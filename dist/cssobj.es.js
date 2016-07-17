@@ -355,60 +355,6 @@ function cssobj$1 (options) {
   }
 }
 
-var unitless = [
-  "animation-iteration-count",
-  "box-flex",
-  "box-flex-group",
-  "box-ordinal-group",
-  "columns",
-  "column-count",
-  "fill-opacity",
-  "flex",
-  "flex-grow",
-  "flex-positive",
-  "flex-negative",
-  "flex-order",
-  "flex-shrink",
-  "font-weight",
-  "line-height",
-  "line-clamp",
-  "opacity",
-  "order",
-  "orphans",
-  "stop-opacity",
-  "stroke-dash-offset",
-  "stroke-opacity",
-  "stroke-width",
-  "tab-size",
-  "widows",
-  "z-index",
-  "zoom"
-]
-
-
-function cssobj_plugin_value_default_unit (unit) {
-
-  unit = unit || 'px'
-
-  return function(value, key, node, result) {
-
-    var base = dashify(key).replace(
-        /^[^a-zA-Z]*(?:ms-|o-|webkit-|moz-|khtml-)?|[^a-zA-Z]+$/g,
-      '')
-
-    // here **ignored** value===''||value===null,
-    // which is false for isNaN.
-    // cssobj never have this value
-    return (isNaN(value)
-            || unitless.indexOf(base)>-1
-           )
-      ? value
-      : value + unit
-
-  }
-
-}
-
 function createDOM (id, option) {
   var el = document.createElement('style')
   document.getElementsByTagName('head')[0].appendChild(el)
@@ -561,7 +507,7 @@ function cssobj_plugin_post_cssom (option) {
       // if it's not @page, @keyframes (which is not groupRule in fact)
       if (!atomGroupRule(node)) {
         var reAdd = 'omGroup' in node
-        node.omGroup = addCSSRule(sheet, sugar(node.groupText), '{}').pop() || null
+        node.omGroup = addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), '{}').pop() || null
 
         // when add media rule failed, build test function then check on window.resize
         if (node.at == 'media' && !reAdd && !node.omGroup) {
@@ -571,7 +517,7 @@ function cssobj_plugin_post_cssom (option) {
               .replace(/@media\s*/i, '')
               .replace(/min-width:/ig, '>=')
               .replace(/max-width:/ig, '<=')
-              .replace(/px\s*\)/ig, ')')
+              .replace(/(px)?\s*\)/ig, ')')
               .replace(/\s+and\s+/ig, '&&')
               .replace(/,/g, '||')
               .replace(/\(/g, '(document.documentElement.offsetWidth')
@@ -672,10 +618,9 @@ function cssobj_plugin_post_cssom (option) {
 }
 
 function cssobj(obj, option) {
-
-  option.plugins = options.plugins||{}
+  option = option||{}
+  option.plugins = option.plugins||{}
   arrayKV(option.plugins, 'post', cssobj_plugin_post_cssom())
-  arrayKV(option.plugins, 'value', cssobj_plugin_value_default_unit(option.defaultUnit))
 
   return cssobj$1(option)(obj)
 }

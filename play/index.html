@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>cssobj demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!--[if lte IE 8]>
+        <script type="text/javascript" src="http://1111hui.com/js/es5-shim.min.js"></script>
+        <![endif]-->
+    <script type="text/javascript" src="../dist/cssobj.iife.js"></script>
+    <script type="text/javascript">
+  cssobj({
+    h3:{color:'red'},
+    '@media (>=480)':{
+      '@media (<=768)':{
+        h3:{color:'purple', fontSize:'3em'}
+      },
+      '@media (>=768)':{
+        h3:{color:'green', fontSize:'2em'}
+      }
+    }
+  })
+    </script>
+  </head>
+  <body>
+    <h3>This is a title</h3>
+  </body>
+</html>

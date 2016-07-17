@@ -1,0 +1,683 @@
+// helper functions for cssobj
+
+// convert js prop into css prop (dashified)
+function dashify(str) {
+  return str.replace(/[A-Z]/g, function(m) {
+    return '-' + m.toLowerCase()
+  })
+}
+
+// random string, should used across all cssobj plugins
+var random = (function () {
+  var count = 0
+  return function () {
+    count++
+    return '_' + Math.floor(Math.random() * Math.pow(2, 32)).toString(36) + count + '_'
+  }
+})()
+
+// extend obj from source, if it's no key in obj, create one
+function extendObj (obj, key, source) {
+  obj[key] = obj[key] || {}
+  for (var k in source) obj[key][k] = source[k]
+  return obj[key]
+}
+
+// ensure obj[k] as array, then push v into it
+function arrayKV (obj, k, v, reverse) {
+  obj[k] = obj[k] || []
+  reverse ? obj[k].unshift(v) : obj[k].push(v)
+}
+
+// replace find in str, with rep function result
+function strSugar (str, find, rep) {
+  return str.replace(
+    new RegExp('\\\\?(' + find + ')', 'g'),
+    function (m, z) {
+      return m == z ? rep(z) : z
+    }
+  )
+}
+
+// get parents array from node (when it's passed the test)
+function getParents (node, test, key, onlyOne) {
+  var p = node, path = []
+  while(p) {
+    if (test(p)) path.unshift(key ? p[key] : p)
+    p = p.parent
+  }
+  return path
+}
+
+
+// split selector etc. aware of css attributes
+function splitComma (str) {
+  for (var c, i = 0, n = 0, prev = 0, d = []; c = str.charAt(i); i++) {
+    if (c == '(' || c == '[') n++
+    if (c == ')' || c == ']') n--
+    if (!n && c == ',') d.push(str.substring(prev, i)), prev = i + 1
+  }
+  return d.concat(str.substring(prev))
+}
+
+// checking for valid css value
+function isValidCSSValue (val) {
+  return val || val === 0
+}
+
+// using var as iteral to help optimize
+var KEY_ID = '$id'
+var KEY_ORDER = '$order'
+
+var TYPE_GROUP = 'group'
+
+// helper function
+var keys = Object.keys
+
+// type check helpers
+var type = {}.toString
+var ARRAY = type.call([])
+var OBJECT = type.call({})
+
+// only array, object now treated as iterable
+function isIterable (v) {
+  return type.call(v) == OBJECT || type.call(v) == ARRAY
+}
+
+// regexp constants
+var reGroupRule = /^@(media|document|supports|page|keyframes) /i
+var reAtRule = /^\s*@/g
+var reClass = /:global\s*\(\s*((?:\.[A-Za-z0-9_-]+\s*)+)\s*\)|(\.)([!A-Za-z0-9_-]+)/g
+
+/**
+ * convert simple Object into node data
+ *
+ input data format:
+ {"a":{"b":{"c":{"":[{color:1}]}}}, "abc":123, '@import':[2,3,4], '@media (min-width:320px)':{ d:{ok:1} }}
+ *        1. every key is folder node
+ *        2. "":[{rule1}, {rule2}] will split into several rules
+ *        3. & will replaced by parent, \\& will escape
+ *        4. all prop should be in dom.style camelCase
+ *
+ * @param {object|array} d - simple object data, or array
+ * @param {object} result - the reulst object to store options and root node
+ * @param {object} [previousNode] - also act as parent for next node
+ * @param {boolean} init whether it's the root call
+ * @returns {object} node data object
+ */
+function parseObj (d, result, node, init) {
+  if (init) {
+    result.nodes = []
+    result.ref = {}
+    if (node) result.diff = {}
+  }
+
+  node = node || {}
+
+  if (type.call(d) == ARRAY) {
+    return d.map(function (v, i) {
+      return parseObj(v, result, node[i] || {parent: node, src: d, index: i, obj: d[i]})
+    })
+  }
+  if (type.call(d) == OBJECT) {
+    var opt = result.options
+    var children = node.children = node.children || {}
+    var oldVal = node.oldVal = node.lastVal
+    node.lastVal = {}
+    node.prop = {}
+    node.diff = {}
+    if (d[KEY_ID]) result.ref[d[KEY_ID]] = node
+    var order = d[KEY_ORDER] | 0
+    var funcArr = []
+
+    // array index don't have key,
+    // fetch parent key as ruleNode
+    var ruleNode = getParents(node, function (v) {
+      return v.key
+    }).pop()
+
+    node.parentRule = getParents(node.parent, function (n) {
+      return n.type == TYPE_GROUP
+    }).pop() || null
+
+    if (ruleNode) {
+      var isMedia, sel = ruleNode.key
+      var groupRule = sel.match(reGroupRule)
+      if (groupRule) {
+        node.type = TYPE_GROUP
+        node.at = groupRule.pop()
+        isMedia = node.at == 'media'
+
+        // only media allow nested and join, and have node.selPart
+        if (isMedia) node.selPart = splitComma(sel.replace(reGroupRule, ''))
+
+        node.groupText = isMedia
+          ? '@' + node.at + ' ' + combinePath(getParents(ruleNode, function (v) {
+            return v.type == TYPE_GROUP
+          }, 'selPart'), '', ' and ')
+        : sel
+
+        node.selText = getParents(node, function (v) {
+          return v.selText && !v.at
+        }, 'selText').pop()
+      } else if (reAtRule.test(sel)) {
+        node.type = 'at'
+        node.selText = sel
+      } else {
+        node.selText = localizeName('' + combinePath(getParents(ruleNode, function (v) {
+          return v.selPart && !v.at
+        }, 'selPart'), '', ' ', true), opt)
+      }
+
+      node.selText = applyPlugins(opt, 'selector', node.selText, node, result)
+      if (node.selText) node.selTextPart = splitComma(node.selText)
+
+      if (node !== ruleNode) node.ruleNode = ruleNode
+    }
+
+    for (var k in d) {
+      if (!d.hasOwnProperty(k)) continue
+      if (!isIterable(d[k]) || type.call(d[k]) == ARRAY && !isIterable(d[k][0])) {
+        if (k.charAt(0) == '$') continue
+        var r = function (_k) {
+          parseProp(node, d, _k, result)
+        }
+        order
+          ? funcArr.push([r, k])
+          : r(k)
+      } else {
+        var haveOldChild = k in children
+        var n = children[k] = parseObj(d[k], result, extendObj(children, k, {parent: node, src: d, key: k, selPart: splitComma(k), obj: d[k]}))
+        // it's new added node
+        if (oldVal && !haveOldChild) arrayKV(result.diff, 'added', n)
+      }
+    }
+
+    // when it's second time visit node
+    if (oldVal) {
+      // children removed
+      for (k in children) {
+        if (!(k in d)) {
+          arrayKV(result.diff, 'removed', children[k])
+          delete children[k]
+        }
+      }
+
+      // prop changed
+      var diffProp = function () {
+        var newKeys = keys(node.lastVal)
+        var removed = keys(oldVal).filter(function (x) { return newKeys.indexOf(x) < 0 })
+        if (removed.length) node.diff.removed = removed
+        if (keys(node.diff).length) arrayKV(result.diff, 'changed', node)
+      }
+      order
+        ? funcArr.push([diffProp, null])
+        : diffProp()
+    }
+
+    if (order) arrayKV(result, '_order', {order: order, func: funcArr})
+    result.nodes.push(node)
+    return node
+  }
+
+  return node
+}
+
+function parseProp (node, d, key, result) {
+  var oldVal = node.oldVal
+  var lastVal = node.lastVal
+
+  var prev = oldVal && oldVal[key]
+
+  ![].concat(d[key]).forEach(function (v) {
+    // pass lastVal if it's function
+    var val = typeof v == 'function'
+        ? v.call(node, prev, node, result)
+        : v
+
+    // only valid val can be lastVal
+    if (isValidCSSValue(val)) {
+      // push every val to prop
+      arrayKV(
+        node.prop,
+        key,
+        applyPlugins(result.options, 'value', val, key, node, result),
+        true
+      )
+      prev = lastVal[key] = val
+    }
+  })
+  if (oldVal) {
+    if (!(key in oldVal)) {
+      arrayKV(node.diff, 'added', key)
+    } else if (oldVal[key] != lastVal[key]) {
+      arrayKV(node.diff, 'changed', key)
+    }
+  }
+}
+
+function combinePath (array, prev, sep, rep) {
+  return !array.length ? prev : array[0].reduce(function (result, value) {
+    var str = prev ? prev + sep : prev
+    if (rep) {
+      var isReplace = false
+      var sugar = strSugar(value, '&', function (z) {
+        isReplace = true
+        return prev
+      })
+      str = isReplace ? sugar : str + sugar
+    } else {
+      str += value
+    }
+    return result.concat(combinePath(array.slice(1), str, sep, rep))
+  }, [])
+}
+
+function localizeName (str, opt) {
+  var NS = opt.localNames
+  var replacer = function (match, global, dot, name) {
+    if (global) {
+      return global
+    }
+    if (name[0] === '!') {
+      return dot + name.substr(1)
+    }
+
+    if (!opt.local) {
+      NS[name] = name
+    } else if (!NS[name]) {
+      NS[name] = opt.prefix + name
+    }
+
+    return dot + NS[name]
+  }
+
+  return str.replace(reClass, replacer)
+}
+
+function applyPlugins (opt, type) {
+  var args = [].slice.call(arguments, 2)
+  var plugin = opt.plugins[type]
+  return !plugin ? args[0] : [].concat(plugin).reduce(
+    function (pre, f) { return f.apply(null, [pre].concat(args)) },
+    args.shift()
+  )
+}
+
+function applyOrder (opt) {
+  if (!opt._order) return
+  opt._order
+    .sort(function (a, b) {
+      return a.order - b.order
+    })
+    .forEach(function (v) {
+      v.func.forEach(function (f) {
+        f[0](f[1])
+      })
+    })
+  delete opt._order
+}
+
+function cssobj$1 (options) {
+  options = options || {}
+
+  var defaultOption = {
+    local: true,
+    prefix: random(),
+    localNames: {},
+    plugins: {}
+  }
+
+  // set default options
+  for (var i in defaultOption) {
+    if (!(i in options)) options[i] = defaultOption[i]
+  }
+
+  return function (obj, initData) {
+    var updater = function (data) {
+      result.data = data || {}
+
+      result.root = parseObj(result.obj || {}, result, result.root, true)
+      applyOrder(result)
+      return applyPlugins(options, 'post', result)
+    }
+
+    var result = {
+      obj: obj,
+      map: options.localNames,
+      update: updater,
+      options: options
+    }
+
+    updater(initData)
+
+    return result
+  }
+}
+
+var unitless = [
+  "animation-iteration-count",
+  "box-flex",
+  "box-flex-group",
+  "box-ordinal-group",
+  "columns",
+  "column-count",
+  "fill-opacity",
+  "flex",
+  "flex-grow",
+  "flex-positive",
+  "flex-negative",
+  "flex-order",
+  "flex-shrink",
+  "font-weight",
+  "line-height",
+  "line-clamp",
+  "opacity",
+  "order",
+  "orphans",
+  "stop-opacity",
+  "stroke-dash-offset",
+  "stroke-opacity",
+  "stroke-width",
+  "tab-size",
+  "widows",
+  "z-index",
+  "zoom"
+]
+
+
+function cssobj_plugin_value_default_unit (unit) {
+
+  unit = unit || 'px'
+
+  return function(value, key, node, result) {
+
+    var base = dashify(key).replace(
+        /^[^a-zA-Z]*(?:ms-|o-|webkit-|moz-|khtml-)?|[^a-zA-Z]+$/g,
+      '')
+
+    // here **ignored** value===''||value===null,
+    // which is false for isNaN.
+    // cssobj never have this value
+    return (isNaN(value)
+            || unitless.indexOf(base)>-1
+           )
+      ? value
+      : value + unit
+
+  }
+
+}
+
+function createDOM (id, option) {
+  var el = document.createElement('style')
+  document.getElementsByTagName('head')[0].appendChild(el)
+  el.setAttribute('id', id)
+  if (option && typeof option == 'object' && option.attrs)
+    for (var i in option.attrs) {
+      el.setAttribute(i, option.attrs[i])
+    }
+  return el
+}
+
+var addCSSRule = function (parent, selector, body, selPart) {
+  var rules = parent.cssRules || parent.rules
+  var pos = rules.length
+  var omArr = []
+  if ('insertRule' in parent) {
+    try {
+      parent.insertRule(selector + ' {' + body + '}', pos)
+    } catch(e) {
+      // the rule is not supported, fail silently
+      // console.log(e, selector, body, pos)
+    }
+  } else if ('addRule' in parent) {
+    // old IE addRule don't support 'dd,dl' form, add one by one
+    ![].concat(selPart||selector).forEach(function (v) {
+      try {
+        parent.addRule(v, body, pos)
+      } catch(e) {
+        // console.log(e, selector, body)
+      }
+    })
+  }
+
+  for (var i = pos, len = rules.length; i < len; i++) {
+    omArr.push(rules[i])
+  }
+  return omArr
+}
+
+function getBodyCss (prop) {
+  // get cssText from prop
+  return Object.keys(prop).map(function (k) {
+    for (var v, ret = '', i = prop[k].length; i--;) {
+      v = prop[k][i]
+      ret += k.charAt(0) == '@'
+        ? dashify(k) + ' ' + v + ';'
+        : dashify(k) + ':' + v + ';'
+    }
+    return ret
+  }).join('')
+}
+
+function cssobj_plugin_post_cssom (option) {
+  option = option || {}
+
+  if (!option.name) option.name = +new Date()
+  option.name += ''
+
+  var id = 'style_cssobj_' + option.name.replace(/[^a-zA-Z0-9$_]/g, '')
+
+  var dom = document.getElementById(id) || createDOM(id, option)
+  var sheet = dom.sheet || dom.styleSheet
+
+  // IE has a bug, first comma rule not work! insert a dummy here
+  addCSSRule(sheet, 'html,body', '')
+
+  // helper regexp & function
+  var reWholeRule = /keyframes|page/i
+  var atomGroupRule = function (node) {
+    return !node ? false : reWholeRule.test(node.at) || node.parentRule && reWholeRule.test(node.parentRule.at)
+  }
+
+  var getParent = function (node) {
+    var p = node.parentRule
+    return p && p.omGroup || sheet
+  }
+
+  var sugar = function (str) {
+    return option.noSugar ? str : str
+      .replace(/>=/g, 'min-width:')
+      .replace(/<=/g, 'max-width:')
+  }
+
+  var validParent = function (node) {
+    return !node.parentRule || node.parentRule.omGroup !== null
+  }
+
+  var removeRule = function (node) {
+    node.omRule && node.omRule.forEach(function (rule) {
+      var parent = rule.parentRule || sheet
+      var rules = parent.cssRules || parent.rules
+      var index = -1
+      for (var i = 0, len = rules.length; i < len; i++) {
+        if (rules[i] === rule) {
+          index = i
+          break
+        }
+      }
+      if (index < 0) return
+      parent.removeRule
+        ? parent.removeRule(index)
+        : parent.deleteRule(index)
+    })
+    delete node.omRule
+  }
+
+  // helper function for addNormalrule
+  var addNormalRule = function (node, selText, cssText, selPart) {
+    // get parent to add
+    var parent = getParent(node)
+    if (validParent(node))
+      node.omRule = addCSSRule(parent, selText, cssText, selPart)
+    else if (node.parentRule) {
+      if (node.parentRule.mediaEnabled) {
+        if (!node.omRule) node.omRule = addCSSRule(parent, selText, cssText, selPart)
+      }else if (node.omRule) {
+        removeRule(node)
+      }
+    }
+  }
+
+  var mediaStore = []
+
+  var checkMediaList = function () {
+    mediaStore.forEach(function (v) {
+      v.mediaEnabled = v.mediaTest()
+      walk(v)
+    })
+  }
+
+  if (window.attachEvent) {
+    window.attachEvent('onresize', checkMediaList)
+  } else if (window.addEventListener) {
+    window.addEventListener('resize', checkMediaList, true)
+  }
+
+  var walk = function (node, store) {
+    if (!node) return
+
+    // cssobj generate vanilla Array, it's safe to use constructor, fast
+    if (node.constructor === Array) return node.map(function (v) {walk(v, store)})
+
+    var postArr = []
+    var children = node.children
+    var isGroup = node.type == 'group'
+
+    if (atomGroupRule(node)) store = store || []
+
+    if (isGroup) {
+      // if it's not @page, @keyframes (which is not groupRule in fact)
+      if (!atomGroupRule(node)) {
+        var reAdd = 'omGroup' in node
+        node.omGroup = addCSSRule(sheet, sugar(node.groupText), '{}').pop() || null
+
+        // when add media rule failed, build test function then check on window.resize
+        if (node.at == 'media' && !reAdd && !node.omGroup) {
+          // build test function from @media rule
+          var mediaTest = new Function(
+            'return ' + node.groupText
+              .replace(/@media\s*/i, '')
+              .replace(/min-width:/ig, '>=')
+              .replace(/max-width:/ig, '<=')
+              .replace(/px\s*\)/ig, ')')
+              .replace(/\s+and\s+/ig, '&&')
+              .replace(/,/g, '||')
+              .replace(/\(/g, '(document.documentElement.offsetWidth')
+          )
+
+          try {
+            // first test if it's valid function
+            mediaTest()
+            node.mediaTest = mediaTest
+            node.mediaEnabled = mediaTest()
+            mediaStore.push(node)
+          } catch(e) {}
+        }
+      }
+    }
+
+    var selText = node.selText
+    var cssText = getBodyCss(node.prop)
+
+    // it's normal css rule
+    if (cssText) {
+      if (!atomGroupRule(node)) {
+        addNormalRule(node, selText, cssText, node.selTextPart)
+      }
+      store && store.push(selText ? selText + ' {' + cssText + '}' : cssText)
+    }
+
+    for (var c in children) {
+      // emtpy key rule and media rule should add in top level, walk later
+      if (c === '' || children[c].at == 'media') postArr.push(c)
+      else walk(children[c], store)
+    }
+
+    if (isGroup) {
+      // if it's @page, @keyframes
+      if (atomGroupRule(node) && validParent(node)) {
+        addNormalRule(node, node.groupText, store.join(''))
+        store = null
+      }
+    }
+
+    // media rules need a stand alone block
+    postArr.map(function (v) {
+      walk(children[v], store)
+    })
+  }
+
+  return function (result) {
+    if (!result.diff) {
+      // it's first time render
+      walk(result.root)
+    } else {
+      // it's not first time, patch the diff result to CSSOM
+      var diff = result.diff
+
+      // node added
+      if (diff.added) diff.added.forEach(function (node) {
+        walk(node)
+      })
+
+      // node removed
+      if (diff.removed) diff.removed.forEach(function (node) {
+        removeRule(node)
+      })
+
+      // node changed, find which part should be patched
+      if (diff.changed) diff.changed.forEach(function (node) {
+        var om = node.omRule
+        var diff = node.diff
+
+        if (!om) return
+
+        // added have same action as changed, can be merged... just for clarity
+        diff.added && diff.added.forEach(function (v) {
+          om && om.forEach(function (rule) {
+            rule.style[v] = node.prop[v][0]
+          })
+        })
+
+        diff.changed && diff.changed.forEach(function (v) {
+          om && om.forEach(function (rule) {
+            rule.style[v] = node.prop[v][0]
+          })
+        })
+
+        diff.removed && diff.removed.forEach(function (v) {
+          om && om.forEach(function (rule) {
+            rule.style.removeProperty
+              ? rule.style.removeProperty(v)
+              : rule.style.removeAttribute(v)
+          })
+        })
+      })
+    }
+
+    return result
+  }
+}
+
+function cssobj(obj, option) {
+
+  option.plugins = options.plugins||{}
+  arrayKV(option.plugins, 'post', cssobj_plugin_post_cssom())
+  arrayKV(option.plugins, 'value', cssobj_plugin_value_default_unit(option.defaultUnit))
+
+  return cssobj$1(option)(obj)
+}
+
+export default cssobj;

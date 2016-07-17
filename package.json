@@ -1,0 +1,18 @@
+{
+  "name": "cssobj",
+  "version": "0.1.1",
+  "description": "",
+  "main": "dist/cssobj.cjs.js",
+  "jsnext:main": "dist/cssobj.es.js",
+  "scripts": {
+    "update": "curl https://raw.githubusercontent.com/cssobj/cssobj-plugin-post-cssom/master/src/cssobj-plugin-post-cssom.js > lib/cssobj-plugin-post-cssom.js && curl https://raw.githubusercontent.com/cssobj/cssobj-plugin-value-default-unit/master/src/cssobj-plugin-value-default-unit.js > lib/cssobj-plugin-value-default-unit.js && curl https://raw.githubusercontent.com/cssobj/cssobj-core/master/lib/cssobj-core.js > lib/cssobj-core.js",
+    "test": "mocha",
+    "report": "cd dist && gzip < cssobj.min.js > cssobj.min.gz && ls -lh && rm -f *.gz",
+    "make": "rollup -c && uglifyjs dist/cssobj.iife.js -cm -o dist/cssobj.min.js"
+  },
+  "author": "James Yang <jamesyang999@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cssobj-helper": "github:cssobj/cssobj-helper"
+  }
+}

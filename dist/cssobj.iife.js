@@ -3,6 +3,15 @@ var cssobj = (function () {
 
   // helper functions for cssobj
 
+  // set default option (not deeply)
+  function defaults(options, defaultOption) {
+    options = options || {}
+    for (var i in defaultOption) {
+      if (!(i in options)) options[i] = defaultOption[i]
+    }
+    return options
+  }
+
   // convert js prop into css prop (dashified)
   function dashify(str) {
     return str.replace(/[A-Z]/g, function(m) {
@@ -125,7 +134,7 @@ var cssobj = (function () {
     if (type.call(d) == OBJECT) {
       var opt = result.options
       var children = node.children = node.children || {}
-      var oldVal = node.oldVal = node.lastVal
+      var prevVal = node.prevVal = node.lastVal
       node.lastVal = {}
       node.prop = {}
       node.diff = {}
@@ -192,12 +201,12 @@ var cssobj = (function () {
           var haveOldChild = k in children
           var n = children[k] = parseObj(d[k], result, extendObj(children, k, {parent: node, src: d, key: k, selPart: splitComma(k), obj: d[k]}))
           // it's new added node
-          if (oldVal && !haveOldChild) arrayKV(result.diff, 'added', n)
+          if (prevVal && !haveOldChild) arrayKV(result.diff, 'added', n)
         }
       }
 
       // when it's second time visit node
-      if (oldVal) {
+      if (prevVal) {
         // children removed
         for (k in children) {
           if (!(k in d)) {
@@ -209,7 +218,7 @@ var cssobj = (function () {
         // prop changed
         var diffProp = function () {
           var newKeys = keys(node.lastVal)
-          var removed = keys(oldVal).filter(function (x) { return newKeys.indexOf(x) < 0 })
+          var removed = keys(prevVal).filter(function (x) { return newKeys.indexOf(x) < 0 })
           if (removed.length) node.diff.removed = removed
           if (keys(node.diff).length) arrayKV(result.diff, 'changed', node)
         }
@@ -227,10 +236,10 @@ var cssobj = (function () {
   }
 
   function parseProp (node, d, key, result) {
-    var oldVal = node.oldVal
+    var prevVal = node.prevVal
     var lastVal = node.lastVal
 
-    var prev = oldVal && oldVal[key]
+    var prev = prevVal && prevVal[key]
 
     ![].concat(d[key]).forEach(function (v) {
       // pass lastVal if it's function
@@ -250,10 +259,10 @@ var cssobj = (function () {
         prev = lastVal[key] = val
       }
     })
-    if (oldVal) {
-      if (!(key in oldVal)) {
+    if (prevVal) {
+      if (!(key in prevVal)) {
         arrayKV(node.diff, 'added', key)
-      } else if (oldVal[key] != lastVal[key]) {
+      } else if (prevVal[key] != lastVal[key]) {
         arrayKV(node.diff, 'changed', key)
       }
     }
@@ -322,19 +331,13 @@ var cssobj = (function () {
   }
 
   function cssobj$1 (options) {
-    options = options || {}
 
-    var defaultOption = {
+    options = defaults(options, {
       local: true,
       prefix: random(),
       localNames: {},
       plugins: {}
-    }
-
-    // set default options
-    for (var i in defaultOption) {
-      if (!(i in options)) options[i] = defaultOption[i]
-    }
+    })
 
     return function (obj, initData) {
       var updater = function (data) {
@@ -437,8 +440,8 @@ var cssobj = (function () {
 
     var sugar = function (str) {
       return option.noSugar ? str : str
-        .replace(/>=/g, 'min-width:')
-        .replace(/<=/g, 'max-width:')
+        .replace(/w\s*>=/ig, 'min-width:')
+        .replace(/w\s*<=/ig, 'max-width:')
     }
 
     var validParent = function (node) {
@@ -516,7 +519,7 @@ var cssobj = (function () {
           if (node.at == 'media' && !reAdd && !node.omGroup) {
             // build test function from @media rule
             var mediaTest = new Function(
-              'return ' + node.groupText
+              'return ' + sugar(node.groupText)
                 .replace(/@media\s*/i, '')
                 .replace(/min-width:/ig, '>=')
                 .replace(/max-width:/ig, '<=')
@@ -569,6 +572,7 @@ var cssobj = (function () {
     }
 
     return function (result) {
+      result.cssdom = dom
       if (!result.diff) {
         // it's first time render
         walk(result.root)

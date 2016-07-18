@@ -8,21 +8,53 @@
         <script type="text/javascript" src="http://1111hui.com/js/es5-shim.min.js"></script>
         <![endif]-->
     <script type="text/javascript" src="../dist/cssobj.iife.js"></script>
-    <script type="text/javascript">
-  cssobj({
-    h3:{color:'red'},
-    '@media (>=480)':{
-      '@media (<=768)':{
-        h3:{color:'purple', fontSize:'3em'}
-      },
-      '@media (>=768)':{
-        h3:{color:'green', fontSize:'2em'}
-      }
-    }
-  })
-    </script>
+    <script type="text/javascript" src="../node_modules/cssobj-plugin-value-default-unit/dist/cssobj-plugin-value-default-unit.iife.js"></script>
+    <script type="text/javascript" src="./browser-detection.js"></script>
   </head>
   <body>
-    <h3>This is a title</h3>
-  </body>
+    <div id="hr"></div>
+    <div id="size"></div>
+    <h3>LOVE CSSOBJ<br>Browser:
+<!--[if IE 7]>IE 7<![endif]-->
+<!--[if IE 6]>IE 6<![endif]-->
+<!--[if IE 5]>IE 5<![endif]-->
+    </h3>
+
+    <script type="text/javascript">
+  // IE 11 simulator cannot report version below IE 7, use CC instead
+  if(!(/ie/i.test(Sniff.browser.name) && parseFloat(Sniff.browser.version)<=7))
+    document.getElementsByTagName('h3')[0].innerHTML += '' + Sniff.browser.name + '-' + Sniff.browser.version + '[' + Sniff.os.name + ']'
+    </script>
+
+    <textarea id="obj">
+{
+  h3:{color:'red', textAlign:'center', lineHeight:1.5, fontSize:32, margin:0, padding:0},
+  '@media (min-width: 400)':{
+    '@media (max-width: 500)':{
+      h3:{color:'purple', fontSize:24}
+    },
+    '@media (min-width: 500)':{
+      h3:{color:'green', fontSize:20}
+    }
+  }
+}
+</textarea>
+
+<script type="text/javascript" src="./page.js"></script>
+<script type="text/javascript">
+var result = cssobj({},{plugins: {value: cssobj_plugin_value_default_unit()}})
+var objDom = document.getElementById('obj')
+function applyObj() {
+  try{
+    var func = new Function('result.obj='+objDom.value)
+    func()
+    result.update()
+  }catch(e){}
+}
+objDom.onkeyup = applyObj
+applyObj()
+window.onresize()
+</script>
+
+</body>
 </html>

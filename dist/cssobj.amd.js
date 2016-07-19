@@ -592,12 +592,10 @@ define('cssobj', function () { 'use strict';
         // node removed
         if (diff.removed) diff.removed.forEach(function (node) {
 
-          node.omRule && node.omRule.forEach(removeOneRule)
-          removeOneRule(node.omGroup)
+          [node.omGroup].concat(node.omRule).forEach(removeOneRule)
 
           node.childSel && node.childSel.forEach(function(n) {
-            n.omRule && n.omRule.forEach(removeOneRule)
-            removeOneRule(n.omGroup)
+            [n.omGroup].concat(n.omRule).forEach(removeOneRule)
           })
 
         })

@@ -390,7 +390,7 @@ define('cssobj', function () { 'use strict';
       }
     } else if ('addRule' in parent) {
       // old IE addRule don't support 'dd,dl' form, add one by one
-      ![].concat(selPart||selector).forEach(function (v) {
+      ![].concat(selPart || selector).forEach(function (v) {
         try {
           parent.addRule(v, body, pos)
         } catch(e) {
@@ -454,7 +454,7 @@ define('cssobj', function () { 'use strict';
     }
 
     var removeOneRule = function (rule) {
-      if(!rule) return
+      if (!rule) return
       var parent = rule.parentRule || sheet
       var rules = parent.cssRules || parent.rules
       var index = -1
@@ -470,6 +470,20 @@ define('cssobj', function () { 'use strict';
         : parent.deleteRule(index)
     }
 
+    function removeNode (node) {
+      // remove mediaStore for old IE
+      var groupIdx = mediaStore.indexOf(node)
+      if (groupIdx > -1) {
+        // before remove from mediaStore
+        // don't forget to remove all children, by a walk
+        node.mediaEnabled = false
+        walk(node)
+        mediaStore.splice(groupIdx, 1)
+      }
+      // remove Group rule and Nomal rule
+      ![node.omGroup].concat(node.omRule).forEach(removeOneRule)
+    }
+
     // helper function for addNormalrule
     var addNormalRule = function (node, selText, cssText, selPart) {
       // get parent to add
@@ -477,6 +491,7 @@ define('cssobj', function () { 'use strict';
       if (validParent(node))
         node.omRule = addCSSRule(parent, selText, cssText, selPart)
       else if (node.parentRule) {
+        // for old IE not support @media, check mediaEnabled, add child nodes
         if (node.parentRule.mediaEnabled) {
           if (!node.omRule) node.omRule = addCSSRule(parent, selText, cssText, selPart)
         }else if (node.omRule) {
@@ -591,13 +606,9 @@ define('cssobj', function () { 'use strict';
 
         // node removed
         if (diff.removed) diff.removed.forEach(function (node) {
-
-          [node.omGroup].concat(node.omRule).forEach(removeOneRule)
-
-          node.childSel && node.childSel.forEach(function(n) {
-            [n.omGroup].concat(n.omRule).forEach(removeOneRule)
-          })
-
+          // also remove all child group & sel
+          node.childSel && node.childSel.forEach(removeNode)
+          removeNode(node)
         })
 
         // node changed, find which part should be patched

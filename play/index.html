@@ -14,16 +14,19 @@
   <body>
     <div id="hr"></div>
     <div id="size"></div>
-    <h3>LOVE CSSOBJ<br>Browser:
+    <h3>LOVE CSSOBJ<br>
+      <span>
+        Browser:
 <!--[if IE 7]>IE 7<![endif]-->
 <!--[if IE 6]>IE 6<![endif]-->
 <!--[if IE 5]>IE 5<![endif]-->
+      </span>
     </h3>
 
     <script type="text/javascript">
   // IE 11 simulator cannot report version below IE 7, use CC instead
   if(!(/ie/i.test(Sniff.browser.name) && parseFloat(Sniff.browser.version)<=7))
-    document.getElementsByTagName('h3')[0].innerHTML += '' + Sniff.browser.name + '-' + Sniff.browser.version + '[' + Sniff.os.name + ']'
+    document.getElementsByTagName('span')[0].innerHTML += '' + Sniff.browser.name + '-' + Sniff.browser.version + '[' + Sniff.os.name + ']'
     </script>
 
     <textarea id="obj">
@@ -34,7 +37,7 @@
     lineHeight: 1.5,
     fontSize: 32,
     margin: 0,
-    padding: 0
+    padding: 0, span:{color:'blue'}
   },
   '@media (min-width: 400)': {
     '@media (max-width: 500)': {
@@ -63,7 +66,7 @@ function applyObj() {
     func()
     result.update()
   }catch(e){
-    console.log(e)
+    // console.log(e)
   }
 }
 objDom.onblur = applyObj

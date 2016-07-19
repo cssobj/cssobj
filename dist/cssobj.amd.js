@@ -249,7 +249,7 @@ define('cssobj', function () { 'use strict';
     ![].concat(d[key]).forEach(function (v) {
       // pass lastVal if it's function
       var val = typeof v == 'function'
-          ? v.call(node, prev, node, result)
+          ? v.call(node.lastVal, prev, node, result.ref, result)
           : v
 
       // only valid val can be lastVal

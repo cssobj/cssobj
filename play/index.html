@@ -29,6 +29,9 @@
     document.getElementsByTagName('span')[0].innerHTML += '' + Sniff.browser.name + '-' + Sniff.browser.version + '[' + Sniff.os.name + ']'
     </script>
 
+    <div style="height:10px; font-size:0; line-height:0; clear:both;"></div>
+    <div class="text">
+      &nbsp;Input Object:
     <textarea id="obj">
 {
   h3: {
@@ -37,12 +40,13 @@
     lineHeight: 1.5,
     fontSize: 32,
     margin: 0,
-    padding: 0, span:{color:'blue'}
+    padding: 0,
+    span:{color:'red', fontSize:22}
   },
   '@media (min-width: 400)': {
     '@media (max-width: 500)': {
       h3: {
-        color: 'purple',
+        color: 'blue',
         fontSize: 24
       }
     },
@@ -54,22 +58,32 @@
     }
   }
 }
-</textarea>
+    </textarea>
+    </div>
 
+    <div class="text"> &nbsp;CSSOM Text:
+      <textarea id="csstext"></textarea>
+    </div>
 <script type="text/javascript" src="./page.js"></script>
 <script type="text/javascript">
 var result = cssobj({},{plugins: {value: cssobj_plugin_value_default_unit()}})
 var objDom = document.getElementById('obj')
+
+function updateCSSText() {
+  return document.getElementById('csstext').value = getCSSText(result.cssdom)
+}
+
 function applyObj() {
   try{
     var func = new Function('result.obj='+objDom.value)
     func()
     result.update()
-  }catch(e){
+    updateCSSText()
+  }catch(e) {
     // console.log(e)
   }
 }
-objDom.onblur = applyObj
+objDom.onkeyup = applyObj
 applyObj()
 window.onresize()
 </script>

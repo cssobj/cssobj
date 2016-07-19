@@ -28,13 +28,26 @@
 
     <textarea id="obj">
 {
-  h3:{color:'red', textAlign:'center', lineHeight:1.5, fontSize:32, margin:0, padding:0},
-  '@media (min-width: 400)':{
-    '@media (max-width: 500)':{
-      h3:{color:'purple', fontSize:24}
+  h3: {
+    color: 'red',
+    textAlign: 'center',
+    lineHeight: 1.5,
+    fontSize: 32,
+    margin: 0,
+    padding: 0
+  },
+  '@media (min-width: 400)': {
+    '@media (max-width: 500)': {
+      h3: {
+        color: 'purple',
+        fontSize: 24
+      }
     },
-    '@media (min-width: 500)':{
-      h3:{color:'green', fontSize:20}
+    '@media (min-width: 500)': {
+      h3: {
+        color: 'green',
+        fontSize: 20
+      }
     }
   }
 }
@@ -49,9 +62,11 @@ function applyObj() {
     var func = new Function('result.obj='+objDom.value)
     func()
     result.update()
-  }catch(e){}
+  }catch(e){
+    console.log(e)
+  }
 }
-objDom.onkeyup = applyObj
+objDom.onblur = applyObj
 applyObj()
 window.onresize()
 </script>

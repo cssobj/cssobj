@@ -33,8 +33,9 @@ function extendObj (obj, key, source) {
 }
 
 // ensure obj[k] as array, then push v into it
-function arrayKV (obj, k, v, reverse) {
+function arrayKV (obj, k, v, reverse, unique) {
   obj[k] = obj[k] || []
+  if(unique && obj[k].indexOf(v)>-1) return
   reverse ? obj[k].unshift(v) : obj[k].push(v)
 }
 
@@ -49,13 +50,18 @@ function strSugar (str, find, rep) {
 }
 
 // get parents array from node (when it's passed the test)
-function getParents (node, test, key, onlyOne) {
+function getParents (node, test, key, childrenKey) {
   var p = node, path = []
   while(p) {
-    if (test(p)) path.unshift(key ? p[key] : p)
+    if (test(p)) {
+      if(childrenKey) path.forEach(function(v) {
+        arrayKV(p, childrenKey, v, false, true)
+      })
+      path.unshift(p)
+    }
     p = p.parent
   }
-  return path
+  return path.map(function(p){return key?p[key]:p })
 }
 
 
@@ -163,7 +169,7 @@ function parseObj (d, result, node, init) {
         node.groupText = isMedia
           ? '@' + node.at + ' ' + combinePath(getParents(ruleNode, function (v) {
             return v.type == TYPE_GROUP
-          }, 'selPart'), '', ' and ')
+          }, 'selPart', 'childSel'), '', ' and ')
         : sel
 
         node.selText = getParents(node, function (v) {
@@ -175,7 +181,7 @@ function parseObj (d, result, node, init) {
       } else {
         node.selText = localizeName('' + combinePath(getParents(ruleNode, function (v) {
           return v.selPart && !v.at
-        }, 'selPart'), '', ' ', true), opt)
+        }, 'selPart', 'childSel'), '', ' ', true), opt)
       }
 
       node.selText = applyPlugins(opt, 'selector', node.selText, node, result)
@@ -445,23 +451,21 @@ function cssobj_plugin_post_cssom (option) {
     return !node.parentRule || node.parentRule.omGroup !== null
   }
 
-  var removeRule = function (node) {
-    node.omRule && node.omRule.forEach(function (rule) {
-      var parent = rule.parentRule || sheet
-      var rules = parent.cssRules || parent.rules
-      var index = -1
-      for (var i = 0, len = rules.length; i < len; i++) {
-        if (rules[i] === rule) {
-          index = i
-          break
-        }
+  var removeOneRule = function (rule) {
+    if(!rule) return
+    var parent = rule.parentRule || sheet
+    var rules = parent.cssRules || parent.rules
+    var index = -1
+    for (var i = 0, len = rules.length; i < len; i++) {
+      if (rules[i] === rule) {
+        index = i
+        break
       }
-      if (index < 0) return
-      parent.removeRule
-        ? parent.removeRule(index)
-        : parent.deleteRule(index)
-    })
-    delete node.omRule
+    }
+    if (index < 0) return
+    parent.removeRule
+      ? parent.removeRule(index)
+      : parent.deleteRule(index)
   }
 
   // helper function for addNormalrule
@@ -474,7 +478,8 @@ function cssobj_plugin_post_cssom (option) {
       if (node.parentRule.mediaEnabled) {
         if (!node.omRule) node.omRule = addCSSRule(parent, selText, cssText, selPart)
       }else if (node.omRule) {
-        removeRule(node)
+        node.omRule.forEach(removeOneRule)
+        delete node.omRule
       }
     }
   }
@@ -584,7 +589,15 @@ function cssobj_plugin_post_cssom (option) {
 
       // node removed
       if (diff.removed) diff.removed.forEach(function (node) {
-        removeRule(node)
+
+        node.omRule && node.omRule.forEach(removeOneRule)
+        removeOneRule(node.omGroup)
+
+        node.childSel && node.childSel.forEach(function(n) {
+          n.omRule && n.omRule.forEach(removeOneRule)
+          removeOneRule(n.omGroup)
+        })
+
       })
 
       // node changed, find which part should be patched

@@ -26,7 +26,7 @@ var pagecss = cssobj(
       padding:2,
       border:'1px solid black'
     },
-    '#csstext':{
+    '.csstext':{
       display: 'none'
     },
     '@media (min-width:350)': {
@@ -35,8 +35,8 @@ var pagecss = cssobj(
           return winWidth/2 - 4 + 'px'
         }
       },
-      '#csstext':{
-        display: 'inline-block'
+      '.csstext':{
+        display: 'block'
       }
     },
     '#hr':{

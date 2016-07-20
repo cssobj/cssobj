@@ -422,10 +422,10 @@ var cssobj = (function () {
   function cssobj_plugin_post_cssom (option) {
     option = option || {}
 
-    if (!option.name) option.name = +new Date()
+    if (!option.name) option.name = random()
     option.name += ''
 
-    var id = 'style_cssobj_' + option.name.replace(/[^a-zA-Z0-9$_]/g, '')
+    var id = 'style_cssobj' + option.name.replace(/[^a-zA-Z0-9$_]/g, '')
 
     var dom = document.getElementById(id) || createDOM(id, option)
     var sheet = dom.sheet || dom.styleSheet

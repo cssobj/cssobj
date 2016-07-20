@@ -41,7 +41,7 @@ var pagecss = cssobj(
     },
     '#hr':{
       paddingTop:10,
-      borderTop:'1px solid black'
+      borderTop:'1px dashed black'
     },
     '#size': {
       textAlign: 'center',

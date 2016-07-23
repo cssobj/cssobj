@@ -56,6 +56,7 @@ var pagecss = cssobj(
   },
   {
     local: false,
+    cssom:{name:'_indexpage'},
     plugins: {value: cssobj_plugin_value_default_unit()}
   }
 )

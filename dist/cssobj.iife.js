@@ -649,7 +649,7 @@ var cssobj = (function () {
   function cssobj(obj, option) {
     option = option||{}
     option.plugins = option.plugins||{}
-    arrayKV(option.plugins, 'post', cssobj_plugin_post_cssom())
+    arrayKV(option.plugins, 'post', cssobj_plugin_post_cssom(option.cssom))
 
     return cssobj$1(option)(obj)
   }

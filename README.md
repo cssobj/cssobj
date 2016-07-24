@@ -1,10 +1,20 @@
 # CSSOBJ
 
-CSSOBJ is a light weight javascript library for rendering and diff CSS from javascript with CSSOM in browsers, using virtual CSS technology. Features include: at media stylesheet rule support for old browsers, localized class names, dynamic caculation and update css, hot replacement for css rules. Idea for build with and deploy web components and MVC frameworks.
+CSSOBJ is a light weight javascript library for rendering and diff CSS from javascript with CSSOM in browsers, using virtual CSS technology. Features include: at media stylesheet rule support for old browsers, localized class names, dynamic caculation and update css, hot replacement for css rules.
 
 [Live demo](https://cssobj.github.io/cssobj-demo/)
 
-![CSSOBJ Screenshot](demo-box.gif)
+[![CSSOBJ Screenshot](demo-box.gif)](https://cssobj.github.io/cssobj-demo/)
+
+## Install:
+
+Download this repo, and check the dist folder.
+
+This project currently not published to `npmjs`, please using below to install from github directly:
+
+```js
+npm install cssobj/cssobj
+```
 
 ## Usage:
 
@@ -105,7 +115,7 @@ Then `div` will have color as **red**, **green** and **blue** accordingly, in **
 
 Below is the screencast with **@media** rule response support in **IE 5** (oh my!)
 
-![CSSOBJ @media support](demo-media.gif)
+[![CSSOBJ @media support](demo-media.gif)](https://cssobj.github.io/cssobj-demo/play/)
 
 ### 5. Localized class names
 
@@ -141,7 +151,7 @@ Virtual CSS middle format is JS object, thus can avoid the differences of CSS en
 
 #### *PARAMS*
 
-##### `obj`
+#### `obj`
 
 Type: **{object|array}**
 
@@ -153,7 +163,7 @@ Nothing special, just plain js `Object`, or `Array` of `Object`, with below rule
 
 * if value is non-object, key will act as css property.
 
-##### `options`
+#### `options`
 
 Type: **{object}**
 

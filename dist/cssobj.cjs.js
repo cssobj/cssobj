@@ -1,9 +1,16 @@
 'use strict';
 
+// ensure obj[k] as array, then push v into it
+function arrayKV (obj, k, v, reverse, unique) {
+  obj[k] = k in obj ? [].concat(obj[k]) : []
+  if(unique && obj[k].indexOf(v)>-1) return
+  reverse ? obj[k].unshift(v) : obj[k].push(v)
+}
+
 // helper functions for cssobj
 
 // set default option (not deeply)
-function defaults(options, defaultOption) {
+function defaults$1(options, defaultOption) {
   options = options || {}
   for (var i in defaultOption) {
     if (!(i in options)) options[i] = defaultOption[i]
@@ -11,15 +18,8 @@ function defaults(options, defaultOption) {
   return options
 }
 
-// convert js prop into css prop (dashified)
-function dashify(str) {
-  return str.replace(/[A-Z]/g, function(m) {
-    return '-' + m.toLowerCase()
-  })
-}
-
 // random string, should used across all cssobj plugins
-var random = (function () {
+var random$1 = (function () {
   var count = 0
   return function () {
     count++
@@ -28,21 +28,21 @@ var random = (function () {
 })()
 
 // extend obj from source, if it's no key in obj, create one
-function extendObj (obj, key, source) {
+function extendObj$1 (obj, key, source) {
   obj[key] = obj[key] || {}
   for (var k in source) obj[key][k] = source[k]
   return obj[key]
 }
 
 // ensure obj[k] as array, then push v into it
-function arrayKV (obj, k, v, reverse, unique) {
-  obj[k] = obj[k] || []
+function arrayKV$1 (obj, k, v, reverse, unique) {
+  obj[k] = k in obj ? [].concat(obj[k]) : []
   if(unique && obj[k].indexOf(v)>-1) return
   reverse ? obj[k].unshift(v) : obj[k].push(v)
 }
 
 // replace find in str, with rep function result
-function strSugar (str, find, rep) {
+function strSugar$1 (str, find, rep) {
   return str.replace(
     new RegExp('\\\\?(' + find + ')', 'g'),
     function (m, z) {
@@ -52,13 +52,16 @@ function strSugar (str, find, rep) {
 }
 
 // get parents array from node (when it's passed the test)
-function getParents (node, test, key, childrenKey) {
+function getParents$1 (node, test, key, childrenKey, parentKey) {
   var p = node, path = []
   while(p) {
     if (test(p)) {
       if(childrenKey) path.forEach(function(v) {
-        arrayKV(p, childrenKey, v, false, true)
+        arrayKV$1(p, childrenKey, v, false, true)
       })
+      if(path[0] && parentKey){
+        path[0][parentKey] = p
+      }
       path.unshift(p)
     }
     p = p.parent
@@ -68,7 +71,7 @@ function getParents (node, test, key, childrenKey) {
 
 
 // split selector etc. aware of css attributes
-function splitComma (str) {
+function splitComma$1 (str) {
   for (var c, i = 0, n = 0, prev = 0, d = []; c = str.charAt(i); i++) {
     if (c == '(' || c == '[') n++
     if (c == ')' || c == ']') n--
@@ -78,7 +81,7 @@ function splitComma (str) {
 }
 
 // checking for valid css value
-function isValidCSSValue (val) {
+function isValidCSSValue$1 (val) {
   return val || val === 0
 }
 
@@ -149,11 +152,11 @@ function parseObj (d, result, node, init) {
 
     // array index don't have key,
     // fetch parent key as ruleNode
-    var ruleNode = getParents(node, function (v) {
+    var ruleNode = getParents$1(node, function (v) {
       return v.key
     }).pop()
 
-    node.parentRule = getParents(node.parent, function (n) {
+    node.parentRule = getParents$1(node.parent, function (n) {
       return n.type == TYPE_GROUP
     }).pop() || null
 
@@ -166,28 +169,28 @@ function parseObj (d, result, node, init) {
         isMedia = node.at == 'media'
 
         // only media allow nested and join, and have node.selPart
-        if (isMedia) node.selPart = splitComma(sel.replace(reGroupRule, ''))
+        if (isMedia) node.selPart = splitComma$1(sel.replace(reGroupRule, ''))
 
         node.groupText = isMedia
-          ? '@' + node.at + ' ' + combinePath(getParents(ruleNode, function (v) {
+          ? '@' + node.at + ' ' + combinePath(getParents$1(ruleNode, function (v) {
             return v.type == TYPE_GROUP
-          }, 'selPart', 'childSel'), '', ' and ')
+          }, 'selPart', 'selChild', 'selParent'), '', ' and ')
         : sel
 
-        node.selText = getParents(node, function (v) {
+        node.selText = getParents$1(node, function (v) {
           return v.selText && !v.at
         }, 'selText').pop()
       } else if (reAtRule.test(sel)) {
         node.type = 'at'
         node.selText = sel
       } else {
-        node.selText = localizeName('' + combinePath(getParents(ruleNode, function (v) {
+        node.selText = localizeName('' + combinePath(getParents$1(ruleNode, function (v) {
           return v.selPart && !v.at
-        }, 'selPart', 'childSel'), '', ' ', true), opt)
+        }, 'selPart', 'selChild', 'selParent'), '', ' ', true), opt)
       }
 
       node.selText = applyPlugins(opt, 'selector', node.selText, node, result)
-      if (node.selText) node.selTextPart = splitComma(node.selText)
+      if (node.selText) node.selTextPart = splitComma$1(node.selText)
 
       if (node !== ruleNode) node.ruleNode = ruleNode
     }
@@ -204,9 +207,9 @@ function parseObj (d, result, node, init) {
           : r(k)
       } else {
         var haveOldChild = k in children
-        var n = children[k] = parseObj(d[k], result, extendObj(children, k, {parent: node, src: d, key: k, selPart: splitComma(k), obj: d[k]}))
+        var n = children[k] = parseObj(d[k], result, extendObj$1(children, k, {parent: node, src: d, key: k, selPart: splitComma$1(k), obj: d[k]}))
         // it's new added node
-        if (prevVal && !haveOldChild) arrayKV(result.diff, 'added', n)
+        if (prevVal && !haveOldChild) arrayKV$1(result.diff, 'added', n)
       }
     }
 
@@ -215,7 +218,7 @@ function parseObj (d, result, node, init) {
       // children removed
       for (k in children) {
         if (!(k in d)) {
-          arrayKV(result.diff, 'removed', children[k])
+          arrayKV$1(result.diff, 'removed', children[k])
           delete children[k]
         }
       }
@@ -225,14 +228,14 @@ function parseObj (d, result, node, init) {
         var newKeys = keys(node.lastVal)
         var removed = keys(prevVal).filter(function (x) { return newKeys.indexOf(x) < 0 })
         if (removed.length) node.diff.removed = removed
-        if (keys(node.diff).length) arrayKV(result.diff, 'changed', node)
+        if (keys(node.diff).length) arrayKV$1(result.diff, 'changed', node)
       }
       order
         ? funcArr.push([diffProp, null])
         : diffProp()
     }
 
-    if (order) arrayKV(result, '_order', {order: order, func: funcArr})
+    if (order) arrayKV$1(result, '_order', {order: order, func: funcArr})
     result.nodes.push(node)
     return node
   }
@@ -253,9 +256,9 @@ function parseProp (node, d, key, result) {
         : v
 
     // only valid val can be lastVal
-    if (isValidCSSValue(val)) {
+    if (isValidCSSValue$1(val)) {
       // push every val to prop
-      arrayKV(
+      arrayKV$1(
         node.prop,
         key,
         applyPlugins(result.options, 'value', val, key, node, result),
@@ -266,9 +269,9 @@ function parseProp (node, d, key, result) {
   })
   if (prevVal) {
     if (!(key in prevVal)) {
-      arrayKV(node.diff, 'added', key)
+      arrayKV$1(node.diff, 'added', key)
     } else if (prevVal[key] != lastVal[key]) {
-      arrayKV(node.diff, 'changed', key)
+      arrayKV$1(node.diff, 'changed', key)
     }
   }
 }
@@ -278,7 +281,7 @@ function combinePath (array, prev, sep, rep) {
     var str = prev ? prev + sep : prev
     if (rep) {
       var isReplace = false
-      var sugar = strSugar(value, '&', function (z) {
+      var sugar = strSugar$1(value, '&', function (z) {
         isReplace = true
         return prev
       })
@@ -337,9 +340,9 @@ function applyOrder (opt) {
 
 function cssobj$1 (options) {
 
-  options = defaults(options, {
+  options = defaults$1(options, {
     local: true,
-    prefix: random(),
+    prefix: random$1(),
     localNames: {},
     plugins: {}
   })
@@ -365,6 +368,24 @@ function cssobj$1 (options) {
     return result
   }
 }
+
+// helper functions for cssobj
+
+// convert js prop into css prop (dashified)
+function dashify$2(str) {
+  return str.replace(/[A-Z]/g, function(m) {
+    return '-' + m.toLowerCase()
+  })
+}
+
+// random string, should used across all cssobj plugins
+var random$2 = (function () {
+  var count = 0
+  return function () {
+    count++
+    return '_' + Math.floor(Math.random() * Math.pow(2, 32)).toString(36) + count + '_'
+  }
+})()
 
 function createDOM (id, option) {
   var el = document.createElement('style')
@@ -411,8 +432,8 @@ function getBodyCss (prop) {
     for (var v, ret = '', i = prop[k].length; i--;) {
       v = prop[k][i]
       ret += k.charAt(0) == '@'
-        ? dashify(k) + ' ' + v + ';'
-        : dashify(k) + ':' + v + ';'
+        ? dashify$2(k) + ' ' + v + ';'
+        : dashify$2(k) + ':' + v + ';'
     }
     return ret
   }).join('')
@@ -421,7 +442,7 @@ function getBodyCss (prop) {
 function cssobj_plugin_post_cssom (option) {
   option = option || {}
 
-  if (!option.name) option.name = random()
+  if (!option.name) option.name = random$2()
   option.name += ''
 
   var id = 'style_cssobj' + option.name.replace(/[^a-zA-Z0-9$_]/g, '')
@@ -607,7 +628,7 @@ function cssobj_plugin_post_cssom (option) {
       // node removed
       if (diff.removed) diff.removed.forEach(function (node) {
         // also remove all child group & sel
-        node.childSel && node.childSel.forEach(removeNode)
+        node.selChild && node.selChild.forEach(removeNode)
         removeNode(node)
       })
 

@@ -29,6 +29,10 @@
     "cssobj-helper": "github:cssobj/cssobj-helper"
   },
   "devDependencies": {
-    "rollup-watch": "^2.5.0"
+    "chai": "^3.5.0",
+    "diff": "^2.2.3",
+    "mocha": "^2.5.3",
+    "rollup-watch": "^2.5.0",
+    "walk": "^2.3.9"
   }
 }

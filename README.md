@@ -1,5 +1,7 @@
 # CSSOBJ
 
+[![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
+
 CSSOBJ is a light weight javascript library for rendering and diff CSS from javascript with CSSOM in browsers, using virtual CSS technology. Features include: at media stylesheet rule support for old browsers, localized class names, dynamic caculation and update css, hot replacement for css rules.
 
 [Live demo](https://cssobj.github.io/cssobj-demo/)

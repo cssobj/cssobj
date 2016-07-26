@@ -28,13 +28,16 @@ function runPhantom (root, fileName, done) {
       var text = group[i].split('******')
       if(text.length<2) return done('wrong test format')
 
-      try {
-        var target = fs.readFileSync(path.join(root, text[1]), 'utf8')
-      } catch(e) {
-        return done(e)
+      var str2 = text[1]
+      if(/^file:/.test(str2)) {
+        try {
+          str2 = fs.readFileSync(path.join(root, str2.replace(/^file:/,'')), 'utf8')
+        } catch(e) {
+          return done(e)
+        }
       }
 
-      expect(text[0]).equal(target)
+      expect(text[0]).equal(str2)
 
     }
 
@@ -57,7 +60,7 @@ function walkFile(root, stat, next) {
 
     this.slow(3000)
 
-    it('case file '+stat.name, function (done) {
+    it('file '+stat.name, function (done) {
       runPhantom(root, stat.name, done)
     })
 

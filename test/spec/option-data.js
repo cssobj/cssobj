@@ -4,5 +4,5 @@ var result = cssobj({
   }
 }, null, 'custom data here')
 
-log(result.data, './option-data.txt')
+log(result.data, 'custom data here')
 

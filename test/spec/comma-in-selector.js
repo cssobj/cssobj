@@ -5,4 +5,4 @@ var result = cssobj({'div,table':{
   }
 }})
 
-log(css(result), './comma-in-selector.css')
+log(css(result), 'file:./comma-in-selector.css')

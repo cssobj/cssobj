@@ -1,7 +1,7 @@
 {
   "name": "cssobj",
-  "version": "0.1.1",
-  "description": "Light weight javascript library for rendering and diff CSS from javascript with CSSOM in browser, using virtual CSS technology. Features include: at media stylesheet rule response support for old browsers, localized class names, dynamic caculation and update css, hot replacement for css rules. Idea for build with and deploy web components and MVC frameworks.",
+  "version": "0.1.2",
+  "description": "Light weight javascript library for rendering and diff CSS from javascript with CSSOM in browser, using virtual CSS technology. Features include: at media stylesheet rule response support for old browsers, localized class names, dynamic caculation and update css, hot replacement for css rules.",
   "keywords": [
     "cssobj",
     "cssom",
@@ -18,8 +18,7 @@
   "main": "dist/cssobj.cjs.js",
   "jsnext:main": "dist/cssobj.es.js",
   "scripts": {
-    "update": "curl https://raw.githubusercontent.com/cssobj/cssobj-plugin-post-cssom/master/src/cssobj-plugin-post-cssom.js > lib/cssobj-plugin-post-cssom.js && curl https://raw.githubusercontent.com/cssobj/cssobj-core/master/lib/cssobj-core.js > lib/cssobj-core.js",
-    "test": "mocha",
+    "test": "cd test && mocha",
     "report": "cd dist && gzip < cssobj.min.js > cssobj.min.gz && ls -lh && rm -f *.gz",
     "make": "rollup -c && uglifyjs dist/cssobj.iife.js -cm -o dist/cssobj.min.js"
   },

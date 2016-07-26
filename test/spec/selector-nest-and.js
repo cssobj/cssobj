@@ -15,3 +15,6 @@ var result = cssobj({
     }
   }
 }, {prefix:'_prefix_'})
+
+console.log('./selector-nest-and.css')
+

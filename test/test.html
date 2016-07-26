@@ -4,6 +4,21 @@
     <meta charset="utf-8">
     <title>test for cssobj</title>
     <script type="text/javascript" src="../dist/cssobj.iife.js"></script>
+    <script type="text/javascript">
+
+    window.getCSSText = function getCSSText (dom) {
+      if(!dom) return ''
+      var sheet = dom.sheet || dom.styleSheet
+      if(sheet.cssText) return sheet.cssText
+      var str = ''
+      var rules = sheet.cssRules || sheet.rules
+      for(var i = 1, len = rules.length; i < len; i++) {
+        str += rules[i].cssText + '\n'
+      }
+      return str
+    }
+
+    </script>
   </head>
   <body>
 

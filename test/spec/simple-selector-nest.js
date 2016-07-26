@@ -6,3 +6,6 @@ var result = cssobj({
     }
   }
 })
+
+console.log('./simple-selector-nest.css')
+

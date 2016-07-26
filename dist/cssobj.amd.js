@@ -1,16 +1,9 @@
 define('cssobj', function () { 'use strict';
 
-  // ensure obj[k] as array, then push v into it
-  function arrayKV (obj, k, v, reverse, unique) {
-    obj[k] = k in obj ? [].concat(obj[k]) : []
-    if(unique && obj[k].indexOf(v)>-1) return
-    reverse ? obj[k].unshift(v) : obj[k].push(v)
-  }
-
   // helper functions for cssobj
 
   // set default option (not deeply)
-  function defaults$1(options, defaultOption) {
+  function defaults(options, defaultOption) {
     options = options || {}
     for (var i in defaultOption) {
       if (!(i in options)) options[i] = defaultOption[i]
@@ -18,8 +11,15 @@ define('cssobj', function () { 'use strict';
     return options
   }
 
+  // convert js prop into css prop (dashified)
+  function dashify(str) {
+    return str.replace(/[A-Z]/g, function(m) {
+      return '-' + m.toLowerCase()
+    })
+  }
+
   // random string, should used across all cssobj plugins
-  var random$1 = (function () {
+  var random = (function () {
     var count = 0
     return function () {
       count++
@@ -28,21 +28,21 @@ define('cssobj', function () { 'use strict';
   })()
 
   // extend obj from source, if it's no key in obj, create one
-  function extendObj$1 (obj, key, source) {
+  function extendObj (obj, key, source) {
     obj[key] = obj[key] || {}
     for (var k in source) obj[key][k] = source[k]
     return obj[key]
   }
 
   // ensure obj[k] as array, then push v into it
-  function arrayKV$1 (obj, k, v, reverse, unique) {
+  function arrayKV (obj, k, v, reverse, unique) {
     obj[k] = k in obj ? [].concat(obj[k]) : []
     if(unique && obj[k].indexOf(v)>-1) return
     reverse ? obj[k].unshift(v) : obj[k].push(v)
   }
 
   // replace find in str, with rep function result
-  function strSugar$1 (str, find, rep) {
+  function strSugar (str, find, rep) {
     return str.replace(
       new RegExp('\\\\?(' + find + ')', 'g'),
       function (m, z) {
@@ -52,12 +52,12 @@ define('cssobj', function () { 'use strict';
   }
 
   // get parents array from node (when it's passed the test)
-  function getParents$1 (node, test, key, childrenKey, parentKey) {
+  function getParents (node, test, key, childrenKey, parentKey) {
     var p = node, path = []
     while(p) {
       if (test(p)) {
         if(childrenKey) path.forEach(function(v) {
-          arrayKV$1(p, childrenKey, v, false, true)
+          arrayKV(p, childrenKey, v, false, true)
         })
         if(path[0] && parentKey){
           path[0][parentKey] = p
@@ -71,7 +71,7 @@ define('cssobj', function () { 'use strict';
 
 
   // split selector etc. aware of css attributes
-  function splitComma$1 (str) {
+  function splitComma (str) {
     for (var c, i = 0, n = 0, prev = 0, d = []; c = str.charAt(i); i++) {
       if (c == '(' || c == '[') n++
       if (c == ')' || c == ']') n--
@@ -81,7 +81,7 @@ define('cssobj', function () { 'use strict';
   }
 
   // checking for valid css value
-  function isValidCSSValue$1 (val) {
+  function isValidCSSValue (val) {
     return val || val === 0
   }
 
@@ -152,11 +152,11 @@ define('cssobj', function () { 'use strict';
 
       // array index don't have key,
       // fetch parent key as ruleNode
-      var ruleNode = getParents$1(node, function (v) {
+      var ruleNode = getParents(node, function (v) {
         return v.key
       }).pop()
 
-      node.parentRule = getParents$1(node.parent, function (n) {
+      node.parentRule = getParents(node.parent, function (n) {
         return n.type == TYPE_GROUP
       }).pop() || null
 
@@ -169,28 +169,28 @@ define('cssobj', function () { 'use strict';
           isMedia = node.at == 'media'
 
           // only media allow nested and join, and have node.selPart
-          if (isMedia) node.selPart = splitComma$1(sel.replace(reGroupRule, ''))
+          if (isMedia) node.selPart = splitComma(sel.replace(reGroupRule, ''))
 
           node.groupText = isMedia
-            ? '@' + node.at + ' ' + combinePath(getParents$1(ruleNode, function (v) {
+            ? '@' + node.at + ' ' + combinePath(getParents(ruleNode, function (v) {
               return v.type == TYPE_GROUP
             }, 'selPart', 'selChild', 'selParent'), '', ' and ')
           : sel
 
-          node.selText = getParents$1(node, function (v) {
+          node.selText = getParents(node, function (v) {
             return v.selText && !v.at
           }, 'selText').pop()
         } else if (reAtRule.test(sel)) {
           node.type = 'at'
           node.selText = sel
         } else {
-          node.selText = localizeName('' + combinePath(getParents$1(ruleNode, function (v) {
+          node.selText = localizeName('' + combinePath(getParents(ruleNode, function (v) {
             return v.selPart && !v.at
           }, 'selPart', 'selChild', 'selParent'), '', ' ', true), opt)
         }
 
         node.selText = applyPlugins(opt, 'selector', node.selText, node, result)
-        if (node.selText) node.selTextPart = splitComma$1(node.selText)
+        if (node.selText) node.selTextPart = splitComma(node.selText)
 
         if (node !== ruleNode) node.ruleNode = ruleNode
       }
@@ -207,9 +207,9 @@ define('cssobj', function () { 'use strict';
             : r(k)
         } else {
           var haveOldChild = k in children
-          var n = children[k] = parseObj(d[k], result, extendObj$1(children, k, {parent: node, src: d, key: k, selPart: splitComma$1(k), obj: d[k]}))
+          var n = children[k] = parseObj(d[k], result, extendObj(children, k, {parent: node, src: d, key: k, selPart: splitComma(k), obj: d[k]}))
           // it's new added node
-          if (prevVal && !haveOldChild) arrayKV$1(result.diff, 'added', n)
+          if (prevVal && !haveOldChild) arrayKV(result.diff, 'added', n)
         }
       }
 
@@ -218,7 +218,7 @@ define('cssobj', function () { 'use strict';
         // children removed
         for (k in children) {
           if (!(k in d)) {
-            arrayKV$1(result.diff, 'removed', children[k])
+            arrayKV(result.diff, 'removed', children[k])
             delete children[k]
           }
         }
@@ -228,14 +228,14 @@ define('cssobj', function () { 'use strict';
           var newKeys = keys(node.lastVal)
           var removed = keys(prevVal).filter(function (x) { return newKeys.indexOf(x) < 0 })
           if (removed.length) node.diff.removed = removed
-          if (keys(node.diff).length) arrayKV$1(result.diff, 'changed', node)
+          if (keys(node.diff).length) arrayKV(result.diff, 'changed', node)
         }
         order
           ? funcArr.push([diffProp, null])
           : diffProp()
       }
 
-      if (order) arrayKV$1(result, '_order', {order: order, func: funcArr})
+      if (order) arrayKV(result, '_order', {order: order, func: funcArr})
       result.nodes.push(node)
       return node
     }
@@ -256,9 +256,9 @@ define('cssobj', function () { 'use strict';
           : v
 
       // only valid val can be lastVal
-      if (isValidCSSValue$1(val)) {
+      if (isValidCSSValue(val)) {
         // push every val to prop
-        arrayKV$1(
+        arrayKV(
           node.prop,
           key,
           applyPlugins(result.options, 'value', val, key, node, result),
@@ -269,9 +269,9 @@ define('cssobj', function () { 'use strict';
     })
     if (prevVal) {
       if (!(key in prevVal)) {
-        arrayKV$1(node.diff, 'added', key)
+        arrayKV(node.diff, 'added', key)
       } else if (prevVal[key] != lastVal[key]) {
-        arrayKV$1(node.diff, 'changed', key)
+        arrayKV(node.diff, 'changed', key)
       }
     }
   }
@@ -281,7 +281,7 @@ define('cssobj', function () { 'use strict';
       var str = prev ? prev + sep : prev
       if (rep) {
         var isReplace = false
-        var sugar = strSugar$1(value, '&', function (z) {
+        var sugar = strSugar(value, '&', function (z) {
           isReplace = true
           return prev
         })
@@ -340,9 +340,9 @@ define('cssobj', function () { 'use strict';
 
   function cssobj$1 (options) {
 
-    options = defaults$1(options, {
+    options = defaults(options, {
       local: true,
-      prefix: random$1(),
+      prefix: random(),
       localNames: {},
       plugins: {}
     })
@@ -368,24 +368,6 @@ define('cssobj', function () { 'use strict';
       return result
     }
   }
-
-  // helper functions for cssobj
-
-  // convert js prop into css prop (dashified)
-  function dashify$2(str) {
-    return str.replace(/[A-Z]/g, function(m) {
-      return '-' + m.toLowerCase()
-    })
-  }
-
-  // random string, should used across all cssobj plugins
-  var random$2 = (function () {
-    var count = 0
-    return function () {
-      count++
-      return '_' + Math.floor(Math.random() * Math.pow(2, 32)).toString(36) + count + '_'
-    }
-  })()
 
   function createDOM (id, option) {
     var el = document.createElement('style')
@@ -432,8 +414,8 @@ define('cssobj', function () { 'use strict';
       for (var v, ret = '', i = prop[k].length; i--;) {
         v = prop[k][i]
         ret += k.charAt(0) == '@'
-          ? dashify$2(k) + ' ' + v + ';'
-          : dashify$2(k) + ':' + v + ';'
+          ? dashify(k) + ' ' + v + ';'
+          : dashify(k) + ':' + v + ';'
       }
       return ret
     }).join('')
@@ -442,7 +424,7 @@ define('cssobj', function () { 'use strict';
   function cssobj_plugin_post_cssom (option) {
     option = option || {}
 
-    if (!option.name) option.name = random$2()
+    if (!option.name) option.name = random()
     option.name += ''
 
     var id = 'style_cssobj' + option.name.replace(/[^a-zA-Z0-9$_]/g, '')
@@ -460,7 +442,7 @@ define('cssobj', function () { 'use strict';
     }
 
     var getParent = function (node) {
-      var p = node.parentRule
+      var p = 'omGroup' in node ? node : node.parentRule
       return p && p.omGroup || sheet
     }
 
@@ -507,6 +489,7 @@ define('cssobj', function () { 'use strict';
 
     // helper function for addNormalrule
     var addNormalRule = function (node, selText, cssText, selPart) {
+      if(!cssText) return
       // get parent to add
       var parent = getParent(node)
       if (validParent(node))
@@ -543,7 +526,13 @@ define('cssobj', function () { 'use strict';
       // cssobj generate vanilla Array, it's safe to use constructor, fast
       if (node.constructor === Array) return node.map(function (v) {walk(v, store)})
 
-      var postArr = []
+
+      // nested media rule will pending proceed
+      if(node.at=='media' && node.selParent && node.selParent.postArr) {
+        return node.selParent.postArr.push(node)
+      }
+
+      node.postArr = []
       var children = node.children
       var isGroup = node.type == 'group'
 
@@ -592,8 +581,8 @@ define('cssobj', function () { 'use strict';
       }
 
       for (var c in children) {
-        // emtpy key rule and media rule should add in top level, walk later
-        if (c === '' || children[c].at == 'media') postArr.push(c)
+        // empty key will pending proceed
+        if (c === '') node.postArr.push(children[c])
         else walk(children[c], store)
       }
 
@@ -606,8 +595,10 @@ define('cssobj', function () { 'use strict';
       }
 
       // media rules need a stand alone block
+      var postArr = node.postArr
+      delete node.postArr
       postArr.map(function (v) {
-        walk(children[v], store)
+        walk(v, store)
       })
     }
 
@@ -666,12 +657,12 @@ define('cssobj', function () { 'use strict';
     }
   }
 
-  function cssobj(obj, option) {
+  function cssobj(obj, option, initData) {
     option = option||{}
     option.plugins = option.plugins||{}
     arrayKV(option.plugins, 'post', cssobj_plugin_post_cssom(option.cssom))
 
-    return cssobj$1(option)(obj)
+    return cssobj$1(option)(obj, initData)
   }
 
   return cssobj;

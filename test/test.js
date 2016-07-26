@@ -1,13 +1,8 @@
 var expect = require('chai').expect
 var spawn = require('child_process').spawn
-var diff = require('diff')
 var fs = require('fs')
 var path = require('path')
 var walk = require('walk')
-
-function formatResult (str) {
-  return str.replace(/\n/g, '\\n').replace(/\s+$/, '[ ]')
-}
 
 function runPhantom (root, fileName, done) {
 
@@ -39,13 +34,7 @@ function runPhantom (root, fileName, done) {
         return done(e)
       }
 
-      var result = '', line = 0
-      diff.diffLines(text[0], target).forEach(function (part) {
-        if (part.added) result += '[target added] below line ' + line + ':\n' + formatResult(part.value) + '\n'
-        if (part.removed) result += '[target removed] below line ' + line + ':\n' + formatResult(part.value) + '\n'
-        line += part.count
-      })
-      if(result) return done(text[1] + ':' + result)
+      expect(text[0]).equal(target)
 
     }
 
@@ -62,7 +51,7 @@ var walker = walk.walkSync('./spec', {
 
 function walkFile(root, stat, next) {
 
-  if(/\.css$/i.test(stat.name)) return next()
+  if(!/\.js$/i.test(stat.name)) return next()
 
   describe('test case in '+root, function () {
 

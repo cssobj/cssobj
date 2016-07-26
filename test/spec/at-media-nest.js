@@ -25,7 +25,7 @@ var result = cssobj({
   }
 })
 
-console.log('./at-media-nest.css')
+log(css(result), './at-media-nest.css')
 
 result.obj = {
   h3: {
@@ -55,5 +55,5 @@ result.obj = {
 
 result.update()
 
-console.log('./at-media-nest-2.css')
+log(css(result), './at-media-nest-2.css')
 

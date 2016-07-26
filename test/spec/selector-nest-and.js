@@ -16,5 +16,5 @@ var result = cssobj({
   }
 }, {prefix:'_prefix_'})
 
-console.log('./selector-nest-and.css')
+log(css(result), './selector-nest-and.css')
 

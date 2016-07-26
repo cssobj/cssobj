@@ -7,5 +7,5 @@ var result = cssobj({
   }
 })
 
-console.log('./simple-selector-nest.css')
+log(css(result), './simple-selector-nest.css')
 

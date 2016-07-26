@@ -5,9 +5,6 @@ var page = webPage.create()
 var system = require('system')
 
 page.onConsoleMessage = function (msg) {
-  msg = page.evaluate(function() {
-    return getCSSText(result.cssdom)
-  }) + '******' + msg + '------'
   system.stdout.write(msg)
 }
 

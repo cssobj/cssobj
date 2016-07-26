@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Light weight javascript library for rendering and diff CSS from javascript with CSSOM in browser, using virtual CSS technology. Features include: at media stylesheet rule response support for old browsers, localized class names, dynamic caculation and update css, hot replacement for css rules.",
   "keywords": [
     "cssobj",
@@ -25,7 +25,6 @@
   "author": "James Yang <jamesyang999@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "cssobj-helper": "github:cssobj/cssobj-helper"
   },
   "devDependencies": {
     "chai": "^3.5.0",

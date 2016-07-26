@@ -424,10 +424,9 @@ function getBodyCss (prop) {
 function cssobj_plugin_post_cssom (option) {
   option = option || {}
 
-  if (!option.name) option.name = random()
-  option.name += ''
-
-  var id = 'style_cssobj' + option.name.replace(/[^a-zA-Z0-9$_]/g, '')
+  var id = option.name
+      ? (option.name+'').replace(/[^a-zA-Z0-9$_-]/g, '')
+      : 'style_cssobj' + random()
 
   var dom = document.getElementById(id) || createDOM(id, option)
   var sheet = dom.sheet || dom.styleSheet

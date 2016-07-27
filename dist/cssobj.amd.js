@@ -140,7 +140,6 @@ define('cssobj', function () { 'use strict';
       })
     }
     if (type.call(d) == OBJECT) {
-      var opt = result.options
       var children = node.children = node.children || {}
       var prevVal = node.prevVal = node.lastVal
       node.lastVal = {}
@@ -150,50 +149,8 @@ define('cssobj', function () { 'use strict';
       var order = d[KEY_ORDER] | 0
       var funcArr = []
 
-      // array index don't have key,
-      // fetch parent key as ruleNode
-      var ruleNode = getParents(node, function (v) {
-        return v.key
-      }).pop()
-
-      node.parentRule = getParents(node.parent, function (n) {
-        return n.type == TYPE_GROUP
-      }).pop() || null
-
-      if (ruleNode) {
-        var isMedia, sel = ruleNode.key
-        var groupRule = sel.match(reGroupRule)
-        if (groupRule) {
-          node.type = TYPE_GROUP
-          node.at = groupRule.pop()
-          isMedia = node.at == 'media'
-
-          // only media allow nested and join, and have node.selPart
-          if (isMedia) node.selPart = splitComma(sel.replace(reGroupRule, ''))
-
-          node.groupText = isMedia
-            ? '@' + node.at + ' ' + combinePath(getParents(ruleNode, function (v) {
-              return v.type == TYPE_GROUP
-            }, 'selPart', 'selChild', 'selParent'), '', ' and ')
-          : sel
-
-          node.selText = getParents(node, function (v) {
-            return v.selText && !v.at
-          }, 'selText').pop()
-        } else if (reAtRule.test(sel)) {
-          node.type = 'at'
-          node.selText = sel
-        } else {
-          node.selText = localizeName('' + combinePath(getParents(ruleNode, function (v) {
-            return v.selPart && !v.at
-          }, 'selPart', 'selChild', 'selParent'), '', ' ', true), opt)
-        }
-
-        node.selText = applyPlugins(opt, 'selector', node.selText, node, result)
-        if (node.selText) node.selTextPart = splitComma(node.selText)
-
-        if (node !== ruleNode) node.ruleNode = ruleNode
-      }
+      // only there's no selText, getSel
+      if(!('selText' in node)) getSel(node, result)
 
       for (var k in d) {
         if (!d.hasOwnProperty(k)) continue
@@ -241,6 +198,57 @@ define('cssobj', function () { 'use strict';
     }
 
     return node
+  }
+
+  function getSel(node, result) {
+
+    var opt = result.options
+
+    // array index don't have key,
+    // fetch parent key as ruleNode
+    var ruleNode = getParents(node, function (v) {
+      return v.key
+    }).pop()
+
+    node.parentRule = getParents(node.parent, function (n) {
+      return n.type == TYPE_GROUP
+    }).pop() || null
+
+    if (ruleNode) {
+      var isMedia, sel = ruleNode.key
+      var groupRule = sel.match(reGroupRule)
+      if (groupRule) {
+        node.type = TYPE_GROUP
+        node.at = groupRule.pop()
+        isMedia = node.at == 'media'
+
+        // only media allow nested and join, and have node.selPart
+        if (isMedia) node.selPart = splitComma(sel.replace(reGroupRule, ''))
+
+        node.groupText = isMedia
+          ? '@' + node.at + ' ' + combinePath(getParents(ruleNode, function (v) {
+            return v.type == TYPE_GROUP
+          }, 'selPart', 'selChild', 'selParent'), '', ' and ').join('').replace(/@media/ig, '')
+        : sel
+
+        node.selText = getParents(node, function (v) {
+          return v.selText && !v.at
+        }, 'selText').pop() || ''
+      } else if (reAtRule.test(sel)) {
+        node.type = 'at'
+        node.selText = sel
+      } else {
+        node.selText = localizeName('' + combinePath(getParents(ruleNode, function (v) {
+          return v.selPart && !v.at
+        }, 'selPart', 'selChild', 'selParent'), '', ' ', true), opt)
+      }
+
+      node.selText = applyPlugins(opt, 'selector', node.selText, node, result)
+      if (node.selText) node.selTextPart = splitComma(node.selText)
+
+      if (node !== ruleNode) node.ruleNode = ruleNode
+    }
+
   }
 
   function parseProp (node, d, key, result) {

@@ -1,0 +1,10 @@
+h3 { color: red; text-align: center; line-height: 1.5; font-size: 32px; margin: 0px; padding: 0px; }
+h3 span { color: red; font-size: 22px; }
+@media (min-width: 400px) { 
+}
+@media (max-width: 510px) and (min-width: 400px) { 
+  h3 { color: blue; font-size: 24px; }
+}
+@media (max-width: 510px) and (min-width: 400px) and (min-width: 520px) { 
+  h3 h3 { color: green; font-size: 20px; }
+}

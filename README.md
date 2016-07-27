@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 
-CSSOBJ is a light weight javascript library for rendering and diff CSS from javascript with CSSOM in browsers, using virtual CSS technology. Features include: at media stylesheet rule support for old browsers, localized class names, dynamic caculation and update css, hot replacement for css rules.
+Generate and manipulate [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js object, localize class names and hook at-media rule for old browsers.
+
+It's just wrapper for [cssobj-core](https://github.com/cssobj/cssobj-core) and [plugin-cssom](https://github.com/cssobj/cssobj-plugin-post-cssom).
 
 [Live demo](https://cssobj.github.io/cssobj-demo/)
 
@@ -10,9 +12,9 @@ CSSOBJ is a light weight javascript library for rendering and diff CSS from java
 
 ## Install:
 
-Download this repo, and check the dist folder.
+- Download this repo, and check the dist folder.
 
-This project currently not published to `npmjs`, please using below to install from github directly:
+- This project currently not published to `npmjs`, please using below to install from github directly:
 
 ``` javascript
 npm install cssobj/cssobj
@@ -96,9 +98,9 @@ or jQuery:
 $('div').css({color:'red', fontSize:'14px'})
 ```
 
-Yes, but the first code is poorly, the second code need jQuery lib and the DOM ready, and have performance issue. ALL of them is not updating css rules.
+Yes, but the first code is poorly, the second code need jQuery lib & after DOM ready, and have performance issue. ALL of them is not updating **css rules**.
 
-[CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base of a browser, and it's javascript ready, why not using it?
+[CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base of a browser, and it have javascript ready API, why not using it?
 
 #### Using *cssobj* instead:
 
@@ -111,14 +113,15 @@ var obj = {
 var css = cssobj(obj)
 ```
 
-Then all your `div`(current and future added!) will have the rule.
+All your `div`(current and future added!) will have the rule.
 
-Then you want to update the rule as below:
+If you want to update the rule as below:
 
 ``` javascript
 obj.div = {color:'red', fontSize:'14px'}
 css.update()
 ```
+
 Then all your `div` (current and future added!) will have the new rule.
 
 The performance will only depend on the browser's CSSOM engine.
@@ -131,9 +134,9 @@ Just try this [demo](https://cssobj.github.io/cssobj-demo/play/), in IE 8, or IE
 
 1. **cssobj** first parse js object into **Virtual CSS** middle format.
 
-2. The internal [CSSOM](https://github.com/cssobj/cssobj-plugin-post-cssom) plugin will create stylesheet dom, and add rules from middle format.
+2. The internal [CSSOM](https://github.com/cssobj/cssobj-plugin-post-cssom) plugin will create stylesheet dom, and apply rules from middle format.
 
-3. When the js object changed, **cssobj** will update CSSOM rules accordingly.
+3. When the js object changed, **cssobj** will diff CSSOM rules (**add/delete/change**) accordingly.
 
 ## Benefit
 
@@ -262,8 +265,8 @@ root | Object | Virtual CSS object parsed from `obj`, mainly used for value func
 nodes | Array | Array of virtual css nodes, for the convinence of `filter` or `map` etc.
 map | Object | Key/value pairs for localized class names, key is original class name in source `obj`, value is localized name.
 ref | Object | Key/value pairs for named objects. Named objects is objects with `$id` string value in `obj`.
-update | Function | Update the `RESULT` object from `obj`, generate `diff`, update CSSOM and all relevent data. Function signature is `function([data]) {} -> result`
--  | param:<br>data | [optional] Passed to `update()` function, and set to `RESULT` `data` value, for later use.
+update | Function | Update the `RESULT` object from `obj`, generate `diff`, update CSSOM and all relevent data. Function signature is `function updater ([data]) {} -> result`
+-  | *updater param*:<br>data | [optional] Passed to `update()` function, and set to `RESULT` `data` value, for later use.
 diff | Object | Set from `update()` function, with `added`, `removed`, `changed` nodes and props.
 data | Object | Store for data parameter of `update()` function, can be referenced and changed in object functions and plugins.
 options | Object | Store for `cssobj()` `options` parameter, can be referenced and changed in object functions and plugins.

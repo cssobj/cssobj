@@ -1,7 +1,7 @@
 {
   "name": "cssobj",
   "version": "0.2.0",
-  "description": "Light weight javascript library for rendering and diff CSS from javascript with CSSOM in browser, using virtual CSS technology. Features include: at media stylesheet rule response support for old browsers, localized class names, dynamic caculation and update css, hot replacement for css rules.",
+  "description": "Generate and manipulate CSSOM from js object, localize class names and hook at-media rule for old browsers.",
   "keywords": [
     "cssobj",
     "cssom",

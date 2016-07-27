@@ -165,7 +165,10 @@ var cssobj = (function () {
             : r(k)
         } else {
           var haveOldChild = k in children
-          var n = children[k] = parseObj(d[k], result, extendObj(children, k, {parent: node, src: d, key: k, selPart: splitComma(k), obj: d[k]}))
+          var newNode = extendObj(children, k, {parent: node, src: d, key: k, obj: d[k]})
+          // don't overwrite selPart for previous node
+          newNode.selPart = newNode.selPart || splitComma(k)
+          var n = children[k] = parseObj(d[k], result, newNode)
           // it's new added node
           if (prevVal && !haveOldChild) arrayKV(result.diff, 'added', n)
         }
@@ -226,10 +229,11 @@ var cssobj = (function () {
         // only media allow nested and join, and have node.selPart
         if (isMedia) node.selPart = splitComma(sel.replace(reGroupRule, ''))
 
+        // combinePath is array, '' + array instead of array.join(',')
         node.groupText = isMedia
           ? '@' + node.at + ' ' + combinePath(getParents(ruleNode, function (v) {
             return v.type == TYPE_GROUP
-          }, 'selPart', 'selChild', 'selParent'), '', ' and ').join('').replace(/@media/ig, '')
+          }, 'selPart', 'selChild', 'selParent'), '', ' and ')
         : sel
 
         node.selText = getParents(node, function (v) {

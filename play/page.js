@@ -9,7 +9,7 @@ var pagecss = cssobj(
     },
     body:{
       fontSize:16,
-      paddingTop:10,
+      paddingTop:20,
       fontFamily:'Arial, Helvetica'
     },
     '.text':{
@@ -20,8 +20,8 @@ var pagecss = cssobj(
     },
     textarea:{
       width:'100%',
-      height:function(prev, node, ref) {
-        return ref.con.lastVal.height
+      height:function(prev, node, result) {
+        return result.ref.con.lastVal.height
       },
       padding:2,
       border:'1px solid black'
@@ -40,7 +40,7 @@ var pagecss = cssobj(
       }
     },
     '#hr':{
-      paddingTop:10,
+      paddingTop:20,
       borderTop:'1px dashed black'
     },
     '#size': {
@@ -48,7 +48,7 @@ var pagecss = cssobj(
       width: 150,
       position: 'absolute',
       background: 'yellow',
-      top: 0,
+      top: 10,
       left: function(prev) {
         return winWidth/2 - this.width/2
       }

@@ -260,7 +260,7 @@ function parseProp (node, d, key, result) {
   ![].concat(d[key]).forEach(function (v) {
     // pass lastVal if it's function
     var val = typeof v == 'function'
-        ? v.call(node.lastVal, prev, node, result.ref, result)
+        ? v.call(node.lastVal, prev, node, result)
         : v
 
     // only valid val can be lastVal
@@ -614,13 +614,17 @@ function cssobj_plugin_post_cssom (option) {
         // added have same action as changed, can be merged... just for clarity
         diff.added && diff.added.forEach(function (v) {
           om && om.forEach(function (rule) {
-            rule.style[v] = node.prop[v][0]
+            try{
+              rule.style[v] = node.prop[v][0]
+            }catch(e){}
           })
         })
 
         diff.changed && diff.changed.forEach(function (v) {
           om && om.forEach(function (rule) {
-            rule.style[v] = node.prop[v][0]
+            try{
+              rule.style[v] = node.prop[v][0]
+            }catch(e){}
           })
         })
 

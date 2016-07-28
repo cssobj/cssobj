@@ -14,7 +14,11 @@ var result = cssobj({
       }
     }
   }
-}, {prefix:'_prefix_'})
+}, {
+  local:{
+    prefix:'_prefix_'
+  }
+})
 
 log(css(result), 'file:./selector-nest-and.css')
 

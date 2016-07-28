@@ -107,8 +107,6 @@ define('cssobj', function () { 'use strict';
   // regexp constants
   var reGroupRule = /^@(media|document|supports|page|keyframes) /i
   var reAtRule = /^\s*@/g
-  var reClass = /:global\s*\(\s*((?:\.[A-Za-z0-9_-]+\s*)+)\s*\)|(\.)([!A-Za-z0-9_-]+)/g
-
   /**
    * convert simple Object into node data
    *
@@ -242,9 +240,9 @@ define('cssobj', function () { 'use strict';
         node.type = 'at'
         node.selText = sel
       } else {
-        node.selText = localizeName('' + combinePath(getParents(ruleNode, function (v) {
+        node.selText = '' + combinePath(getParents(ruleNode, function (v) {
           return v.selPart && !v.at
-        }, 'selPart', 'selChild', 'selParent'), '', ' ', true), opt)
+        }, 'selPart', 'selChild', 'selParent'), '', ' ', true), opt
       }
 
       node.selText = applyPlugins(opt, 'selector', node.selText, node, result)
@@ -305,28 +303,6 @@ define('cssobj', function () { 'use strict';
     }, [])
   }
 
-  function localizeName (str, opt) {
-    var NS = opt.localNames
-    var replacer = function (match, global, dot, name) {
-      if (global) {
-        return global
-      }
-      if (name[0] === '!') {
-        return dot + name.substr(1)
-      }
-
-      if (!opt.local) {
-        NS[name] = name
-      } else if (!NS[name]) {
-        NS[name] = opt.prefix + name
-      }
-
-      return dot + NS[name]
-    }
-
-    return str.replace(reClass, replacer)
-  }
-
   function applyPlugins (opt, type) {
     var args = [].slice.call(arguments, 2)
     var plugin = opt.plugins[type]
@@ -353,9 +329,6 @@ define('cssobj', function () { 'use strict';
   function cssobj$1 (options) {
 
     options = defaults(options, {
-      local: true,
-      prefix: random(),
-      localNames: {},
       plugins: {}
     })
 
@@ -370,7 +343,6 @@ define('cssobj', function () { 'use strict';
 
       var result = {
         obj: obj,
-        map: options.localNames,
         update: updater,
         options: options
       }
@@ -668,10 +640,46 @@ define('cssobj', function () { 'use strict';
     }
   }
 
+  var reClass$1 = /:global\s*\(((?:\s*\.[A-Za-z0-9_-]+\s*)+)\)|(\.)([!A-Za-z0-9_-]+)/g
+
+  function cssobj_plugin_selector_localize(prefix, localNames) {
+
+    prefix = prefix!=='' ? prefix || random() : ''
+
+    localNames = localNames || {}
+
+    var replacer = function (match, global, dot, name) {
+      if (global) {
+        return global
+      }
+      if (name[0] === '!') {
+        return dot + name.substr(1)
+      }
+
+      return dot + map(name)
+    }
+
+    var map = function(name) {
+      return name in localNames
+        ? localNames[name]
+        : prefix + name
+    }
+
+    return function localizeName (sel, node, result) {
+      // don't touch at rule's selText
+      // it's copied from parent, which already localized
+      if(node.at) return sel
+      if(!result.map) result.map = map
+      return sel.replace(reClass$1, replacer)
+    }
+  }
+
   function cssobj(obj, option, initData) {
     option = option||{}
     option.plugins = option.plugins||{}
+    option.local = option.local||{}
     arrayKV(option.plugins, 'post', cssobj_plugin_post_cssom(option.cssom))
+    arrayKV(option.plugins, 'selector', cssobj_plugin_selector_localize(option.local.prefix, option.local.localNames))
 
     return cssobj$1(option)(obj, initData)
   }

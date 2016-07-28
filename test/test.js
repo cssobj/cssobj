@@ -35,9 +35,12 @@ function runPhantom (root, fileName, done) {
         } catch(e) {
           return done(e)
         }
+      } else if(/^regexp:/.test(str2)){
+        str2 = str2.replace(/^regexp:/,'')
+        expect(text[0]).match(new RegExp(str2))
+      } else {
+        expect(text[0]).equal(str2)
       }
-
-      expect(text[0]).equal(str2)
 
     }
 

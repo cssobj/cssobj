@@ -677,7 +677,12 @@ define('cssobj', function () { 'use strict';
   function cssobj(obj, option, initData) {
     option = option||{}
     option.plugins = option.plugins||{}
-    option.local = option.local||{}
+
+    var local = option.local
+    option.local = !local
+      ? {prefix:''}
+    : local && typeof local==='object' ? local : {}
+
     arrayKV(option.plugins, 'post', cssobj_plugin_post_cssom(option.cssom))
     arrayKV(option.plugins, 'selector', cssobj_plugin_selector_localize(option.local.prefix, option.local.localNames))
 

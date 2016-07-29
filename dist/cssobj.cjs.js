@@ -662,21 +662,25 @@ function cssobj_plugin_selector_localize(prefix, localNames) {
       return dot + name.substr(1)
     }
 
-    return dot + map(name)
+    return dot + (name in localNames
+                  ? localNames[name]
+                  : prefix + name)
   }
 
-  var map = function(name) {
-    return name in localNames
-      ? localNames[name]
-      : prefix + name
+  var map = function(str, isClassList) {
+    return str.replace(reClass$1, replacer)
+  }
+
+  var map2 = function(str) {
+    return map((' '+str).replace(/\s+\.?/g, '.')).replace(/\./g, ' ')
   }
 
   return function localizeName (sel, node, result) {
     // don't touch at rule's selText
     // it's copied from parent, which already localized
     if(node.at) return sel
-    if(!result.map) result.map = map
-    return sel.replace(reClass$1, replacer)
+    if(!result.map) result.map = map, result.map2 = map2
+    return map(sel)
   }
 }
 

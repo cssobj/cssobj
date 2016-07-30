@@ -1,12 +1,12 @@
 {
   "name": "cssobj",
-  "version": "0.2.0",
-  "description": "Generate and manipulate CSSOM from js object, localize class names and hook at-media rule for old browsers.",
+  "version": "0.2.1",
+  "description": "Generate and diff CSSOM from js object, localize class names and hook at-media rule for old browsers.",
   "keywords": [
     "cssobj",
     "cssom",
-    "hot replacement",
-    "mvc component",
+    "diff css",
+    "diff cssom",
     "at media rule",
     "localize class names",
     "dynamic caculation for css",

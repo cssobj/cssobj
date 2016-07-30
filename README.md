@@ -4,11 +4,61 @@
 
 Generate and manipulate [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js object, localize class names and hook at-media rule for old browsers.
 
+Light weight: **only 1 file, 3K gzipped, no dependencies**
+
 It's just wrapper for [cssobj-core](https://github.com/cssobj/cssobj-core), [plugin-localize](https://github.com/cssobj/cssobj-plugin-selector-localize) and [plugin-cssom](https://github.com/cssobj/cssobj-plugin-post-cssom).
 
 [Live demo](https://cssobj.github.io/cssobj-demo/)
 
-[![CSSOBJ Screenshot](demo-box.gif)](https://cssobj.github.io/cssobj-demo/)
+[![CSSOBJ Screenshot](demo-box.gif)](https://cssobj.github.io/cssobj-demo/#demo1)
+
+## Why?
+
+For a long time, the way for javascript to dynamicly change css is via **DOM.style**, like below:
+
+``` javascript
+document.getElementById('domID').style.color = 'red'
+document.getElementById('domID').style.fontSize = '14px'
+```
+
+or jQuery (or similar lib):
+
+``` javascript
+$('div').css({color:'red', fontSize:'14px'})
+```
+
+But the first way is poor, the second way need jQuery lib, interactive with DOM, and have performance issues.
+
+**But ALL of them is not updating css rules**.
+
+[CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base stone of browser, and it have good javascript API, why not using it?
+
+Now the coming for CSSOM **generate** and **diff** engine: **cssobj**
+
+```javascript
+'script in your <head>'
+var obj = {div: {color:'red', fontSize:'12px'}}
+var ret = cssobj(obj)
+```
+
+Then all `div` will have `color: red;`, currently and future!
+
+Want to dynamicly update?
+
+```javascript
+'script in your <head>'
+obj.div.color = 'blue'
+ret.update()
+```
+
+Then all `div` will update css `color: blue;`. No jQuery, no wait for any **DOM** ready, no `window.onload`!
+
+The cool thing is:
+
+ - **You never need to wait for DOM any more**
+
+ - **cssobj will only update changed value, with maximum performance**
+
 
 ## Install:
 
@@ -21,6 +71,8 @@ npm install cssobj/cssobj
 ```
 
 ## Usage:
+
+**cssobj** is universal lib for manipulate **CSSOM**, below is just some use case:
 
 ### Case 1: you want local class names
 
@@ -38,7 +90,7 @@ You will have the **pain** by sharing to others with class name conflict, so
 
 #### Using *cssobj* instead:
 
-Include **dist/cssobj.min.js** (**3K gzipped**) into `<head>`, add code below:
+Include **dist/cssobj.min.js** into `<head>`, add code below:
 
 ``` html
 <script src="dist/cssobj.min.js"></script>
@@ -85,26 +137,11 @@ var result = cssobj(obj, {local: {prefix:'_yourown_'} })
 
 ### Case 2: you want dynamicly update you css rule
 
-Does javascript already do the job?
+Dynamicly change style using js? `document.getElementById('id').style.fontSize = '12px'` ?
 
-``` javascript
-document.getElementById('domID').style.color = 'red'
-document.getElementById('domID').style.fontSize = '14px'
-```
+No, it's not updating css rule. Interactive with **DOM** is the old way.
 
-or jQuery:
-
-``` javascript
-$('div').css({color:'red', fontSize:'14px'})
-```
-
-Yes, but the first code is poorly, the second code need jQuery lib & after DOM ready, and have performance issue. ALL of them is not updating **css rules**.
-
-[CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base of a browser, and it have javascript ready API, why not using it?
-
-#### Using *cssobj* instead:
-
-Think at first your style sheet as below:
+#### Using *cssobj* to update style sheet:
 
 ``` javascript
 var obj = {
@@ -112,8 +149,6 @@ var obj = {
 }
 var css = cssobj(obj)
 ```
-
-All your `div`(current and future added!) will have the rule.
 
 If you want to update the rule as below:
 
@@ -134,7 +169,7 @@ Just try this [demo](https://cssobj.github.io/cssobj-demo/play/), in IE 8, or IE
 
 1. **cssobj** first parse js object into **Virtual CSS** middle format.
 
-2. The internal [CSSOM](https://github.com/cssobj/cssobj-plugin-post-cssom) plugin will create stylesheet dom, and apply rules from middle format.
+2. The internal [plugin-cssom](https://github.com/cssobj/cssobj-plugin-post-cssom) will create stylesheet dom, and apply rules from middle format.
 
 3. When the js object changed, **cssobj** will diff CSSOM rules (**add/delete/change**) accordingly.
 
@@ -222,7 +257,7 @@ Virtual CSS middle format is JS object, thus can avoid the differences of CSS en
 
 ### `var result = cssobj(obj, options)`
 
-> parse obj, generate virtual css, then render `<style>` tag into `<head>`
+parse obj, generate virtual css, then render `<style>` tag into `<head>`
 
 #### *PARAMS*
 
@@ -244,7 +279,7 @@ Type: **{object}**
 
 name | type | default | description
 -----|-----|-----------|---------------
-local | Boolean or Object | true | `true` to localize class names, using `options.local.prefix`, or `random()` as prefix.
+local | Boolean or Object | false | `true` to localize class names, using `options.local.prefix` as prefix.
 local.prefix | String | random string | prefix for localized names, will using `random()` function in [cssobj-helper](https://github.com/cssobj/cssobj-helper) if not specified or as falsy.
 local.localNames | Object | { } | predefined `key - val` to control each class name when localized.
 plugins | Object | { } | supported key is `post`, `value`, `selector`, each must be function or array of functions.
@@ -303,6 +338,18 @@ cssdom | Stylesheet<br>Element | Style sheet element generated by `cssobj()` fun
 ## Test
 
 Using [phantom](http://phantomjs.org/) 2.0 to test with CSSOM.
+
+## Contribute
+
+Yes! We need you! Think below way:
+
+ - Please use cssobj in your project.
+
+ - Please tell your friend about cssobj.
+
+ - Please post issues for your idea and for bug.
+
+ - Please read source, improve it!
 
 ## License
 

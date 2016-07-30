@@ -39,8 +39,8 @@ var result = cssobj({
 
 log(css(result), '._abc_nav { color: red; }\n')
 
-// test for map
-log(result.map('.nav'), '._abc_nav')
+// test for mapSel
+log(result.mapSel('.nav'), '._abc_nav')
 
 // localNames
 var result = cssobj({
@@ -51,5 +51,5 @@ var result = cssobj({
 
 log(css(result), '.cde { color: red; }\n')
 
-// test for map
-log(result.map('.nav .xyz'), '.cde ._abc_xyz')
+// test for mapSel
+log(result.mapSel('.nav .xyz'), '.cde ._abc_xyz')

@@ -125,7 +125,8 @@ body {
 Class names will add a random prefix, you can get the class name using below:
 
 ``` javascript
-result.map('item')   // === _1jkhrb92_item
+result.mapSel('.item')   // === ._1jkhrb92_item
+result.mapClass('.item')   // === _1jkhrb92_item
 ```
 
 You can also specify your own `prefix`.
@@ -137,9 +138,13 @@ var result = cssobj(obj, {local: {prefix:'_yourown_'} })
 
 ### Case 2: you want dynamicly update you css rule
 
-Dynamicly change style using js? `document.getElementById('id').style.fontSize = '12px'` ?
+Change style using js?
 
-No, it's not updating css rule. Interactive with **DOM** is the old way.
+``` javascript
+document.getElementById('id').style.fontSize = '12px'
+```
+
+No, it's not updating css rule. Interactive with **DOM** is the **old way**.
 
 #### Using *cssobj* to update style sheet:
 
@@ -159,7 +164,8 @@ css.update()
 
 Then all your `div` (current and future added!) will have the new rule.
 
-The performance will only depend on the browser's CSSOM engine.
+The performance is optimized, only updating changed prop, keep others **untouched**!
+
 
 ### Case 3: you want @media rule work in old Browsers
 
@@ -298,9 +304,10 @@ name | type | description
 obj | Object | The source js object for `cssobj()` function call.
 root | Object | Virtual CSS object parsed from `obj`, mainly used for value functions and plugins.
 nodes | Array | Array of virtual css nodes, for the convinence of `filter` or `map` etc.
-map | Function | Get localized class name from selector string. Function signature is `function(sel){ return mappedSel }`.
+mapSel | Function | Get localized class name from selector string. Function signature is `function({string} selector){ return {string} mappedSel }`.
+mapClass | Function | Get localized class name from class list string. Function signature is `function({string} classList){ return {string} mappedClassList }`.
 ref | Object | Key/value pairs for named objects. Named objects is objects with `$id` string value in `obj`.
-update | Function | Update the `RESULT` object from `obj`, generate `diff`, update CSSOM and all relevent data. Function signature is `function updater ([data]) {} -> result`
+update | Function | Update the `RESULT` object from `obj`, generate `diff`, update CSSOM and all relevent data. Function signature is `function updater ([{object} data]) { return {object} result }`
 -  | *updater param*:<br>data | [optional] Passed to `update()` function, and set to `RESULT` `data` value, for later use.
 diff | Object | Set from `update()` function, with `added`, `removed`, `changed` nodes and props.
 data | Object | Store for data parameter of `update()` function, can be referenced and changed in object functions and plugins.

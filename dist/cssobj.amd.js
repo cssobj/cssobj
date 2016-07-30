@@ -667,20 +667,20 @@ define('cssobj', function () { 'use strict';
                     : prefix + name)
     }
 
-    var map = function(str, isClassList) {
+    var mapSel = function(str, isClassList) {
       return str.replace(reClass$1, replacer)
     }
 
-    var map2 = function(str) {
-      return map((' '+str).replace(/\s+\.?/g, '.')).replace(/\./g, ' ')
+    var mapClass = function(str) {
+      return mapSel((' '+str).replace(/\s+\.?/g, '.')).replace(/\./g, ' ')
     }
 
     return function localizeName (sel, node, result) {
       // don't touch at rule's selText
       // it's copied from parent, which already localized
       if(node.at) return sel
-      if(!result.map) result.map = map, result.map2 = map2
-      return map(sel)
+      if(!result.mapSel) result.mapSel = mapSel, result.mapClass = mapClass
+      return mapSel(sel)
     }
   }
 

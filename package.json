@@ -22,6 +22,14 @@
     "report": "cd dist && gzip < cssobj.min.js > cssobj.min.gz && ls -lh && rm -f *.gz",
     "make": "rollup -c && uglifyjs dist/cssobj.iife.js -cm -o dist/cssobj.min.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cssobj/cssobj.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cssobj/cssobj/issues"
+  },
+  "homepage": "https://github.com/cssobj/cssobj#readme",
   "author": "James Yang <jamesyang999@gmail.com>",
   "license": "MIT",
   "dependencies": {

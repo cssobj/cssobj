@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Generate and diff CSSOM from js object, localize class names and hook at-media rule for old browsers.",
   "keywords": [
     "cssobj",
@@ -20,7 +20,7 @@
   "scripts": {
     "test": "cd test && mocha",
     "report": "cd dist && gzip < cssobj.min.js > cssobj.min.gz && ls -lh && rm -f *.gz",
-    "make": "rollup -c && uglifyjs dist/cssobj.iife.js -cm -o dist/cssobj.min.js"
+    "make": "rollup -c && uglifyjs dist/cssobj.iife.js -cm -o dist/cssobj.min.js && gulp bump"
   },
   "repository": {
     "type": "git",
@@ -32,11 +32,12 @@
   "homepage": "https://github.com/cssobj/cssobj#readme",
   "author": "James Yang <jamesyang999@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",
     "diff": "^2.2.3",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^2.2.0",
     "mocha": "^2.5.3",
     "rollup-watch": "^2.5.0",
     "walk": "^2.3.9"

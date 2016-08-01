@@ -10,13 +10,13 @@ var result = cssobj({
   },
 })
 
+log(css(result), 'body span { color: blue; }\n@media (min-width: 300px) { \n}\n')
+
 var body = result.obj.body
 
 // change value in body, when it's empty
 body.fontSize = '14px'
 body.span['@media (min-width: 300px)'].color = 'red'
-
-log(234234)
 
 result.update()
 

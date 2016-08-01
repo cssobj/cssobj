@@ -476,11 +476,11 @@ function cssobj_plugin_post_cssom (option) {
     // get parent to add
     var parent = getParent(node)
     if (validParent(node))
-      node.omRule = addCSSRule(parent, selText, cssText, selPart)
+      return node.omRule = addCSSRule(parent, selText, cssText, selPart)
     else if (node.parentRule) {
       // for old IE not support @media, check mediaEnabled, add child nodes
       if (node.parentRule.mediaEnabled) {
-        if (!node.omRule) node.omRule = addCSSRule(parent, selText, cssText, selPart)
+        if (!node.omRule) return node.omRule = addCSSRule(parent, selText, cssText, selPart)
       }else if (node.omRule) {
         node.omRule.forEach(removeOneRule)
         delete node.omRule
@@ -611,7 +611,7 @@ function cssobj_plugin_post_cssom (option) {
         var om = node.omRule
         var diff = node.diff
 
-        if (!om) return
+        if (!om) om = addNormalRule(node, node.selText, getBodyCss(node.prop), node.selTextPart)
 
         // added have same action as changed, can be merged... just for clarity
         diff.added && diff.added.forEach(function (v) {

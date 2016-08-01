@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "description": "Generate and diff CSSOM from js object, localize class names and hook at-media rule for old browsers.",
   "keywords": [
     "cssobj",

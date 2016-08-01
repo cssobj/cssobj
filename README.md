@@ -6,7 +6,7 @@ Generate and diff [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_O
 
 Light weight: **only 1 file, 3K gzipped, no dependencies**
 
-Well [tested](#test), ready for use in your project.
+Well [tested](#test), easy to use in your project, see [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib)
 
 [Live demo](https://cssobj.github.io/cssobj-demo/)
 

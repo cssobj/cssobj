@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 
-Generate and diff [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js object, localize class names and hook at-media rule for old browsers.
+CSS in JS solution, [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js, getting and setting CSS stylesheet rules, css modules and media query for old browsers.
 
 Light weight: **only 1 file, 3K gzipped, no dependencies**
 

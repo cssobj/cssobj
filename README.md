@@ -1,12 +1,12 @@
 # CSSOBJ
 
-[![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
+[![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj) [Github Repo](https://github.com/cssobj/cssobj)
 
-CSS in JS solution, [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js, getting and setting CSS stylesheet rules, css modules and media query for old browsers.
+CSS in JS solution, [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js, getting and setting CSS stylesheet rules, css modules inside JS components, media query for old browsers. Good for MVC frameworks.
 
 Light weight: **only 1 file, 3K gzipped, no dependencies**
 
-Well [tested](#test), easy to use in your project, see [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib)
+Well [tested](https://github.com/cssobj/cssobj#test), easy to use in your project, see [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib)
 
 [Live demo](https://cssobj.github.io/cssobj-demo/)
 

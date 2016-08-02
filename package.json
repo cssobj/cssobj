@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "CSS in JS solution, CSSOM from js, getting and setting CSS stylesheet rules, css modules and media query for old browsers.",
   "keywords": [
     "cssom",

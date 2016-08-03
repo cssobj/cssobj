@@ -16,7 +16,7 @@ var pagecss = cssobj(
       $id: 'con',
       float:'left',
       width:'99%',
-      height:function(){return winHeight - document.getElementsByTagName('h3')[0].offsetHeight - 60}
+      height:function(){return winHeight && winHeight - document.getElementsByTagName('h3')[0].offsetHeight - 60}
     },
     textarea:{
       width:'100%',
@@ -32,7 +32,7 @@ var pagecss = cssobj(
     '@media (min-width:350)': {
       '.text':{
         width: function() {
-          return winWidth/2 - 4 + 'px'
+          return winWidth && winWidth/2 - 4 + 'px'
         }
       },
       '.csstext':{
@@ -50,7 +50,7 @@ var pagecss = cssobj(
       background: 'yellow',
       top: 10,
       left: function(prev) {
-        return winWidth/2 - this.width/2
+        return winWidth && winWidth/2 - this.width/2
       }
     }
   },

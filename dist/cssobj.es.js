@@ -414,14 +414,18 @@ function getBodyCss (prop) {
 var styleList = document.createElement('p').style
 
 var vendorPrefix = (function getPrefix() {
-  var pre = Object.keys(styleList)
-    .join(',')
-    .match(/,(moz|webkit|ms|o)[A-Z]/)
+  var props = []
+  for(var i in styleList) props.push(i)
+  var pre = props.join(',')
+      .match(/,(moz|Moz|webkit|Webkit|ms|Ms|O)[A-Z]/)
   return pre ? pre[1] : ''
 })()
 
 // apply prop to get right vendor prefix
 function prefixProp (name, cap) {
+  // float in old browser is SEPCIAL
+  if(name=='float') return styleList.cssFloat && 'cssFloat' || styleList.styleFloat && 'styleFloat' || 'float'
+
   // js prop is lowerCase
   // css need cap prefix capitalized
   return name in styleList
@@ -550,7 +554,7 @@ function cssobj_plugin_post_cssom (option) {
       // if it's not @page, @keyframes (which is not groupRule in fact)
       if (!atomGroupRule(node)) {
         var reAdd = 'omGroup' in node
-        node.omGroup = addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), '{}').pop() || null
+        node.omGroup = addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), '').pop() || null
 
         // when add media rule failed, build test function then check on window.resize
         if (node.at == 'media' && !reAdd && !node.omGroup) {

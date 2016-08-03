@@ -1,16 +1,23 @@
 # CSSOBJ
 
-[![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj) [Github Repo](https://github.com/cssobj/cssobj)
+[![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 
-CSS in JS solution, [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js, getting and setting CSS stylesheet rules, css modules inside JS components, media query for old browsers. Good for MVC frameworks.
+CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js, features:
 
-Light weight: **only 1 file, 3K gzipped, no dependencies**
+ - **CSS Rules** create and diff
+ - CSS modules with local class
+ - Auto vendor prefixer
+ - Media query for old browsers
+ - Dynamic change CSS
 
-Well [tested](https://github.com/cssobj/cssobj#test), easy to use in your project, see [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib)
+Light weight (**3K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#test), Easy to use (example in [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib))
 
-[Live demo](https://cssobj.github.io/cssobj-demo/)
+
+[Live Demo](https://cssobj.github.io/cssobj-demo/)  -  [Github Repo](https://github.com/cssobj/cssobj)
 
 [![CSSOBJ Screenshot](demo-box.gif)](https://cssobj.github.io/cssobj-demo/#demo1)
+
+
 
 ## Why?
 
@@ -62,12 +69,8 @@ The cool thing is:
 
 ## Install:
 
-- Download this repo, and check the dist folder.
-
-- This project currently not published to `npmjs`, please using below to install from github directly:
-
 ``` javascript
-npm install cssobj/cssobj
+npm install cssobj
 ```
 
 ## Usage:
@@ -172,9 +175,27 @@ The performance is optimized, only updating changed prop, keep others **untouche
 
 Just try this [demo](https://cssobj.github.io/cssobj-demo/play/), in IE 8, or IE 7, or IE 5!
 
+### Case 4: you want auto vendor prefix work all the time
+
+**cssobj** will detect current browser's `vendor prefix`, and auto prefix when the property is invalid for style.
+
+``` javascript
+var obj = {
+  button: {
+    // will prefix for current browser
+    appearance: 'none',
+    borderImage: 'url(border.png)'
+  }
+}
+var css = cssobj(obj)
+```
+
+[Test Demo](https://cssobj.github.io/cssobj-demo/button/) - [BrowserStack Snapshot](https://www.browserstack.com/screenshots/11918d3edc8e3db6c046f228364dbec526b1b3ec)
+
+
 ## How it worked?
 
-1. **cssobj** first parse js object into **Virtual CSS** middle format.
+1. **cssobj** first parse js object into **Virtual CSSOM** middle format.
 
 2. The internal [plugin-cssom](https://github.com/cssobj/cssobj-plugin-post-cssom) will create stylesheet dom, and apply rules from middle format.
 
@@ -258,7 +279,7 @@ Only one js file with no dependencies, **3K** gzipped.
 
 Easy to plugin, and there're plenty of them.
 
-Virtual CSS middle format is JS object, thus can avoid the differences of CSS engines, dynamicly caculated.
+Virtual CSSOM middle format is JS object, thus can avoid the differences of CSS engines, dynamicly caculated.
 
 ## API
 
@@ -303,7 +324,7 @@ The return value of `cssobj()` and `result.update()`, it's a js object with belo
 name | type | description
 -----|-----|-----------
 obj | Object | The source js object for `cssobj()` function call.
-root | Object | Virtual CSS object parsed from `obj`, mainly used for value functions and plugins.
+root | Object | Virtual CSSOM object parsed from `obj`, mainly used for value functions and plugins.
 nodes | Array | Array of virtual css nodes, for the convinence of `filter` or `map` etc.
 mapSel | Function | Get localized class name from selector string. Function signature is `function({string} selector){ return {string} mappedSel }`.
 mapClass | Function | Get localized class name from class list string. Function signature is `function({string} classList){ return {string} mappedClassList }`.

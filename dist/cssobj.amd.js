@@ -379,6 +379,12 @@ define('cssobj', function () { 'use strict';
       try {
         parent.insertRule(selector + ' {' + body + '}', pos)
       } catch(e) {
+        // modern browser with prefix check, now only -webkit-
+        // http://shouldiprefix.com/#animations
+        if(selector.indexOf('@keyframes')==0) for(var ret, i = 0, len = cssPrefixes.length; i < len; i++) {
+          ret = addCSSRule(parent, selector.replace('@keyframes', '@-'+cssPrefixes[i].toLowerCase()+'-keyframes'), body)
+          if(ret.length) return ret
+        }
         // the rule is not supported, fail silently
         // console.log(e, selector, body, pos)
       }

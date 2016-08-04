@@ -1,5 +1,10 @@
 var obj = {
+  '@keyframes anim1':{
+    '0%': { left: '0' },
+    '100%': { left: '200px' }
+  },
   body:{
+    animationName: 'anim1',
     color:'red',
     textEmphasisStyle:'dot', imeAlign:'auto',
     input:{
@@ -14,7 +19,8 @@ var result = cssobj(obj)
 
 log(
   css(result),
-  'body { color: red; -webkit-text-emphasis-style: dot; }\n\
+  '@-webkit-keyframes anim1 { \n  0% { left: 0px; }\n  100% { left: 200px; }\n}\n\
+body { -webkit-animation: anim1; color: red; -webkit-text-emphasis-style: dot; }\n\
 body input { float: left; font-size: 12px; -webkit-appearance: none; }\n'
    )
 
@@ -24,6 +30,7 @@ result.update()
 
 log(
   css(result),
-  'body { color: red; -webkit-text-emphasis-style: dot; }\n\
+  '@-webkit-keyframes anim1 { \n  0% { left: 0px; }\n  100% { left: 200px; }\n}\n\
+body { -webkit-animation: anim1; color: red; -webkit-text-emphasis-style: dot; }\n\
 body input { float: left; font-size: 12px; -webkit-appearance: inherit; }\n'
    )

@@ -5,6 +5,8 @@ var obj = {
   },
   body:{
     animationName: 'anim1',
+    flex:1,
+    display: 'flex',
     color:'red',
     textEmphasisStyle:'dot', imeAlign:'auto',
     input:{
@@ -20,7 +22,7 @@ var result = cssobj(obj)
 log(
   css(result),
   '@-webkit-keyframes anim1 { \n  0% { left: 0px; }\n  100% { left: 200px; }\n}\n\
-body { -webkit-animation: anim1; color: red; -webkit-text-emphasis-style: dot; }\n\
+body { -webkit-animation: anim1; -webkit-flex: 1 1 0px; display: -webkit-flex; color: red; -webkit-text-emphasis-style: dot; }\n\
 body input { float: left; font-size: 12px; -webkit-appearance: none; }\n'
    )
 
@@ -30,7 +32,5 @@ result.update()
 
 log(
   css(result),
-  '@-webkit-keyframes anim1 { \n  0% { left: 0px; }\n  100% { left: 200px; }\n}\n\
-body { -webkit-animation: anim1; color: red; -webkit-text-emphasis-style: dot; }\n\
-body input { float: left; font-size: 12px; -webkit-appearance: inherit; }\n'
+  'regexp:-webkit-appearance: inherit;'
    )

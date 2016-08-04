@@ -408,9 +408,17 @@ function getBodyCss (prop) {
   return Object.keys(prop).map(function (k) {
     for (var v, ret = '', i = prop[k].length; i--;) {
       v = prop[k][i]
+
+      // display:flex expand for vendor prefix
+      var vArr = k=='display' && v=='flex'
+          ? ['-webkit-box', '-ms-flexbox', '-webkit-flex', 'flex']
+          : [v]
+
       ret += k.charAt(0) == '@'
         ? dashify(k) + ' ' + v + ';'
-        : dashify(prefixProp(k, true)) + ':' + v + ';'
+        : vArr.map(function(v2) {
+          return dashify(prefixProp(k, true)) + ':' + v2 + ';'
+        }).join('')
     }
     return ret
   }).join('')
@@ -418,22 +426,28 @@ function getBodyCss (prop) {
 
 // vendor prefix support
 // borrowed from jQuery 1.12
-var	cssPrefixes = [ "Webkit", "O", "Moz", "ms" ]
+var	cssPrefixes = [ "Webkit", "Moz", "ms", "O" ]
+var cssPrefixesReg = new RegExp('^(?:' + cssPrefixes.join('|') + ')[A-Z]')
 var	emptyStyle = document.createElement( "div" ).style
+var testProp  = function (list) {
+  for(var i = list.length; i--;) {
+    if(list[i] in emptyStyle) return list[i]
+  }
+}
 
 // cache cssProps
 var	cssProps = {
     // normalize float css property
-  'float': emptyStyle.cssFloat && 'cssFloat' || emptyStyle.styleFloat && 'styleFloat' || 'float'
+  'float': testProp(['styleFloat', 'cssFloat', 'float']),
+  'flex': testProp(['WebkitBoxFlex', 'msFlex', 'WebkitFlex', 'flex'])
 }
 
+
 // return a css property mapped to a potentially vendor prefixed property
-function vendorPropName( name, cap ) {
+function vendorPropName( name ) {
 
   // shortcut for names that are not vendor prefixed
-  if ( name in emptyStyle ) {
-    return name
-  }
+  if ( name in emptyStyle ) return
 
   // check for vendor prefixed names
   var preName, capName = name.charAt( 0 ).toUpperCase() + name.slice( 1 )
@@ -441,16 +455,19 @@ function vendorPropName( name, cap ) {
 
   while ( i-- ) {
     preName = cssPrefixes[ i ] + capName
-    if ( preName in emptyStyle ) {
-      return cap ? capitalize(preName) : preName
-    }
+    if ( preName in emptyStyle ) return preName
   }
 }
 
 // apply prop to get right vendor prefix
+// cap=0 for no cap; cap=1 for capitalize prefix
 function prefixProp (name, cap) {
-  return cssProps[ name ] ||
-    ( cssProps[ name ] = vendorPropName( name, cap) || name )
+  // find name and cache the name for next time use
+  var retName = cssProps[ name ] ||
+      ( cssProps[ name ] = vendorPropName( name ) || name)
+  return cap && cssPrefixesReg.test(retName)  // if hasPrefix in prop
+    ? capitalize(retName)
+    : retName
 }
 
 

@@ -414,26 +414,40 @@ var cssobj = (function () {
   }
 
   // vendor prefix support
-  var styleList = document.createElement('p').style
+  // borrowed from jQuery 1.12
+  var	cssPrefixes = [ "Webkit", "O", "Moz", "ms" ]
+  var	emptyStyle = document.createElement( "div" ).style
 
-  var vendorPrefix = (function getPrefix() {
-    var props = []
-    for(var i in styleList) props.push(i)
-    var pre = props.join(',')
-        .match(/,(moz|Moz|webkit|Webkit|ms|Ms|O)[A-Z]/)
-    return pre ? pre[1] : ''
-  })()
+  // cache cssProps
+  var	cssProps = {
+      // normalize float css property
+    'float': emptyStyle.cssFloat && 'cssFloat' || emptyStyle.styleFloat && 'styleFloat' || 'float'
+  }
+
+  // return a css property mapped to a potentially vendor prefixed property
+  function vendorPropName( name, cap ) {
+
+    // shortcut for names that are not vendor prefixed
+    if ( name in emptyStyle ) {
+      return name
+    }
+
+    // check for vendor prefixed names
+    var preName, capName = name.charAt( 0 ).toUpperCase() + name.slice( 1 )
+    var i = cssPrefixes.length
+
+    while ( i-- ) {
+      preName = cssPrefixes[ i ] + capName
+      if ( preName in emptyStyle ) {
+        return cap ? capitalize(preName) : preName
+      }
+    }
+  }
 
   // apply prop to get right vendor prefix
   function prefixProp (name, cap) {
-    // float in old browser is SEPCIAL
-    if(name=='float') return styleList.cssFloat && 'cssFloat' || styleList.styleFloat && 'styleFloat' || 'float'
-
-    // js prop is lowerCase
-    // css need cap prefix capitalized
-    return name in styleList
-      ? name
-      : vendorPrefix ? (cap? capitalize(vendorPrefix) : vendorPrefix) + capitalize(name) : name
+    return cssProps[ name ] ||
+      ( cssProps[ name ] = vendorPropName( name, cap) || name )
   }
 
 

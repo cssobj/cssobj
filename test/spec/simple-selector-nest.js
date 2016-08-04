@@ -8,4 +8,3 @@ var result = cssobj({
 })
 
 log(css(result), 'file:./simple-selector-nest.css')
-

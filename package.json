@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "0.2.28",
+  "version": "0.2.29",
   "description": "CSS in JS solution, CSSOM from js, getting and setting CSS stylesheet rules, css modules, auto prefixer, media query for old browsers. CSS in React/Angular/Vue/Ember/Mithril/jQuery",
   "keywords": [
     "cssom",

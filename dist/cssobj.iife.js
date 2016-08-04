@@ -111,7 +111,7 @@ var cssobj = (function () {
   }
 
   // regexp constants
-  var reGroupRule = /^@(media|document|supports|page|keyframes) /i
+  var reGroupRule = /^@(media|document|supports|page|keyframes)/i
   var reAtRule = /^\s*@/g
   /**
    * convert simple Object into node data
@@ -234,9 +234,9 @@ var cssobj = (function () {
 
         // combinePath is array, '' + array instead of array.join(',')
         node.groupText = isMedia
-          ? '@' + node.at + ' ' + combinePath(getParents(ruleNode, function (v) {
+          ? '@' + node.at + combinePath(getParents(ruleNode, function (v) {
             return v.type == TYPE_GROUP
-          }, 'selPart', 'selChild', 'selParent'), '', ' and ')
+          }, 'selPart', 'selChild', 'selParent'), '', ' and')
         : sel
 
         node.selText = getParents(node, function (v) {
@@ -378,7 +378,7 @@ var cssobj = (function () {
     var omArr = []
     if ('insertRule' in parent) {
       try {
-        parent.insertRule(selector + ' {' + body + '}', pos)
+        parent.insertRule(selector + '{' + body + '}', pos)
       } catch(e) {
         // modern browser with prefix check, now only -webkit-
         // http://shouldiprefix.com/#animations

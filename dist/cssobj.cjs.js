@@ -463,12 +463,12 @@ function vendorPropName( name ) {
 
 // apply prop to get right vendor prefix
 // cap=0 for no cap; cap=1 for capitalize prefix
-function prefixProp (name, cap) {
+function prefixProp (name, inCSS) {
   // find name and cache the name for next time use
   var retName = cssProps[ name ] ||
       ( cssProps[ name ] = vendorPropName( name ) || name)
-  return cap && cssPrefixesReg.test(retName)  // if hasPrefix in prop
-    ? capitalize(retName)
+  return inCSS   // if hasPrefix in prop
+    ? cssPrefixesReg.test(retName) ? capitalize(retName) : name=='float' && name || retName  // fix float in CSS, avoid return cssFloat
     : retName
 }
 

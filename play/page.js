@@ -73,6 +73,9 @@ window.onresize = function() {
 function getCSSText(dom) {
   var sheet = dom.sheet || dom.styleSheet
   if(sheet.cssText) return sheet.cssText
+    .replace(/^\s*html\s*{\s*}\s*/i, '')
+    .replace(/^\s*body\s*{\s*}\s*/i, '')
+
   var str = ''
   var rules = sheet.cssRules || sheet.rules
   for(var i = 1, len = rules.length; i < len; i++) {

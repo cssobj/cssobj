@@ -40,7 +40,7 @@
     '100%': { left: '200px' }
   },
   h3: {
-    animationName: 'anim1', flex:1, flexAlign:'left',
+    animationName: 'anim1', flex:1, display: 'flex',
     color: 'red',  textEmphasisStyle:'dot', imeAlign:'auto', borderImage: 'none',
     textAlign: 'center', flowInto:'flow1',
     lineHeight: 1.5,
@@ -50,13 +50,13 @@
     span:{color:'red', fontSize:22}
   },
   '@media (min-width: 400)': {
-    '@media (max-width: 500)': {
+    '@media (max-width: 1600)': {
       h3: {
         color: 'blue',
         fontSize: 24
       }
     },
-    '@media (min-width: 500)': {
+    '@media (min-width: 800)': {
       h3: {
         color: 'green',
         fontSize: 20

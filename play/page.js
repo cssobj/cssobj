@@ -73,13 +73,15 @@ window.onresize = function() {
 function getCSSText(dom) {
   var sheet = dom.sheet || dom.styleSheet
   if(sheet.cssText) return sheet.cssText
-    .replace(/^\s*html\s*{\s*}\s*/i, '')
-    .replace(/^\s*body\s*{\s*}\s*/i, '')
+    .replace(/^\s*html\s*{\s*}\s*/im, '')
+    .replace(/^\s*body\s*{\s*}\s*/im, '')
 
   var str = ''
   var rules = sheet.cssRules || sheet.rules
-  for(var i = 1, len = rules.length; i < len; i++) {
+  for(var i = 0, len = rules.length; i < len; i++) {
     str += rules[i].cssText + '\n'
   }
   return str
+    .replace(/^\s*html\s*{\s*}\s*/im, '')
+    .replace(/^\s*body\s*{\s*}\s*/im, '')
 }

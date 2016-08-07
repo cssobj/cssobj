@@ -34,12 +34,15 @@
     <div class="text">
       &nbsp;Input Object:
     <textarea id="obj">
-{
-  '@keyframes anim1':{
-    '0%': { left: '0' },
-    '100%': { left: '200px' }
-  },
-  h3: {
+      {
+      '@import ': 'url(test.css)',
+      '@import': ['url(test2.css)','url(test.css)'],
+      '@namespace': 'svg url(http://www.w3.org/2000/svg)',
+'@font-face' : {
+         fontFamily:'comic',
+         src:'url(http://valid_url/some_font_file.eot)'
+      },
+h3: {
     animationName: 'anim1', flex:1, display: 'flex',
     color: 'red',  textEmphasisStyle:'dot', imeAlign:'auto', borderImage: 'none',
     textAlign: 'center', flowInto:'flow1',
@@ -47,7 +50,7 @@
     fontSize: 32,
     margin: 0,
     padding: 0,
-    span:{color:'red', fontSize:22}
+    'span,p':{color:'red', fontSize:22}
   },
   '@media(min-width: 400)': {
     '@media(max-width: 1600)': {
@@ -72,7 +75,11 @@
     </div>
 <script type="text/javascript" src="./page.js"></script>
 <script type="text/javascript">
-var result = cssobj({},{plugins: {value: cssobj_plugin_value_default_unit()}})
+  var result = cssobj(
+         {
+      '@import ': 'url(test.css)',
+      '@import': ['url(test2.css)','url(test.css)'],
+},{plugins: {value: cssobj_plugin_value_default_unit()}})
 var objDom = document.getElementById('obj')
 
 function updateCSSText() {
@@ -80,11 +87,11 @@ function updateCSSText() {
 }
 
 function applyObj() {
-  try{
     var func = new Function('result.obj='+objDom.value)
     func()
     result.update()
     updateCSSText()
+  try{
   }catch(e) {
     console.log(e)
   }

@@ -75,7 +75,6 @@ var cssobj = (function () {
     return path.map(function(p){return key?p[key]:p })
   }
 
-
   // split selector etc. aware of css attributes
   function splitComma (str) {
     for (var c, i = 0, n = 0, prev = 0, d = []; c = str.charAt(i); i++) {
@@ -138,9 +137,11 @@ var cssobj = (function () {
 
     node = node || {}
 
+    node.obj = d
+
     if (type.call(d) == ARRAY) {
       return d.map(function (v, i) {
-        return parseObj(v, result, node[i] || {parent: node, src: d, index: i, obj: d[i]})
+        return parseObj(v, result, node[i] || {parent: node, src: d, index: i})
       })
     }
     if (type.call(d) == OBJECT) {
@@ -153,13 +154,34 @@ var cssobj = (function () {
       var order = d[KEY_ORDER] | 0
       var funcArr = []
 
+      var processObj = function (obj, k, nodeObj) {
+        var haveOldChild = k in children
+        var newNode = extendObj(children, k, nodeObj)
+        // don't overwrite selPart for previous node
+        newNode.selPart = newNode.selPart || splitComma(k)
+        var n = children[k] = parseObj(obj, result, newNode)
+        // it's new added node
+        if (prevVal && !haveOldChild) arrayKV(result.diff, 'added', n)
+      }
+
       // only there's no selText, getSel
       if(!('selText' in node)) getSel(node, result)
 
       for (var k in d) {
-        if (!d.hasOwnProperty(k)) continue
+        if (!d.hasOwnProperty(k) || k.charAt(0) == '$') continue
         if (!isIterable(d[k]) || type.call(d[k]) == ARRAY && !isIterable(d[k][0])) {
-          if (k.charAt(0) == '$') continue
+
+          // it's inline at-rule: @import etc.
+          if (k.charAt(0)=='@') {
+            processObj(
+              // map @import: [a,b,c] into {a:1, b:1, c:1}
+              [].concat(d[k]).reduce(function(prev, cur) {
+                prev[cur] = ';'
+                return prev
+              }, {}), k, {parent: node, src: d, key: k, inline:true})
+            continue
+          }
+
           var r = function (_k) {
             parseProp(node, d, _k, result)
           }
@@ -167,13 +189,7 @@ var cssobj = (function () {
             ? funcArr.push([r, k])
             : r(k)
         } else {
-          var haveOldChild = k in children
-          var newNode = extendObj(children, k, {parent: node, src: d, key: k, obj: d[k]})
-          // don't overwrite selPart for previous node
-          newNode.selPart = newNode.selPart || splitComma(k)
-          var n = children[k] = parseObj(d[k], result, newNode)
-          // it's new added node
-          if (prevVal && !haveOldChild) arrayKV(result.diff, 'added', n)
+          processObj(d[k], k, {parent: node, src: d, key: k})
         }
       }
 
@@ -311,7 +327,7 @@ var cssobj = (function () {
 
   function applyPlugins (opt, type) {
     var args = [].slice.call(arguments, 2)
-    var plugin = opt.plugins[type]
+    var plugin = opt.plugins && opt.plugins[type]
     return !plugin ? args[0] : [].concat(plugin).reduce(
       function (pre, f) { return f.apply(null, [pre].concat(args)) },
       args.shift()
@@ -372,59 +388,70 @@ var cssobj = (function () {
     return el
   }
 
-  var addCSSRule = function (parent, selector, body, selPart) {
+  var addCSSRule = function (parent, selector, body, node) {
     var rules = parent.cssRules || parent.rules
-    var pos = rules.length
-    var omArr = []
-    if ('insertRule' in parent) {
-      try {
-        parent.insertRule(selector + '{' + body + '}', pos)
-      } catch(e) {
-        // modern browser with prefix check, now only -webkit-
-        // http://shouldiprefix.com/#animations
-        if(selector.indexOf('@keyframes')==0) for(var ret, i = 0, len = cssPrefixes.length; i < len; i++) {
-          ret = addCSSRule(parent, selector.replace('@keyframes', '@-'+cssPrefixes[i].toLowerCase()+'-keyframes'), body)
-          if(ret.length) return ret
-        }
-        // the rule is not supported, fail silently
-        // console.log(e, selector, body, pos)
-      }
-    } else if ('addRule' in parent) {
-      // old IE addRule don't support 'dd,dl' form, add one by one
-      ![].concat(selPart || selector).forEach(function (v) {
-        try {
-          parent.addRule(v, body, pos)
-        } catch(e) {
-          // console.log(e, selector, body)
-        }
-      })
-    }
+    var prev = rules.length
+    var isImportRule = /@import/i.test(node.selText)
 
-    for (var i = pos, len = rules.length; i < len; i++) {
-      omArr.push(rules[i])
+    var str = node.inline
+        ? body.map(function(v) {
+          return node.selText + ' ' + v
+        })
+        : [selector + '{' + body.join('') + '}']
+
+    str.forEach(function(text) {
+      if (parent.insertRule) {
+        try {
+          parent.insertRule(text, isImportRule ? 0 : rules.length)
+        } catch(e) {
+          // modern browser with prefix check, now only -webkit-
+          // http://shouldiprefix.com/#animations
+          if(selector && selector.indexOf('@keyframes')==0) for(var ret, i = 0, len = cssPrefixes.length; i < len; i++) {
+            ret = addCSSRule(parent, selector.replace('@keyframes', '@-'+cssPrefixes[i].toLowerCase()+'-keyframes'), body, node)
+            if(ret.length) return ret
+          }
+          // the rule is not supported, fail silently
+          // console.log(e, selector, body, pos)
+        }
+      } else if (parent.addRule) {
+        // old IE addRule don't support 'dd,dl' form, add one by one
+        ![].concat(node.selPart || selector).forEach(function (sel) {
+          try {
+            if(isImportRule) parent.addImport(text, 0)
+            else parent.addRule(sel, text, rules.length)
+          } catch(e) {
+            // console.log(e, selector, body)
+          }
+        })
+      }
+    })
+
+    // get the sliced rules from prev to length
+    var arr = []
+    for (var i = prev, len = rules.length; i < len; i++) {
+      arr.push(rules[isImportRule ? i-prev : i])
     }
-    return omArr
+    return arr
   }
 
-  function getBodyCss (prop) {
+  function getBodyCss (node) {
     // get cssText from prop
+    var prop = node.prop
     return Object.keys(prop).map(function (k) {
-      for (var v, ret = '', i = prop[k].length; i--;) {
+      for (var v, ret='', i = prop[k].length; i--;) {
         v = prop[k][i]
 
         // display:flex expand for vendor prefix
         var vArr = k=='display' && v=='flex'
-            ? ['-webkit-box', '-ms-flexbox', '-webkit-flex', 'flex']
-            : [v]
+          ? ['-webkit-box', '-ms-flexbox', '-webkit-flex', 'flex']
+          : [v]
 
-        ret += k.charAt(0) == '@'
-          ? dashify(k) + ' ' + v + ';'
-          : vArr.map(function(v2) {
-            return dashify(prefixProp(k, true)) + ':' + v2 + ';'
-          }).join('')
+        ret += vArr.map(function(v2) {
+          return node.inline ? k : dashify(prefixProp(k, true)) + ':' + v2 + ';'
+        }).join('')
       }
       return ret
-    }).join('')
+    })
   }
 
   // vendor prefix support
@@ -440,7 +467,7 @@ var cssobj = (function () {
 
   // cache cssProps
   var	cssProps = {
-      // normalize float css property
+    // normalize float css property
     'float': testProp(['styleFloat', 'cssFloat', 'float']),
     'flex': testProp(['WebkitBoxFlex', 'msFlex', 'WebkitFlex', 'flex'])
   }
@@ -470,7 +497,7 @@ var cssobj = (function () {
         ( cssProps[ name ] = vendorPropName( name ) || name)
     return inCSS   // if hasPrefix in prop
       ? cssPrefixesReg.test(retName) ? capitalize(retName) : name=='float' && name || retName  // fix float in CSS, avoid return cssFloat
-      : retName
+    : retName
   }
 
 
@@ -485,7 +512,9 @@ var cssobj = (function () {
     var sheet = dom.sheet || dom.styleSheet
 
     // IE has a bug, first comma rule not work! insert a dummy here
-    addCSSRule(sheet, 'html,body', '')
+    // sheet.insertRule ("@import url('test.css');", 0)  // it's ok to insert @import, but only at top
+    // sheet.insertRule ("@charset 'UTF-8';", 0)  // throw SyntaxError https://www.w3.org/Bugs/Public/show_bug.cgi?id=22207
+    addCSSRule(sheet, 'html,body', [], {})
 
     // helper regexp & function
     var reWholeRule = /keyframes|page/i
@@ -540,16 +569,16 @@ var cssobj = (function () {
     }
 
     // helper function for addNormalrule
-    var addNormalRule = function (node, selText, cssText, selPart) {
+    var addNormalRule = function (node, selText, cssText) {
       if(!cssText) return
       // get parent to add
       var parent = getParent(node)
       if (validParent(node))
-        return node.omRule = addCSSRule(parent, selText, cssText, selPart)
+        return node.omRule = addCSSRule(parent, selText, cssText, node)
       else if (node.parentRule) {
         // for old IE not support @media, check mediaEnabled, add child nodes
         if (node.parentRule.mediaEnabled) {
-          if (!node.omRule) return node.omRule = addCSSRule(parent, selText, cssText, selPart)
+          if (!node.omRule) return node.omRule = addCSSRule(parent, selText, cssText, node)
         }else if (node.omRule) {
           node.omRule.forEach(removeOneRule)
           delete node.omRule
@@ -594,7 +623,7 @@ var cssobj = (function () {
         // if it's not @page, @keyframes (which is not groupRule in fact)
         if (!atomGroupRule(node)) {
           var reAdd = 'omGroup' in node
-          node.omGroup = addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), '').pop() || null
+          node.omGroup = addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), [], node).pop() || null
 
           // when add media rule failed, build test function then check on window.resize
           if (node.at == 'media' && !reAdd && !node.omGroup) {
@@ -622,14 +651,14 @@ var cssobj = (function () {
       }
 
       var selText = node.selText
-      var cssText = getBodyCss(node.prop)
+      var cssText = getBodyCss(node)
 
       // it's normal css rule
-      if (cssText) {
+      if (cssText.length) {
         if (!atomGroupRule(node)) {
-          addNormalRule(node, selText, cssText, node.selTextPart)
+          addNormalRule(node, selText, cssText)
         }
-        store && store.push(selText ? selText + ' {' + cssText + '}' : cssText)
+        store && store.push(selText ? selText + ' {' + cssText.join('') + '}' : cssText)
       }
 
       for (var c in children) {
@@ -641,7 +670,7 @@ var cssobj = (function () {
       if (isGroup) {
         // if it's @page, @keyframes
         if (atomGroupRule(node) && validParent(node)) {
-          addNormalRule(node, node.groupText, store.join(''))
+          addNormalRule(node, node.groupText, store)
           store = null
         }
       }
@@ -680,7 +709,7 @@ var cssobj = (function () {
           var om = node.omRule
           var diff = node.diff
 
-          if (!om) om = addNormalRule(node, node.selText, getBodyCss(node.prop), node.selTextPart)
+          if (!om) om = addNormalRule(node, node.selText, getBodyCss(node))
 
           // added have same action as changed, can be merged... just for clarity
           diff.added && diff.added.forEach(function (v) {
@@ -704,9 +733,11 @@ var cssobj = (function () {
           diff.removed && diff.removed.forEach(function (v) {
             var prefixV = prefixProp(v)
             om && om.forEach(function (rule) {
-              rule.style.removeProperty
-                ? rule.style.removeProperty(prefixV)
-                : rule.style.removeAttribute(prefixV)
+              try{
+                rule.style.removeProperty
+                  ? rule.style.removeProperty(prefixV)
+                  : rule.style.removeAttribute(prefixV)
+              }catch(e){}
             })
           })
         })

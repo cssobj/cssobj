@@ -110,7 +110,8 @@ function isIterable (v) {
 
 // regexp constants
 var reGroupRule = /^@(media|document|supports|page|keyframes)/i
-var reAtRule = /^\s*@/g
+var reAtRule = /^\s*@/i
+
 /**
  * convert simple Object into node data
  *
@@ -425,8 +426,9 @@ var addCSSRule = function (parent, selector, body, node) {
             index = parent.addImport(text[2])
             omArr.push(parent.imports[index])
           } else if (!/^\s*@/.test(node.key)) {
-            index = parent.addRule(sel, text[2], rules.length)
-            omArr.push(rules[index])
+            parent.addRule(sel, text[2], rules.length)
+            // old IE have bug: addRule will always return -1!!!
+            omArr.push(rules[rules.length-1])
           }
         } catch(e) {
           // console.log(e, selector, body)
@@ -754,7 +756,7 @@ function cssobj_plugin_post_cssom (option) {
   }
 }
 
-var reClass$1 = /:global\s*\(((?:\s*\.[A-Za-z0-9_-]+\s*)+)\)|(\.)([!A-Za-z0-9_-]+)/g
+var reClass = /:global\s*\(((?:\s*\.[A-Za-z0-9_-]+\s*)+)\)|(\.)([!A-Za-z0-9_-]+)/g
 
 function cssobj_plugin_selector_localize(prefix, localNames) {
 
@@ -776,7 +778,7 @@ function cssobj_plugin_selector_localize(prefix, localNames) {
   }
 
   var mapSel = function(str, isClassList) {
-    return str.replace(reClass$1, replacer)
+    return str.replace(reClass, replacer)
   }
 
   var mapClass = function(str) {

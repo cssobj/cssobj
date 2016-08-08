@@ -85,11 +85,11 @@ function updateCSSText() {
 }
 
 function applyObj() {
+  try{
     var func = new Function('result.obj='+objDom.value)
     func()
     result.update()
     updateCSSText()
-  try{
   }catch(e) {
     console.log(e)
   }

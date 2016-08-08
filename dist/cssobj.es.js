@@ -418,10 +418,11 @@ var addCSSRule = function (parent, selector, body, node) {
       // old IE addRule don't support 'dd,dl' form, add one by one
       ![].concat(node.selTextPart || selector).forEach(function (sel) {
         try {
+          // remove ALL @-rule support for old IE
           if(isImportRule) {
             parent.addImport(text[2], 0)
             omArr.push(parent.imports[0])
-          } else if (!/@/.test(node.key)) {
+          } else if (!/^\s*@/.test(node.key)) {
             index = parent.addRule(sel, text[2], rules.length)
             omArr.push(rules[index])
           }
@@ -544,9 +545,7 @@ function cssobj_plugin_post_cssom (option) {
     var rules = parent.cssRules || parent.rules
     var removeFunc = function (v, i) {
       if((v===rule)) {
-        v.imports
-          ? parent.removeImport(i)
-          : parent.deleteRule
+        parent.deleteRule
           ? parent.deleteRule(i)
           : parent.removeRule(i)
         return true
@@ -556,7 +555,7 @@ function cssobj_plugin_post_cssom (option) {
     // > sheet.removeImport(0)  it's work, then again
     // > sheet.removeImport(0)  it's not work!!!
     //
-    parent.imports && [].some.call(parent.imports, removeFunc)
+    // parent.imports && [].some.call(parent.imports, removeFunc)
     ![].some.call(rules, removeFunc)
   }
 

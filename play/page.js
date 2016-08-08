@@ -9,12 +9,14 @@ var pagecss = cssobj(
     },
     body:{
       fontSize:16,
-      paddingTop:20,
+      paddingTop:10,
       fontFamily:'Arial, Helvetica'
     },
     '.text':{
       $id: 'con',
       float:'left',
+      display:'inline',
+      overflow:'hidden',
       width:'99%',
       height:function(){return winHeight && winHeight - document.getElementsByTagName('h3')[0].offsetHeight - 60}
     },
@@ -48,7 +50,7 @@ var pagecss = cssobj(
       width: 150,
       position: 'absolute',
       background: 'yellow',
-      top: 10,
+      top: 0,
       left: function(prev) {
         return winWidth && winWidth/2 - this.width/2
       }

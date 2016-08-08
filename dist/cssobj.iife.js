@@ -521,7 +521,7 @@ var cssobj = (function () {
     // IE has a bug, first comma rule not work! insert a dummy here
     // sheet.insertRule ("@import url('test.css');", 0)  // it's ok to insert @import, but only at top
     // sheet.insertRule ("@charset 'UTF-8';", 0)  // throw SyntaxError https://www.w3.org/Bugs/Public/show_bug.cgi?id=22207
-    addCSSRule(sheet, 'html,body', [], {})
+    // addCSSRule(sheet, 'html,body', [], {})
 
     // helper regexp & function
     var reWholeRule = /keyframes|page/i

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 
-CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) from js, features:
+CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and CSS rules from js, features:
 
  - **CSS Rules** create and diff
  - CSS modules with local class
@@ -173,7 +173,7 @@ The performance is optimized, only updating changed prop, keep others **untouche
 
 ### Case 3: you want @media rule work in old Browsers
 
-Just try this [demo](https://cssobj.github.io/cssobj-demo/play/), in IE 8, or IE 7, or IE 5!
+Just try this [demo](https://cssobj.github.io/cssobj-demo/play/), in IE 5,6,7,8!
 
 ### Case 4: you want auto vendor prefix work all the time
 
@@ -247,7 +247,7 @@ cssobj({
 })
 ```
 
-Then `div` will have color as **red**, **green** and **blue** accordingly, in **ALL BROWSERS** (IE5+, except IE6, contribution welcome!)
+Then `div` will have color as **red**, **green** and **blue** accordingly, in **ALL BROWSERS** (tested Modern & IE5+)
 
 [Demo](https://cssobj.github.io/cssobj-demo/play/) here for **@media (min-width), (max-width)** support for old browsers.
 

@@ -422,8 +422,8 @@ var addCSSRule = function (parent, selector, body, node) {
         try {
           // remove ALL @-rule support for old IE
           if(isImportRule) {
-            parent.addImport(text[2], 0)
-            omArr.push(parent.imports[0])
+            index = parent.addImport(text[2])
+            omArr.push(parent.imports[index])
           } else if (!/^\s*@/.test(node.key)) {
             index = parent.addRule(sel, text[2], rules.length)
             omArr.push(rules[index])

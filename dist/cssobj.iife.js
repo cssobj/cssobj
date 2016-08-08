@@ -389,20 +389,22 @@ var cssobj = (function () {
   }
 
   var addCSSRule = function (parent, selector, body, node) {
-    var rules = parent.cssRules || parent.rules
-    var prev = rules.length
     var isImportRule = /@import/i.test(node.selText)
+    var rules = parent.cssRules || parent.rules
+    var index=0
 
+    var omArr = []
     var str = node.inline
-        ? body.map(function(v) {
-          return node.selText + ' ' + v
-        })
-        : [selector + '{' + body.join('') + '}']
+      ? body.map(function(v) {
+        return [node.selText, ' ', v]
+      })
+    : [[selector, '{', body.join(''), '}']]
 
     str.forEach(function(text) {
       if (parent.insertRule) {
         try {
-          parent.insertRule(text, isImportRule ? 0 : rules.length)
+          index = parent.insertRule(text.join(''), isImportRule ? 0 : rules.length)
+          omArr.push(rules[index])
         } catch(e) {
           // modern browser with prefix check, now only -webkit-
           // http://shouldiprefix.com/#animations
@@ -414,11 +416,18 @@ var cssobj = (function () {
           // console.log(e, selector, body, pos)
         }
       } else if (parent.addRule) {
+        // https://msdn.microsoft.com/en-us/library/hh781508(v=vs.85).aspx
+        // only supported @rule will accept: @import
         // old IE addRule don't support 'dd,dl' form, add one by one
-        ![].concat(node.selPart || selector).forEach(function (sel) {
+        ![].concat(node.selTextPart || selector).forEach(function (sel) {
           try {
-            if(isImportRule) parent.addImport(text, 0)
-            else parent.addRule(sel, text, rules.length)
+            if(isImportRule) {
+              parent.addImport(text[2], 0)
+              omArr.push(parent.imports[0])
+            } else if (!/@/.test(node.key)) {
+              index = parent.addRule(sel, text[2], rules.length)
+              omArr.push(rules[index])
+            }
           } catch(e) {
             // console.log(e, selector, body)
           }
@@ -426,12 +435,7 @@ var cssobj = (function () {
       }
     })
 
-    // get the sliced rules from prev to length
-    var arr = []
-    for (var i = prev, len = rules.length; i < len; i++) {
-      arr.push(rules[isImportRule ? i-prev : i])
-    }
-    return arr
+    return omArr
   }
 
   function getBodyCss (node) {
@@ -541,17 +545,22 @@ var cssobj = (function () {
       if (!rule) return
       var parent = rule.parentRule || sheet
       var rules = parent.cssRules || parent.rules
-      var index = -1
-      for (var i = 0, len = rules.length; i < len; i++) {
-        if (rules[i] === rule) {
-          index = i
-          break
+      var removeFunc = function (v, i) {
+        if((v===rule)) {
+          v.imports
+            ? parent.removeImport(i)
+            : parent.deleteRule
+            ? parent.deleteRule(i)
+            : parent.removeRule(i)
+          return true
         }
       }
-      if (index < 0) return
-      parent.removeRule
-        ? parent.removeRule(index)
-        : parent.deleteRule(index)
+      // sheet.imports have bugs in IE:
+      // > sheet.removeImport(0)  it's work, then again
+      // > sheet.removeImport(0)  it's not work!!!
+      //
+      parent.imports && [].some.call(parent.imports, removeFunc)
+      ![].some.call(rules, removeFunc)
     }
 
     function removeNode (node) {
@@ -623,7 +632,7 @@ var cssobj = (function () {
         // if it's not @page, @keyframes (which is not groupRule in fact)
         if (!atomGroupRule(node)) {
           var reAdd = 'omGroup' in node
-          node.omGroup = addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), [], node).pop() || null
+          node.omGroup = option.noMedia ? null : addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), [], node).pop() || null
 
           // when add media rule failed, build test function then check on window.resize
           if (node.at == 'media' && !reAdd && !node.omGroup) {
@@ -634,7 +643,7 @@ var cssobj = (function () {
                 .replace(/min-width:/ig, '>=')
                 .replace(/max-width:/ig, '<=')
                 .replace(/(px)?\s*\)/ig, ')')
-                .replace(/\s+and\s+/ig, '&&')
+                .replace(/\band\b/ig, '&&')
                 .replace(/,/g, '||')
                 .replace(/\(/g, '(document.documentElement.offsetWidth')
             )

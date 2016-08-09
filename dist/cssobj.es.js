@@ -107,6 +107,12 @@ function isIterable (v) {
 }
 
 // regexp constants
+// @page rule: CSSOM:
+//   IE returned: not implemented error
+//   FF, Chrome actually is not groupRule(not cssRules), same as @font-face rule
+//   https://developer.mozilla.org/en-US/docs/Web/API/CSSGroupingRule
+//   CSSPageRule is listed as derived from CSSGroupingRule, but not implemented yet.
+//   Here added @page as GroupRule, but plugin should take care of this.
 var reGroupRule = /^@(media|document|supports|page|keyframes)/i
 var reAtRule = /^\s*@/i
 
@@ -393,15 +399,18 @@ var addCSSRule = function (parent, selector, body, node) {
 
   var omArr = []
   var str = node.inline
-    ? body.map(function(v) {
-      return [node.selText, ' ', v]
-    })
-  : [[selector, '{', body.join(''), '}']]
+      ? body.map(function(v) {
+        return [node.selText, ' ', v]
+      })
+      : [[selector, '{', body.join(''), '}']]
 
   str.forEach(function(text) {
-    if (parent.insertRule) {
+    if (parent.cssRules) {
       try {
-        index = parent.insertRule(text.join(''), isImportRule ? 0 : rules.length)
+        index = parent.appendRule
+          ? parent.appendRule(text.join('')) || rules.length-1  // keyframes.appendRule return undefined
+          : parent.insertRule(text.join(''), isImportRule ? 0 : rules.length)
+
         omArr.push(rules[index])
       } catch(e) {
         // modern browser with prefix check, now only -webkit-
@@ -423,7 +432,13 @@ var addCSSRule = function (parent, selector, body, node) {
           if(isImportRule) {
             index = parent.addImport(text[2])
             omArr.push(parent.imports[index])
-          } else if (!/^\s*@/.test(node.key)) {
+
+            // IE addPageRule() return: not implemented!!!!
+            // } else if (/@page/.test(sel)) {
+            //   index = parent.addPageRule(sel, text[2], -1)
+            //   omArr.push(rules[rules.length-1])
+
+          } else if (!/^\s*@/.test(sel)) {
             parent.addRule(sel, text[2], rules.length)
             // old IE have bug: addRule will always return -1!!!
             omArr.push(rules[rules.length-1])
@@ -515,13 +530,15 @@ function cssobj_plugin_post_cssom (option) {
   var dom = document.getElementById(id) || createDOM(id, option)
   var sheet = dom.sheet || dom.styleSheet
 
-  // IE has a bug, first comma rule not work! insert a dummy here
   // sheet.insertRule ("@import url('test.css');", 0)  // it's ok to insert @import, but only at top
   // sheet.insertRule ("@charset 'UTF-8';", 0)  // throw SyntaxError https://www.w3.org/Bugs/Public/show_bug.cgi?id=22207
+
+  // IE has a bug, first comma rule not work! insert a dummy here
   // addCSSRule(sheet, 'html,body', [], {})
 
   // helper regexp & function
-  var reWholeRule = /keyframes|page/i
+  // @page in FF not allowed pseudo @page :first{}, with SyntaxError: An invalid or illegal string was specified
+  var reWholeRule = /page/i
   var atomGroupRule = function (node) {
     return !node ? false : reWholeRule.test(node.at) || node.parentRule && reWholeRule.test(node.parentRule.at)
   }
@@ -548,7 +565,7 @@ function cssobj_plugin_post_cssom (option) {
     var removeFunc = function (v, i) {
       if((v===rule)) {
         parent.deleteRule
-          ? parent.deleteRule(i)
+          ? parent.deleteRule(rule.keyText || i)
           : parent.removeRule(i)
         return true
       }
@@ -630,7 +647,7 @@ function cssobj_plugin_post_cssom (option) {
       // if it's not @page, @keyframes (which is not groupRule in fact)
       if (!atomGroupRule(node)) {
         var reAdd = 'omGroup' in node
-        node.omGroup = option.noMedia ? null : addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), [], node).pop() || null
+        node.omGroup = node.at=='media' && option.noMedia ? null : addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), [], node).pop() || null
 
         // when add media rule failed, build test function then check on window.resize
         if (node.at == 'media' && !reAdd && !node.omGroup) {

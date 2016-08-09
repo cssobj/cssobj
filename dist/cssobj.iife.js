@@ -410,18 +410,20 @@ var cssobj = (function () {
     str.forEach(function(text) {
       if (parent.cssRules) {
         try {
-          index = parent.appendRule
-            ? parent.appendRule(text.join('')) || rules.length-1  // keyframes.appendRule return undefined
-            : parent.insertRule(text.join(''), isImportRule ? 0 : rules.length)
+          index = isImportRule ? 0 : rules.length
+          parent.appendRule
+            ? parent.appendRule(text.join(''))  // keyframes.appendRule return undefined
+            : parent.insertRule(text.join(''), index) //firefox <16 also return undefined...
 
           omArr.push(rules[index])
+
         } catch(e) {
           // modern browser with prefix check, now only -webkit-
           // http://shouldiprefix.com/#animations
-          if(selector && selector.indexOf('@keyframes')==0) for(var ret, i = 0, len = cssPrefixes.length; i < len; i++) {
-            ret = addCSSRule(parent, selector.replace('@keyframes', '@-'+cssPrefixes[i].toLowerCase()+'-keyframes'), body, node)
-            if(ret.length) return ret
-          }
+          // if(selector && selector.indexOf('@keyframes')==0) for(var ret, i = 0, len = cssPrefixes.length; i < len; i++) {
+          //   ret = addCSSRule(parent, selector.replace('@keyframes', '@-'+cssPrefixes[i].toLowerCase()+'-keyframes'), body, node)
+          //   if(ret.length) return ret
+          // }
           // the rule is not supported, fail silently
           // console.log(e, selector, body, pos)
         }
@@ -551,12 +553,6 @@ var cssobj = (function () {
       return p && p.omGroup || sheet
     }
 
-    var sugar = function (str) {
-      return option.noSugar ? str : str
-        .replace(/w\s*>=/ig, 'min-width:')
-        .replace(/w\s*<=/ig, 'max-width:')
-    }
-
     var validParent = function (node) {
       return !node.parentRule || node.parentRule.omGroup !== null
     }
@@ -650,13 +646,21 @@ var cssobj = (function () {
         // if it's not @page, @keyframes (which is not groupRule in fact)
         if (!atomGroupRule(node)) {
           var reAdd = 'omGroup' in node
-          node.omGroup = node.at=='media' && option.noMedia ? null : addCSSRule(sheet, sugar(node.groupText).replace(/([0-9.]+)\s*\)/g, '$1px)'), [], node).pop() || null
+          if (node.at=='media' && option.noMedia) node.omGroup = null
+          else [''].concat(cssPrefixes).some(function (v) {
+            return node.omGroup = addCSSRule(
+              // all groupRule will be added to root sheet
+              sheet,
+              '@' + (v ? '-' + v.toLowerCase() + '-' : v) + node.groupText.slice(1), [], node
+            ).pop() || null
+          })
+
 
           // when add media rule failed, build test function then check on window.resize
           if (node.at == 'media' && !reAdd && !node.omGroup) {
             // build test function from @media rule
             var mediaTest = new Function(
-              'return ' + sugar(node.groupText)
+              'return ' + node.groupText
                 .replace(/@media\s*/i, '')
                 .replace(/min-width:/ig, '>=')
                 .replace(/max-width:/ig, '<=')

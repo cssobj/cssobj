@@ -174,7 +174,10 @@ define('cssobj', function () { 'use strict';
       if(!('selText' in node)) getSel(node, result)
 
       for (var k in d) {
-        if (!d.hasOwnProperty(k) || k.charAt(0) == '$') continue
+        // here $key start with $ is special
+        // k.charAt(0) == '$' ... but the core will calc it into node.
+        // Plugins should take $ with care and mark as a special case. e.g. ignore it
+        if (!d.hasOwnProperty(k)) continue
         if (!isIterable(d[k]) || type.call(d[k]) == ARRAY && !isIterable(d[k][0])) {
 
           // it's inline at-rule: @import etc.
@@ -461,6 +464,8 @@ define('cssobj', function () { 'use strict';
     // get cssText from prop
     var prop = node.prop
     return Object.keys(prop).map(function (k) {
+      // skip $prop, e.g. $id, $order
+      if(k.charAt(0)=='$') return ''
       for (var v, ret='', i = prop[k].length; i--;) {
         v = prop[k][i]
 
@@ -629,6 +634,8 @@ define('cssobj', function () { 'use strict';
       // cssobj generate vanilla Array, it's safe to use constructor, fast
       if (node.constructor === Array) return node.map(function (v) {walk(v, store)})
 
+      // skip $key node
+      if(node.key && node.key.charAt(0)=='$') return
 
       // nested media rule will pending proceed
       if(node.at=='media' && node.selParent && node.selParent.postArr) {

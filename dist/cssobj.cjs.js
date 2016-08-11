@@ -154,6 +154,7 @@ function parseObj (d, result, node, init) {
     var children = node.children = node.children || {}
     var prevVal = node.prevVal = node.lastVal
     node.lastVal = {}
+    node.rawVal = {}
     node.prop = {}
     node.diff = {}
     if (d[KEY_ID]) result.ref[d[KEY_ID]] = node
@@ -296,13 +297,15 @@ function parseProp (node, d, key, result) {
         ? v.call(node.lastVal, prev, node, result)
         : v
 
+    node.rawVal[key] = val
+    val = applyPlugins(result.options, 'value', val, key, node, result)
     // only valid val can be lastVal
     if (isValidCSSValue(val)) {
       // push every val to prop
       arrayKV(
         node.prop,
         key,
-        applyPlugins(result.options, 'value', val, key, node, result),
+        val,
         true
       )
       prev = lastVal[key] = val

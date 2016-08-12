@@ -54,7 +54,7 @@ to: {top:'200px'}
       content: '"Chapter" counter(chapter)'
     }
   },
-h3: {
+'h3,h4': {
     $id:'abc',
     animationName: 'anim1', flex:1, display: 'flex',
     color: 'red',  textEmphasisStyle:'dot', imeAlign:'auto', borderImage: 'none',
@@ -78,7 +78,10 @@ h3: {
         fontSize: 20
       }
     }
-  }
+      },
+      td:{
+      $extend: /\bh3\b/i
+      }
 }
     </textarea>
     </div>

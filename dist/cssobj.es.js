@@ -283,23 +283,6 @@ function getSel(node, result) {
 
 }
 
-function extendSel(result, sourceNode, target) {
-  var isRegExp = type.call(target)=='[object RegExp]'
-  result.nodes.forEach(function(node) {
-    var selTextPart = node.selTextPart
-    if(!selTextPart || sourceNode.parentRule !== node.parentRule) return
-    sourceNode.selTextPart.forEach(function(source) {
-      ![].push.apply(selTextPart, selTextPart.filter(function(v) {
-        return isRegExp
-          ? v.match(target)
-          : v==target
-      }).map(function(v) {
-        return isRegExp ? v.replace(target, source) : source
-      }))
-    })
-  })
-}
-
 function parseProp (node, d, key, result) {
   var prevVal = node.prevVal
   var lastVal = node.lastVal
@@ -311,8 +294,6 @@ function parseProp (node, d, key, result) {
     var val = typeof v == 'function'
         ? v.call(node.lastVal, prev, node, result)
         : v
-
-    if(val && key=='$extend') extendSel(result, node, val)
 
     node.rawVal[key] = val
     val = applyPlugins(result.options, 'value', val, key, node, result)

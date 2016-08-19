@@ -86,12 +86,14 @@ function splitComma (str) {
 
 // checking for valid css value
 function isValidCSSValue (val) {
-  return val || val === 0
+  // falsy: '', NaN, Infinity, [], {}
+  return typeof val=='string' && val || typeof val=='number' && isFinite(val)
 }
 
 // using var as iteral to help optimize
 var KEY_ID = '$id'
 var KEY_ORDER = '$order'
+var KEY_TEST = '$test'
 
 var TYPE_GROUP = 'group'
 
@@ -151,8 +153,21 @@ function parseObj (d, result, node, init) {
     })
   }
   if (type.call(d) == OBJECT) {
-    var children = node.children = node.children || {}
     var prevVal = node.prevVal = node.lastVal
+    var test = true
+    // at first stage check $test
+    if (KEY_TEST in d) {
+      test = typeof d[KEY_TEST]=='function' ? d[KEY_TEST](node) : d[KEY_TEST]
+      // if test false, remove node completely
+      // if it's return function, going to stage 2 where all prop rendered
+      if(!test) {
+        // for first time check, remove from parent (no diff)
+        !prevVal && node.parent && delete node.parent.children[node.key]
+        return
+      }
+      node.test = test
+    }
+    var children = node.children = node.children || {}
     node.lastVal = {}
     node.rawVal = {}
     node.prop = {}
@@ -166,9 +181,12 @@ function parseObj (d, result, node, init) {
       var newNode = extendObj(children, k, nodeObj)
       // don't overwrite selPart for previous node
       newNode.selPart = newNode.selPart || splitComma(k)
-      var n = children[k] = parseObj(obj, result, newNode)
+      var n = parseObj(obj, result, newNode)
+      if(n) children[k] = n
       // it's new added node
-      if (prevVal && !haveOldChild) arrayKV(result.diff, 'added', n)
+      if (prevVal) !haveOldChild
+        ? n && arrayKV(result.diff, 'added', n)
+        : !n && (arrayKV(result.diff, 'removed', children[k]), delete children[k])
     }
 
     // only there's no selText, getSel
@@ -193,7 +211,8 @@ function parseObj (d, result, node, init) {
         }
 
         var r = function (_k) {
-          parseProp(node, d, _k, result)
+          // skip $test key
+          if(_k != KEY_TEST) parseProp(node, d, _k, result)
         }
         order
           ? funcArr.push([r, k])
@@ -372,6 +391,15 @@ function cssobj$1 (options) {
 
       result.root = parseObj(result.obj || {}, result, result.root, true)
       applyOrder(result)
+      // $test apply
+      result.nodes.forEach(function(node) {
+        if(typeof node.test=='function') {
+          var prev = node.enabled
+          node.enabled = node.test(node, result)
+          if (result.diff && prev !== node.enabled) arrayKV(result.diff, prev ? 'removed' : 'added', node)
+          !node.enabled && node.parent && delete node.parent.children[node.key]
+        }
+      })
       result = applyPlugins(options, 'post', result)
       typeof options.onUpdate=='function' && options.onUpdate(result)
       return result
@@ -641,7 +669,7 @@ function cssobj_plugin_post_cssom (option) {
     if (node.constructor === Array) return node.map(function (v) {walk(v, store)})
 
     // skip $key node
-    if(node.key && node.key.charAt(0)=='$') return
+    if(node.key && node.key.charAt(0)=='$' || !node.prop) return
 
     // nested media rule will pending proceed
     if(node.at=='media' && node.selParent && node.selParent.postArr) {

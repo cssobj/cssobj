@@ -91,6 +91,7 @@ to: {top:'200px'}
     </div>
 <script type="text/javascript" src="./page.js"></script>
 <script type="text/javascript">
+var count = 1
   var result = cssobj(
          {
 },{cssom:{noMedia:false}, plugins: {value: cssobj_plugin_value_default_unit()}})
@@ -114,7 +115,6 @@ objDom.onkeyup = applyObj
 applyObj()
 window.onresize()
 
-count = 1
 document.onclick = function() {
   count++
   result.update()

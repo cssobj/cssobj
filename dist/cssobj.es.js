@@ -155,7 +155,7 @@ function parseObj (d, result, node, init) {
     var test = true
     // at first stage check $test
     if (KEY_TEST in d) {
-      test = typeof d[KEY_TEST]=='function' ? d[KEY_TEST](node) : d[KEY_TEST]
+      test = typeof d[KEY_TEST] == 'function' ? d[KEY_TEST](!node.disabled, node, result) : d[KEY_TEST]
       // if test false, remove node completely
       // if it's return function, going to stage 2 where all prop rendered
       if(!test) {
@@ -394,7 +394,8 @@ function cssobj$1 (options) {
         node = result.nodes[i]
         if(typeof node.test=='function') {
           var prev = !!node.disabled
-          node.disabled = !node.test(node, result)
+          node.test = node.test(!prev, node, result)
+          node.disabled = !node.test
           if (result.diff && prev != node.disabled) arrayKV(result.diff, prev ? 'added' : 'removed', node)
           node.disabled && node.parent && delete node.parent.children[node.key]
         }

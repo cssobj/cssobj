@@ -146,21 +146,23 @@ function parseObj (d, result, node, init) {
   node.obj = d
 
   if (type.call(d) == ARRAY) {
-    return d.map(function (v, i) {
-      return parseObj(v, result, node[i] || {parent: node, src: d, index: i})
-    })
+    var nodes = []
+    for(var i = 0; i < d.length; i++) {
+      var prev = node[i]
+      var n = parseObj(d[i], result, node[i] || {parent: node, src: d, parentNode: nodes, index: i})
+      if(result.diff && prev!=n) arrayKV(result.diff, n ? 'added' : 'removed', n||prev)
+      nodes.push(n)
+    }
+    return nodes
   }
   if (type.call(d) == OBJECT) {
     var prevVal = node.prevVal = node.lastVal
-    var test = true
     // at first stage check $test
     if (KEY_TEST in d) {
-      test = typeof d[KEY_TEST] == 'function' ? d[KEY_TEST](!node.disabled, node, result) : d[KEY_TEST]
+      var test = typeof d[KEY_TEST] == 'function' ? d[KEY_TEST](!node.disabled, node, result) : d[KEY_TEST]
       // if test false, remove node completely
       // if it's return function, going to stage 2 where all prop rendered
       if(!test) {
-        // for first time check, remove from parent (no diff)
-        !prevVal && node.parent && delete node.parent.children[node.key]
         return
       }
       node.test = test
@@ -184,7 +186,9 @@ function parseObj (d, result, node, init) {
       // it's new added node
       if (prevVal) !haveOldChild
         ? n && arrayKV(result.diff, 'added', n)
-        : !n && (arrayKV(result.diff, 'removed', children[k]), delete children[k])
+        : !n && arrayKV(result.diff, 'removed', children[k])
+      // for first time check, remove from parent (no diff)
+      if(!n) delete nodeObj.parent.children[k]
     }
 
     // only there's no selText, getSel

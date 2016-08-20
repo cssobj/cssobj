@@ -5,10 +5,11 @@
 CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and CSS rules from js, features:
 
  - **CSS Rules** create and diff
- - CSS modules with local class
+ - [Conditional apply CSS (good for SPA)](https://cssobj.github.io/cssobj-demo/test/test.html)
+ - [CSS modules with local class](https://cssobj.github.io/cssobj-demo/#demo4)
  - [Auto vendor prefixer](https://www.browserstack.com/screenshots/a9be7bfdfa92aeb75a9a74465ef772c9fb1e424a)
  - [Media query for old browsers](https://www.browserstack.com/screenshots/2930c65da0fefc313c9827cfb7b77a8be03a9207)
- - Dynamically change CSS
+ - [Dynamically change CSS](https://cssobj.github.io/cssobj-demo/#demo1)
 
 Light weight (**3K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#test), Easy to use (example in [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib))
 
@@ -21,7 +22,7 @@ Light weight (**3K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#te
 
 ## Why?
 
-For a long time, the way for javascript to dynamicly change css is via **DOM.style**, like below:
+For a long time, dynamicly change CSS is via **DOM.style**, like below:
 
 ``` javascript
 document.getElementById('domID').style.color = 'red'
@@ -73,31 +74,30 @@ The cool thing is:
 npm install cssobj
 ```
 
-## Usage:
+## Quick Start:
 
-**cssobj** is universal lib for manipulate **CSSOM**, below is just some use case:
+Including **dist/cssobj.min.js** into `<head>`, using as below:
 
-### Case 1: you want local class names
+### - Conditional apply CSS
 
-Think below normal stylesheet:
-
-``` html
-<style>
-  body { color: red; }
-  .item  { font-size: 12px; }
-  .item span { color: blue; }
-</style>
+```javascript
+var obj = {
+  p: [{
+    $test: true,
+    color: 'blue'
+  }, {
+    $test: false,
+    color: 'red'
+  }]
+}
+var result = cssobj(obj)
 ```
 
-You will have the **pain** by sharing to others with class name conflict, so
+The CSS is: `p {color: blue;}`
 
-#### Using *cssobj* instead:
+### - local class names
 
-Include **dist/cssobj.min.js** into `<head>`, add code below:
-
-``` html
-<script src="dist/cssobj.min.js"></script>
-<script>
+```javascript
 var obj = {
   body: {
     color:'red'
@@ -108,7 +108,6 @@ var obj = {
   }
 }
 var result = cssobj(obj, {local:true})
-</script>
 ```
 
 This will generate [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) in your `<head>`, with below css:
@@ -125,31 +124,14 @@ body {
 }
 ```
 
-Class names will add a random prefix, you can get the altered class name using below:
+Class names will add a random prefix, you can get class name using below:
 
 ``` javascript
 result.mapSel('.item')   // === ._1jkhrb92_item (with dot)
 result.mapClass('.item')   // === _1jkhrb92_item (without dot)
 ```
 
-You can also specify your own `prefix`.
-
-``` javascript
-var result = cssobj(obj, {local: {prefix:'_yourown_'} })
-// .item -> ._yourown_item
-```
-
-### Case 2: you want dynamicly update you css rule
-
-Change stylesheet using js?
-
-``` javascript
-document.getElementById('id').style.fontSize = '12px'
-```
-
-No, it's not updating css rule. Change **DOM** is the **old way**.
-
-#### Using *cssobj* to update CSSOM:
+### - Dynamicly update you css rule
 
 ``` javascript
 var obj = {
@@ -162,20 +144,15 @@ If you want to update the rule later:
 
 ``` javascript
 ... ...
-obj.div = {color:'red', fontSize:'14px'}
+obj.div.fontSize = '14px'
 css.update()
 ```
 
-Then all your `div` (current and future added!) will have the new rule.
-
-The performance is optimized, only updating changed prop, keep others **untouched**!
-
-
-### Case 3: you want @media rule work in old Browsers
+### - @media rule work in old Browsers
 
 Just try this [demo](https://cssobj.github.io/cssobj-demo/play/), in IE 5,6,7,8!
 
-### Case 4: you want auto vendor prefix work all the time
+### - Auto vendor prefixer
 
 **cssobj** will detect current browser's `vendor prefix`, and auto prefix when the property is invalid for style.
 
@@ -201,9 +178,10 @@ var css = cssobj(obj)
 
 3. When the js object changed, **cssobj** will diff CSSOM rules (**add/delete/change**) accordingly. (see [demo](https://cssobj.github.io/cssobj-demo/#demo1))
 
+
 ## Benefit
 
-What's the benefit? See below:
+What's the benefit?
 
 ### 1. Live update
 

@@ -393,17 +393,6 @@ function cssobj$1 (options) {
 
       result.root = parseObj(result.obj || {}, result, result.root, true)
       applyOrder(result)
-      // apply $test function to add/remove node
-      for(var node, i=result.nodes.length; i--;) {
-        node = result.nodes[i]
-        if(typeof node.test=='function') {
-          var prev = !!node.disabled
-          node.test = node.test(!prev, node, result)
-          node.disabled = !node.test
-          if (result.diff && prev != node.disabled) arrayKV(result.diff, prev ? 'added' : 'removed', node)
-          node.disabled && node.parent && delete node.parent.children[node.key]
-        }
-      }
       result = applyPlugins(options, 'post', result)
       typeof options.onUpdate=='function' && options.onUpdate(result)
       return result

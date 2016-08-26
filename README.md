@@ -14,7 +14,7 @@ CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/
 Light weight (**3K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#test), Easy to use (example in [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib))
 
 
-[Live Demo](https://cssobj.github.io/cssobj-demo/)  -  [Github Repo](https://github.com/cssobj/cssobj)
+[Live Demo](https://cssobj.github.io/cssobj-demo/)  -  [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
 
 [![CSSOBJ Screenshot](demo-box.gif)](https://cssobj.github.io/cssobj-demo/#demo1)
 
@@ -22,26 +22,22 @@ Light weight (**3K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#te
 
 ## Why?
 
-For a long time, dynamicly change CSS is via **DOM.style**, like below:
+For a long time, change CSS is via **DOM.style**, like below:
 
 ``` javascript
+// vanilla
 document.getElementById('domID').style.color = 'red'
 document.getElementById('domID').style.fontSize = '14px'
+
+// jquery
+$('div').css({color:'red', fontSize:'14px'})  // all the DIVs!
 ```
 
-or jQuery (or similar lib):
+**ALL of them is not updating CSS rules**, and may have performance issues.
 
-``` javascript
-$('div').css({color:'red', fontSize:'14px'})
-```
+[CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base of browser, have good Javascript API, why not using it?
 
-But the first way is poor, the second way need jQuery lib, interactive with DOM, and have performance issues.
-
-**But ALL of them is not updating css rules**.
-
-[CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base stone of browser, and it have good javascript API, why not using it?
-
-**cssobj** is the modern CSSOM **generate** and **diff** engine, see below:
+**cssobj** is the modern CSSOM **generation** and **diff** engine, see below:
 
 ```javascript
 /* script in your <head> */
@@ -59,9 +55,7 @@ obj.div.color = 'blue'
 ret.update()
 ```
 
-Then all `div` will update css `color: blue;`. No jQuery, no wait for **DOM**, no `window.onload`!
-
-The cool thing is:
+Then all `div` will have css `color: blue;`. No jQuery, no wait for **DOM**, no `window.onload`!
 
  - **You never need to wait for DOM any more**
 
@@ -78,7 +72,7 @@ npm install cssobj
 
 Including **dist/cssobj.min.js** into `<head>`, using as below:
 
-### - Conditional apply CSS
+### - Conditional apply CSS [demo](https://cssobj.github.io/cssobj-demo/test/test.html)
 
 ```javascript
 var obj = {

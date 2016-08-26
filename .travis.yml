@@ -5,6 +5,4 @@ before_install:
   - sudo rm -rf /usr/local/phantomjs/bin/phantomjs
   - sudo mv phantomjs /usr/local/phantomjs/bin/phantomjs
 node_js:
-  - "6.2.1"
-script:
-  - npm run test
+  - 6

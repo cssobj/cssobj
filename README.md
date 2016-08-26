@@ -83,10 +83,10 @@ Including **dist/cssobj.min.js** into `<head>`, using as below:
 ```javascript
 var obj = {
   p: [{
-    $test: true,
+    $test: function(){return true},
     color: 'blue'
   }, {
-    $test: false,
+    $test: function(){return false},
     color: 'red'
   }]
 }

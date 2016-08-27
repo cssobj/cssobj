@@ -24,12 +24,13 @@
       </span>
     </h3>
     <div align="center"><a href="https://github.com/cssobj/cssobj">Github Repo</a></div>
-    <iframe src="./iframe.html" id="iframe1" style="display:inline;height:30px;"></iframe>
+    <iframe src="./iframe.html" id="iframe1" frameborder="0" style="display:inline;height:30px;"></iframe>
     <script type="text/javascript">
      // IFRAME TEST
-     document.getElementById('iframe1').onload = function(e) {
-       cssobj({'#widget':{color:'red'}}, {cssom:{frame:e.target}})
-     }
+  var iframe = document.getElementById('iframe1')
+  iframe.onload = function() {
+    cssobj({'#widget':{color:'red'}}, {cssom:{frame:iframe}})
+  }
   // IE 11 simulator cannot report version below IE 7, use CC instead
   if(!(/ie/i.test(Sniff.browser.name) && parseFloat(Sniff.browser.version)<=7))
     document.getElementsByTagName('span')[0].innerHTML += '' + Sniff.browser.name + '-' + Sniff.browser.version + '[' + Sniff.os.name + ']'

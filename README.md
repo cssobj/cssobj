@@ -22,7 +22,7 @@ Light weight (**3K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#te
 
 ## Why?
 
-For a long time, change CSS is via **DOM.style**, like below:
+For a long time, changing CSS is via **DOM.style**, like below:
 
 ``` javascript
 // vanilla
@@ -33,7 +33,7 @@ document.getElementById('domID').style.fontSize = '14px'
 $('div').css({color:'red', fontSize:'14px'})  // all the DIVs!
 ```
 
-**ALL of them is not updating CSS rules**, and may have performance issues.
+**BUT ALL of above is not updating CSS rules**, and may have performance issues.
 
 [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base of browser, have good Javascript API, why not using it?
 
@@ -45,7 +45,7 @@ var obj = {div: {color:'red', fontSize:'12px'}}
 var ret = cssobj(obj)
 ```
 
-Then all `div` will have `color: red;`, currently and future!
+Then all `div` will have **color: red;**, currently and future!
 
 Want to dynamicly update?
 
@@ -55,12 +55,13 @@ obj.div.color = 'blue'
 ret.update()
 ```
 
-Then all `div` will have css `color: blue;`. No jQuery, no wait for **DOM**, no `window.onload`!
+Then all `div` will have css **color: blue;**. No jQuery, no wait for **DOM**, no `window.onload`!
 
  - **You never need to wait for DOM any more**
 
  - **cssobj will only update changed value, good for performance!**
 
+===
 
 ## Install:
 
@@ -163,6 +164,15 @@ var css = cssobj(obj)
 
 [Test Demo](https://cssobj.github.io/cssobj-demo/button/) - [BrowserStack Snapshot](https://www.browserstack.com/screenshots/11918d3edc8e3db6c046f228364dbec526b1b3ec)
 
+### - IFrame support
+
+Use with `<iframe>` is easy:
+
+```js
+iframe.onload = function(e){
+  cssobj(obj, {cssom: { frame: iframe }})
+}
+```
 
 ## How it worked?
 
@@ -282,6 +292,7 @@ name | type | default | description
 local | Boolean or Object | false | `true` to localize class names, using `options.local.prefix` as prefix.
 local.prefix | String | random string | prefix for localized names, will using `random()` function in [cssobj-helper](https://github.com/cssobj/cssobj-helper) if not specified or as falsy.
 local.localNames | Object | { } | predefined `key - val` to control each class name when localized.
+cssom | Object | { } | `cssom-plugin` option, supported key: `frame` as iframe DOM, `name` of style id, `attrs` for style tag.
 plugins | Object | { } | supported plugin is `post`, `value`, `selector`, each must be function or array of functions.
 
 #### *RETURN*

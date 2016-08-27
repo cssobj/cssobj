@@ -413,9 +413,11 @@ var cssobj = (function () {
     }
   }
 
-  function createDOM (id, option) {
-    var el = document.createElement('style')
-    document.getElementsByTagName('head')[0].appendChild(el)
+  function createDOM (rootDoc, id, option) {
+    var el = rootDoc.getElementById(id)
+    if(el) return el
+    el = rootDoc.createElement('style')
+    rootDoc.getElementsByTagName('head')[0].appendChild(el)
     el.setAttribute('id', id)
     if (option && typeof option == 'object' && option.attrs)
       for (var i in option.attrs) {
@@ -566,7 +568,9 @@ var cssobj = (function () {
         ? (option.name+'').replace(/[^a-zA-Z0-9$_-]/g, '')
         : 'style_cssobj' + random()
 
-    var dom = document.getElementById(id) || createDOM(id, option)
+    var frame = option.frame
+    var rootDoc = frame ? frame.contentDocument||frame.contentWindow.document : document
+    var dom = createDOM(rootDoc, id, option)
     var sheet = dom.sheet || dom.styleSheet
 
     // sheet.insertRule ("@import url('test.css');", 0)  // it's ok to insert @import, but only at top
@@ -647,7 +651,7 @@ var cssobj = (function () {
 
     var checkMediaList = function () {
       mediaStore.forEach(function (v) {
-        v.mediaEnabled = v.mediaTest()
+        v.mediaEnabled = v.mediaTest(rootDoc)
         walk(v)
       })
     }
@@ -695,7 +699,7 @@ var cssobj = (function () {
           // when add media rule failed, build test function then check on window.resize
           if (node.at == 'media' && !reAdd && !node.omGroup) {
             // build test function from @media rule
-            var mediaTest = new Function(
+            var mediaTest = new Function('doc',
               'return ' + node.groupText
                 .replace(/@media\s*/i, '')
                 .replace(/min-width:/ig, '>=')
@@ -703,14 +707,14 @@ var cssobj = (function () {
                 .replace(/(px)?\s*\)/ig, ')')
                 .replace(/\band\b/ig, '&&')
                 .replace(/,/g, '||')
-                .replace(/\(/g, '(document.documentElement.offsetWidth')
+                .replace(/\(/g, '(doc.documentElement.offsetWidth')
             )
 
             try {
               // first test if it's valid function
-              mediaTest()
+              var mediaEnabled = mediaTest(rootDoc)
               node.mediaTest = mediaTest
-              node.mediaEnabled = mediaTest()
+              node.mediaEnabled = mediaEnabled
               mediaStore.push(node)
             } catch(e) {}
           }

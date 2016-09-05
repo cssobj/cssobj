@@ -283,6 +283,8 @@ Nothing special, just plain js `Object`, or `Array` of `Object`, with below rule
 
 * if value is non-object, key will act as css property.
 
+##### [more rules can be found here](docs/cssobj-object-format.md)
+
 #### `options`
 
 Type: **{object}**

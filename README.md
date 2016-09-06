@@ -61,12 +61,18 @@ Then all `div` will have css **color: blue;**. No jQuery, no wait for **DOM**, n
 
  - **cssobj will only update changed value, good for performance!**
 
-===
-
 ## Install:
+
+**npm**
 
 ``` javascript
 npm install cssobj
+```
+
+**bower**
+
+``` javascript
+bower install cssobj
 ```
 
 ## Quick Start:
@@ -102,7 +108,7 @@ var obj = {
     span: { color: 'blue' }
   }
 }
-var result = cssobj(obj, {local:true})
+var result = cssobj(obj, {local:true})  // { local: {prefix:'my-prefix-'} }
 ```
 
 This will generate [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) in your `<head>`, with below css:

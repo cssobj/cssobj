@@ -1,0 +1,35 @@
+{
+  "name": "cssobj",
+  "description": "CSS Rules from JS, change rules dynamically, CSS in JS solution, CSSOM from js, getting and setting CSS stylesheet rules, css modules, auto prefixer, media query for old browsers. CSS in React/Angular/Vue/Ember/Mithril/jQuery",
+  "main": "dist/cssobj.cjs.js",
+  "authors": [
+    "James Yang <jamesyang999@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "cssom",
+    "prefixer",
+    "css",
+    "generate",
+    "diff",
+    "css",
+    "media",
+    "query",
+    "css",
+    "modules"
+  ],
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node"
+  ],
+  "homepage": "https://github.com/cssobj/cssobj",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

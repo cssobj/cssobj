@@ -1,6 +1,8 @@
+<img align="right" title="cssobj logo" alt="cssobj logo" align="bottom" src="https://avatars0.githubusercontent.com/u/20465580?v=3&s=120" border="0" hspace="30" vspace="20">
 # CSSOBJ
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj) [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](#)
+
 
 CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and CSS rules from js, features:
 
@@ -12,7 +14,6 @@ CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/
  - [Dynamically change CSS](https://cssobj.github.io/cssobj-demo/#demo1)
 
 Light weight (**3K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#test), Easy to use (example in [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib))
-
 
 [Live Demo](https://cssobj.github.io/cssobj-demo/)  -  [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
 

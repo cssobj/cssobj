@@ -128,8 +128,11 @@ body {
 Class names will add a random prefix, you can get class name using below:
 
 ``` javascript
-result.mapSel('.item')   // === ._1jkhrb92_item (with dot)
-result.mapClass('.item')   // === _1jkhrb92_item (without dot)
+/* want localized CSS Selector, use mapSel */
+result.mapSel('ul.list > li.item')   // === "ul._1jkhrb92_list > li._1jkhrb92_item"
+
+/* want localized space separated class names (W/O DOT), use mapClass */
+result.mapClass('item active')   // === "_1jkhrb92_item _1jkhrb92_active"
 ```
 
 ### - Dynamicly update you css rule
@@ -317,8 +320,8 @@ name | type | description
 obj | Object | The source js object for `cssobj()` function call.
 root | Object | Virtual CSSOM object parsed from `obj`, mainly used for value functions and plugins.
 nodes | Array | Array of virtual css nodes, for the convinence of `filter` or `map` etc.
-mapSel | Function | Get localized class name from selector string. Function signature is `function({string} selector){ return {string} mappedSel }`.
-mapClass | Function | Get localized class name from class list string. Function signature is `function({string} classList){ return {string} mappedClassList }`.
+mapSel | Function | Input CSS selector string, return localized CSS selector string, this want to keep consistency with `h("ul.list > li.item")` in any [hyperscript](https://github.com/dominictarr/hyperscript) or [virtual-hyperscript](https://github.com/Matt-Esch/virtual-dom/tree/master/virtual-hyperscript). Function signature is `function({string} cssSelector){ return {string} mappedSelector }`.
+mapClass | Function | Input space separated class list string **(WITHOUT DOT)**, return localized class list string, this want to keep consistency with `<div class="a b c"...` in HTML **class attribute**. Function signature is `function({string} classList){ return {string} mappedClassList }`.
 ref | Object | Key/value pairs for named objects. Named objects is objects with `$id` string value in `obj`.
 update | Function | Update the `RESULT` object from `obj`, generate `diff`, update CSSOM and all relevent data. Function signature is `function updater ([{object} data]) { return {object} result }`
 -  | *updater param*:<br>data | [optional] Passed to `update()` function, and set to `RESULT` `data` value, for later use.

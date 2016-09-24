@@ -1,4 +1,4 @@
-<img align="right" title="cssobj logo" alt="cssobj logo" align="bottom" src="https://avatars0.githubusercontent.com/u/20465580?v=3&s=120" border="0" hspace="30" vspace="20">
+<img align="right" src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="0" height="150" border="0"><img align="right" title="cssobj logo" alt="cssobj logo" align="bottom" src="https://avatars0.githubusercontent.com/u/20465580?v=3&s=132" border="30" hspace="0" vspace="20">
 # CSSOBJ
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj) [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](#)
@@ -130,7 +130,7 @@ Class names will add a random prefix, you can get class name using below:
 
 ``` javascript
 /* want localized CSS Selector, use mapSel */
-result.mapSel('ul.list > li.item')   // === "ul._1jkhrb92_list > li._1jkhrb92_item"
+result.mapSel('ul#nav.list')   // === "ul#nav._1jkhrb92_list"
 
 /* want localized space separated class names (W/O DOT), use mapClass */
 result.mapClass('item active')   // === "_1jkhrb92_item _1jkhrb92_active"
@@ -321,7 +321,7 @@ name | type | description
 obj | Object | The source js object for `cssobj()` function call.
 root | Object | Virtual CSSOM object parsed from `obj`, mainly used for value functions and plugins.
 nodes | Array | Array of virtual css nodes, for the convinence of `filter` or `map` etc.
-mapSel | Function | Input CSS selector string, return localized CSS selector string, this want to keep consistency with `h("ul.list > li.item")` in any [hyperscript](https://github.com/dominictarr/hyperscript) or [virtual-hyperscript](https://github.com/Matt-Esch/virtual-dom/tree/master/virtual-hyperscript). Function signature is `function({string} cssSelector){ return {string} mappedSelector }`.
+mapSel | Function | Input CSS selector string, return localized CSS selector string, this want to keep consistency with `h("ul#nav.list")` in any [hyperscript](https://github.com/dominictarr/hyperscript) or [virtual-hyperscript](https://github.com/Matt-Esch/virtual-dom/tree/master/virtual-hyperscript). Function signature is `function({string} cssSelector){ return {string} mappedSelector }`.
 mapClass | Function | Input space separated class list string **(WITHOUT DOT)**, return localized class list string, this want to keep consistency with `<div class="a b c"...` in HTML **class attribute**. Function signature is `function({string} classList){ return {string} mappedClassList }`.
 ref | Object | Key/value pairs for named objects. Named objects is objects with `$id` string value in `obj`.
 update | Function | Update the `RESULT` object from `obj`, generate `diff`, update CSSOM and all relevent data. Function signature is `function updater ([{object} data]) { return {object} result }`
@@ -383,4 +383,4 @@ Yes! We need you! Think below way:
 
 ## License
 
-MIT © James Yang
+MIT

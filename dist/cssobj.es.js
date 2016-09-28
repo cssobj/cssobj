@@ -1,4 +1,21 @@
+/*
+  cssobj v0.5.0
+  Wed Sep 28 2016 21:30:52 GMT+0800 (HKT)
+  commit 657d2894e4132de4fe00c22834b785302241abed
+
+
+  https://github.com/cssobj/cssobj
+  Released under the MIT License.
+*/
+
 // helper functions for cssobj
+
+// check n is numeric, or string of numeric
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n)
+}
+
+
 
 // set default option (not deeply)
 function defaults(options, defaultOption) {
@@ -20,6 +37,12 @@ function dashify(str) {
 function capitalize (str) {
   return str.charAt(0).toUpperCase() + str.substr(1)
 }
+
+// repeat str for num times
+
+
+// don't use String.prototype.trim in cssobj, using below instead
+
 
 // random string, should used across all cssobj plugins
 var random = (function () {
@@ -87,6 +110,16 @@ function isValidCSSValue (val) {
   // falsy: '', NaN, Infinity, [], {}
   return typeof val=='string' && val || typeof val=='number' && isFinite(val)
 }
+
+/* lib cssobj */
+/** IE ES3 need below polyfills:
+ * Array.prototype.forEach
+ * Array.prototype.indexOf
+ * Array.prototype.map
+ * Array.prototype.some
+ * Array.prototype.reduce
+ * Object.keys
+ **/
 
 // using var as iteral to help optimize
 var KEY_ID = '$id'
@@ -306,37 +339,60 @@ function getSel(node, result) {
 
 }
 
-function parseProp (node, d, key, result) {
+/**
+ * Parse property of object d's key, with propKey as a candidate key name
+ * @param {} node: v-node of cssobj
+ * @param {} d: source object
+ * @param {} key: any numeric will be ignored, then converted to string
+ * @param {} result: cssobj result object
+ * @param {} propKey: candidate prop key name
+
+ Accept only key as string, numeric will be ignored
+
+ color: function(){return ['red', 'blue']} will expand
+ color: function(){return {fontSize: '12px', float:'right'}} will be replaced
+
+ */
+function parseProp (node, d, key, result, propKey) {
   var prevVal = node.prevVal
   var lastVal = node.lastVal
-
-  var prev = prevVal && prevVal[key]
+  if(!isNumeric(key)) propKey = key
+  if(!propKey) return
+  var prev = prevVal && prevVal[propKey]
 
   ![].concat(d[key]).forEach(function (v) {
     // pass lastVal if it's function
-    var val = typeof v == 'function'
-        ? v(prev, node, result)
-        : v
+    var rawVal = typeof v == 'function'
+      ? v(prev, node, result)
+      : v
 
-    node.rawVal[key] = val
-    val = applyPlugins(result.options, 'value', val, key, node, result)
-    // only valid val can be lastVal
-    if (isValidCSSValue(val)) {
-      // push every val to prop
-      arrayKV(
-        node.prop,
-        key,
-        val,
-        true
-      )
-      prev = lastVal[key] = val
+    var val = applyPlugins(result.options, 'value', rawVal, propKey, node, result)
+
+    // check and merge only format as Object || Array of Object, other format not accepted!
+    if (isIterable(val)) {
+      for (var k in val) {
+        if (val.hasOwnProperty(k)) parseProp(node, val, k, result, propKey)
+      }
+    } else {
+      node.rawVal[propKey] = rawVal
+      if (isValidCSSValue(val)) {
+        // only valid val can enter node.prop and lastVal
+        // push every val to prop
+        arrayKV(
+          node.prop,
+          propKey,
+          val,
+          true
+        )
+        prev = lastVal[propKey] = val
+      }
     }
   })
   if (prevVal) {
-    if (!(key in prevVal)) {
-      arrayKV(node.diff, 'added', key)
-    } else if (prevVal[key] != lastVal[key]) {
-      arrayKV(node.diff, 'changed', key)
+    if (!(propKey in prevVal)) {
+      arrayKV(node.diff, 'added', propKey)
+    } else if (prevVal[propKey] != lastVal[propKey]) {
+      arrayKV(node.diff, 'changed', propKey)
     }
   }
 }
@@ -381,7 +437,7 @@ function applyOrder (opt) {
   delete opt._order
 }
 
-function cssobj$1 (options) {
+function cssobj$2 (options) {
 
   options = defaults(options, {
     plugins: {}
@@ -409,6 +465,8 @@ function cssobj$1 (options) {
     return result
   }
 }
+
+// plugin for cssobj
 
 function createDOM (rootDoc, id, option) {
   var el = rootDoc.getElementById(id)
@@ -496,14 +554,14 @@ function getBodyCss (node) {
     for (var v, ret='', i = prop[k].length; i--;) {
       v = prop[k][i]
 
+      /** Below feature moved into plugin-flexbox **/
       // display:flex expand for vendor prefix
-      var vArr = k=='display' && v=='flex'
-        ? ['-webkit-box', '-ms-flexbox', '-webkit-flex', 'flex']
-        : [v]
+      // var valueArr = k=='display' && v=='flex'
+      //   ? ['-webkit-box', '-ms-flexbox', '-webkit-flex', 'flex']
+      //   : [v]
 
-      ret += vArr.map(function(v2) {
-        return node.inline ? k : dashify(prefixProp(k, true)) + ':' + v2 + ';'
-      }).join('')
+      // all value expand should be done as value function/plugin in cssobj-core >=0.5.0
+      ret += node.inline ? k : dashify(prefixProp(k, true)) + ':' + v + ';'
     }
     return ret
   })
@@ -511,9 +569,9 @@ function getBodyCss (node) {
 
 // vendor prefix support
 // borrowed from jQuery 1.12
-var	cssPrefixes = [ "Webkit", "Moz", "ms", "O" ]
+var cssPrefixes = [ "Webkit", "Moz", "ms", "O" ]
 var cssPrefixesReg = new RegExp('^(?:' + cssPrefixes.join('|') + ')[A-Z]')
-var	emptyStyle = document.createElement( "div" ).style
+var emptyStyle = document.createElement( "div" ).style
 var testProp  = function (list) {
   for(var i = list.length; i--;) {
     if(list[i] in emptyStyle) return list[i]
@@ -521,10 +579,12 @@ var testProp  = function (list) {
 }
 
 // cache cssProps
-var	cssProps = {
+var cssProps = {
   // normalize float css property
-  'float': testProp(['styleFloat', 'cssFloat', 'float']),
-  'flex': testProp(['WebkitBoxFlex', 'msFlex', 'WebkitFlex', 'flex'])
+  'float': testProp(['styleFloat', 'cssFloat', 'float'])
+
+  // flex expand feature will move into plugin-flexbox
+  // 'flex': testProp(['WebkitBoxFlex', 'msFlex', 'WebkitFlex', 'flex'])
 }
 
 
@@ -532,10 +592,11 @@ var	cssProps = {
 function vendorPropName( name ) {
 
   // shortcut for names that are not vendor prefixed
+  // when name already have '-' as first char, don't prefix
   if ( name in emptyStyle ) return
 
   // check for vendor prefixed names
-  var preName, capName = name.charAt( 0 ).toUpperCase() + name.slice( 1 )
+  var preName, capName = capitalize(name)
   var i = cssPrefixes.length
 
   while ( i-- ) {
@@ -817,6 +878,8 @@ function cssobj_plugin_post_cssom (option) {
   }
 }
 
+// cssobj plugin
+
 var reClass = /:global\s*\(((?:\s*\.[A-Za-z0-9_-]+\s*)+)\)|(\.)([!A-Za-z0-9_-]+)/g
 
 function cssobj_plugin_selector_localize(prefix, localNames) {
@@ -857,7 +920,9 @@ function cssobj_plugin_selector_localize(prefix, localNames) {
   }
 }
 
-function cssobj(obj, option, initData) {
+// cssobj is simply an intergration for cssobj-core, cssom
+
+function cssobj (obj, option, initData) {
   option = option||{}
   option.plugins = option.plugins||{}
 
@@ -869,7 +934,9 @@ function cssobj(obj, option, initData) {
   arrayKV(option, 'plugins', cssobj_plugin_post_cssom(option.cssom))
   arrayKV(option, 'plugins', cssobj_plugin_selector_localize(option.local.prefix, option.local.localNames))
 
-  return cssobj$1(option)(obj, initData)
+  return cssobj$2(option)(obj, initData)
 }
+
+cssobj.version = '0.5.0'
 
 export default cssobj;

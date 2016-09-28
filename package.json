@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "0.4.7",
+  "version": "0.5.0",
   "description": "CSS Rules from JS, change rules dynamically, CSS in JS solution, CSSOM from js, getting and setting CSS stylesheet rules, css modules, auto prefixer, media query for old browsers. CSS in React/Angular/Vue/Ember/Mithril/jQuery",
   "keywords": [
     "cssom",
@@ -15,7 +15,8 @@
   "scripts": {
     "test": "cd test && mocha",
     "report": "cd dist && gzip < cssobj.min.js > cssobj.min.gz && ls -lh && rm -f *.gz",
-    "make": "rollup -c && uglifyjs dist/cssobj.iife.js -cm -o dist/cssobj.min.js && gulp bump"
+    "build": "git rev-parse HEAD > .commithash && rollup -c && uglifyjs dist/cssobj.iife.js -cm -o dist/cssobj.min.js",
+    "make": "npm run build && gulp bump"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
     "gulp": "^3.9.1",
     "gulp-bump": "^2.2.0",
     "mocha": "^2.5.3",
+    "rollup-plugin-replace": "^1.1.1",
     "rollup-watch": "^2.5.0",
     "walk": "^2.3.9"
   }

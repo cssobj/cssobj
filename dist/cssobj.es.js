@@ -1,7 +1,7 @@
 /*
   cssobj v0.5.0
-  Wed Sep 28 2016 21:30:52 GMT+0800 (HKT)
-  commit 657d2894e4132de4fe00c22834b785302241abed
+  Thu Sep 29 2016 17:59:24 GMT+0800 (HKT)
+  commit b5486346b997cd34a7ba868c46641b6b85a37915
 
 
   https://github.com/cssobj/cssobj
@@ -356,9 +356,12 @@ function getSel(node, result) {
 function parseProp (node, d, key, result, propKey) {
   var prevVal = node.prevVal
   var lastVal = node.lastVal
-  if(!isNumeric(key)) propKey = key
-  if(!propKey) return
-  var prev = prevVal && prevVal[propKey]
+
+  // the prop name get from object key or candidate key
+  var propName = isNumeric(key) ? propKey : key
+  if(!propName) return
+
+  var prev = prevVal && prevVal[propName]
 
   ![].concat(d[key]).forEach(function (v) {
     // pass lastVal if it's function
@@ -366,33 +369,33 @@ function parseProp (node, d, key, result, propKey) {
       ? v(prev, node, result)
       : v
 
-    var val = applyPlugins(result.options, 'value', rawVal, propKey, node, result)
+    var val = applyPlugins(result.options, 'value', rawVal, propName, node, result, propKey)
 
     // check and merge only format as Object || Array of Object, other format not accepted!
     if (isIterable(val)) {
       for (var k in val) {
-        if (val.hasOwnProperty(k)) parseProp(node, val, k, result, propKey)
+        if (val.hasOwnProperty(k)) parseProp(node, val, k, result, propName)
       }
     } else {
-      node.rawVal[propKey] = rawVal
+      node.rawVal[propName] = rawVal
       if (isValidCSSValue(val)) {
         // only valid val can enter node.prop and lastVal
         // push every val to prop
         arrayKV(
           node.prop,
-          propKey,
+          propName,
           val,
           true
         )
-        prev = lastVal[propKey] = val
+        prev = lastVal[propName] = val
       }
     }
   })
   if (prevVal) {
-    if (!(propKey in prevVal)) {
-      arrayKV(node.diff, 'added', propKey)
-    } else if (prevVal[propKey] != lastVal[propKey]) {
-      arrayKV(node.diff, 'changed', propKey)
+    if (!(propName in prevVal)) {
+      arrayKV(node.diff, 'added', propName)
+    } else if (prevVal[propName] != lastVal[propName]) {
+      arrayKV(node.diff, 'changed', propName)
     }
   }
 }

@@ -1,7 +1,7 @@
 /*
-  cssobj v0.5.0
-  Thu Sep 29 2016 17:59:24 GMT+0800 (HKT)
-  commit b5486346b997cd34a7ba868c46641b6b85a37915
+  cssobj v0.5.2
+  Thu Sep 29 2016 18:26:09 GMT+0800 (HKT)
+  commit 6dbf951ec69892e099b670b651c4c6ad4f52e0e8
 
 
   https://github.com/cssobj/cssobj
@@ -943,7 +943,7 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.5.0'
+cssobj.version = '0.5.2'
 
 return cssobj;
 

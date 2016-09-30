@@ -1,7 +1,7 @@
 /*
-  cssobj v0.5.2
-  Thu Sep 29 2016 18:26:09 GMT+0800 (HKT)
-  commit 6dbf951ec69892e099b670b651c4c6ad4f52e0e8
+  cssobj v0.5.3
+  Fri Sep 30 2016 22:39:17 GMT+0800 (HKT)
+  commit 06d601e144e5e92ab7be045bb37a94ecf3b1d96d
 
 
   https://github.com/cssobj/cssobj
@@ -445,7 +445,7 @@ function applyOrder (opt) {
 function cssobj$2 (options) {
 
   options = defaults(options, {
-    plugins: {}
+    plugins: []
   })
 
   return function (obj, initData) {
@@ -929,20 +929,22 @@ function cssobj_plugin_selector_localize(prefix, localNames) {
 
 function cssobj (obj, option, initData) {
   option = option||{}
-  option.plugins = option.plugins||{}
 
   var local = option.local
   option.local = !local
     ? {prefix:''}
   : local && typeof local==='object' ? local : {}
 
-  arrayKV(option, 'plugins', cssobj_plugin_post_cssom(option.cssom))
-  arrayKV(option, 'plugins', cssobj_plugin_selector_localize(option.local.prefix, option.local.localNames))
+  option.plugins = [].concat(
+    option.plugins||[],
+    cssobj_plugin_selector_localize(option.local.prefix, option.local.localNames),
+    cssobj_plugin_post_cssom(option.cssom)
+  )
 
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.5.2'
+cssobj.version = '0.5.3'
 
 return cssobj;
 

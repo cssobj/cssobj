@@ -6,3 +6,5 @@ before_install:
   - sudo mv phantomjs /usr/local/phantomjs/bin/phantomjs
 node_js:
   - 6
+script:
+  - cd test && mocha

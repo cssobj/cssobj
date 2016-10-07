@@ -1,7 +1,7 @@
 /*
-  cssobj v0.5.3
-  Fri Sep 30 2016 22:39:17 GMT+0800 (HKT)
-  commit 06d601e144e5e92ab7be045bb37a94ecf3b1d96d
+  cssobj v0.5.4
+  Fri Oct 07 2016 09:23:47 GMT+0800 (HKT)
+  commit b95902176997cebfef6c417556b61bcceaee917f
 
 
   https://github.com/cssobj/cssobj
@@ -20,13 +20,7 @@ function isNumeric(n) {
 
 
 // set default option (not deeply)
-function defaults(options, defaultOption) {
-  options = options || {}
-  for (var i in defaultOption) {
-    if (!(i in options)) options[i] = defaultOption[i]
-  }
-  return options
-}
+
 
 // convert js prop into css prop (dashified)
 function dashify(str) {
@@ -112,16 +106,6 @@ function isValidCSSValue (val) {
   // falsy: '', NaN, Infinity, [], {}
   return typeof val=='string' && val || typeof val=='number' && isFinite(val)
 }
-
-/* lib cssobj */
-/** IE ES3 need below polyfills:
- * Array.prototype.forEach
- * Array.prototype.indexOf
- * Array.prototype.map
- * Array.prototype.some
- * Array.prototype.reduce
- * Object.keys
- **/
 
 // using var as iteral to help optimize
 var KEY_ID = '$id'
@@ -379,7 +363,12 @@ function parseProp (node, d, key, result, propKey) {
         if (val.hasOwnProperty(k)) parseProp(node, val, k, result, propName)
       }
     } else {
-      node.rawVal[propName] = rawVal
+      arrayKV(
+        node.rawVal,
+        propName,
+        rawVal,
+        true
+      )
       if (isValidCSSValue(val)) {
         // only valid val can enter node.prop and lastVal
         // push every val to prop
@@ -444,9 +433,13 @@ function applyOrder (opt) {
 
 function cssobj$2 (options) {
 
-  options = defaults(options, {
-    plugins: []
-  })
+  // without using helper function below, to save size
+  // options = defaults(options, {
+  //   plugins: []
+  // })
+
+  options = options || {}
+  options.plugins = options.plugins || []
 
   return function (obj, initData) {
     var updater = function (data) {
@@ -944,6 +937,6 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.5.3'
+cssobj.version = '0.5.4'
 
 module.exports = cssobj;

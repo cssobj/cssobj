@@ -7,4 +7,5 @@ before_install:
 node_js:
   - 6
 script:
+  - npm install -g mocha
   - cd test && mocha

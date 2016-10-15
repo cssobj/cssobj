@@ -1,16 +1,16 @@
 /*
-  cssobj v0.5.4
-  Fri Oct 07 2016 10:53:57 GMT+0800 (HKT)
-  commit 1c3df316c7876dc0f572d72b7b39eb137f3e6fe3
+  cssobj v0.6.0
+  Sat Oct 15 2016 19:19:27 GMT+0800 (HKT)
+  commit 57569566b4a528b8543021a03d245e8d2acec4c9
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@0.5.5
-    81cf859b6799d63447704c8a5551366e92ff1c61
-  - cssobj-plugin-cssom@2.1.2
-    74f6085021896840a0063882d886eeb4b388e65b
+  - cssobj-core@0.6.0
+    cade87a587a5b6cd3b6ead69934eb38e371f50c3
+  - cssobj-plugin-cssom@2.1.5
+    48bd712baac33d8d59b8bfe647a262de2820fdb5
   - cssobj-plugin-localize@2.0.0
     312ea4e5fdbc1dff201e42fd052d1dfe3d938a4e
 */
@@ -22,10 +22,18 @@ function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n)
 }
 
-
+function own(o, k) {
+  return {}.hasOwnProperty.call(o, k)
+}
 
 // set default option (not deeply)
-
+function defaults(options, defaultOption) {
+  options = options || {}
+  for (var i in defaultOption) {
+    if (own(defaultOption, i) && !(i in options)) options[i] = defaultOption[i]
+  }
+  return options
+}
 
 // convert js prop into css prop (dashified)
 function dashify(str) {
@@ -57,7 +65,11 @@ var random = (function () {
 // extend obj from source, if it's no key in obj, create one
 function extendObj (obj, key, source) {
   obj[key] = obj[key] || {}
-  for (var k in source) obj[key][k] = source[k]
+  for(var args = arguments, i = 2; i < args.length; i++) {
+    source = args[i]
+    for (var k in source)
+      if (own(source, k)) obj[key][k] = source[k]
+  }
   return obj[key]
 }
 
@@ -132,6 +144,11 @@ function isIterable (v) {
   return type.call(v) == OBJECT || type.call(v) == ARRAY
 }
 
+// check if it's function
+function isFunction (v) {
+  return typeof v == 'function'
+}
+
 // regexp constants
 // @page rule: CSSOM:
 //   IE returned: not implemented error
@@ -178,12 +195,14 @@ function parseObj (d, result, node, init) {
       nodes.push(n)
     }
     return nodes
-  }
-  if (type.call(d) == OBJECT) {
+  } else {
+    // it's no need to check (type.call(d) == OBJECT)
+    // isIterable will filter only ARRAY/OBJECT
+    // other types will goto parseProp function
     var prevVal = node.prevVal = node.lastVal
     // at first stage check $test
     if (KEY_TEST in d) {
-      var test = typeof d[KEY_TEST] == 'function' ? d[KEY_TEST](!node.disabled, node, result) : d[KEY_TEST]
+      var test = isFunction(d[KEY_TEST]) ? d[KEY_TEST](!node.disabled, node, result) : d[KEY_TEST]
       // if test false, remove node completely
       // if it's return function, going to stage 2 where all prop rendered
       if(!test) {
@@ -222,7 +241,7 @@ function parseObj (d, result, node, init) {
       // here $key start with $ is special
       // k.charAt(0) == '$' ... but the core will calc it into node.
       // Plugins should take $ with care and mark as a special case. e.g. ignore it
-      if (!d.hasOwnProperty(k)) continue
+      if (!own(d, k)) continue
       if (!isIterable(d[k]) || type.call(d[k]) == ARRAY && !isIterable(d[k][0])) {
 
         // it's inline at-rule: @import etc.
@@ -275,7 +294,6 @@ function parseObj (d, result, node, init) {
     return node
   }
 
-  return node
 }
 
 function getSel(node, result) {
@@ -350,13 +368,17 @@ function parseProp (node, d, key, result, propKey) {
 
   // the prop name get from object key or candidate key
   var propName = isNumeric(key) ? propKey : key
-  if(!propName) return
+
+  // NEXT: propName can be changed by user
+  // now it's not used, since propName ensure exists
+  // corner case: propKey==='' ?? below line will do wrong!!
+  // if(!propName) return
 
   var prev = prevVal && prevVal[propName]
 
   ![].concat(d[key]).forEach(function (v) {
     // pass lastVal if it's function
-    var rawVal = typeof v == 'function'
+    var rawVal = isFunction(v)
       ? v(prev, node, result)
       : v
 
@@ -365,7 +387,7 @@ function parseProp (node, d, key, result, propKey) {
     // check and merge only format as Object || Array of Object, other format not accepted!
     if (isIterable(val)) {
       for (var k in val) {
-        if (val.hasOwnProperty(k)) parseProp(node, val, k, result, propName)
+        if (own(val, k)) parseProp(node, val, k, result, propName)
       }
     } else {
       arrayKV(
@@ -416,7 +438,8 @@ function combinePath (array, prev, sep, rep) {
 function applyPlugins (opt, type) {
   var args = [].slice.call(arguments, 2)
   var plugin = opt.plugins
-  return !plugin ? args[0] : [].concat(plugin).reduce(
+  // plugin is always Array, so here we don't check it
+  return [].concat(plugin).reduce(
     function (pre, plugin) { return plugin[type] ? plugin[type].apply(null, [pre].concat(args)) : pre },
     args.shift()
   )
@@ -438,30 +461,34 @@ function applyOrder (opt) {
 
 function cssobj$2 (options) {
 
-  // without using helper function below, to save size
-  // options = defaults(options, {
-  //   plugins: []
-  // })
-
-  options = options || {}
-  options.plugins = options.plugins || []
+  options = defaults(options, {
+    plugins: [],
+    intro: []
+  })
 
   return function (obj, initData) {
     var updater = function (data) {
       if (arguments.length) result.data = data || {}
 
-      result.root = parseObj(result.obj || {}, result, result.root, true)
+      result.root = parseObj(extendObj({}, '', result.intro, result.obj), result, result.root, true)
       applyOrder(result)
       result = applyPlugins(options, 'post', result)
-      typeof options.onUpdate=='function' && options.onUpdate(result)
+      isFunction(options.onUpdate) && options.onUpdate(result)
       return result
     }
 
     var result = {
-      obj: obj,
+      obj: obj||{},
+      intro: {},
       update: updater,
       options: options
     }
+
+    ![].concat(options.intro).forEach(
+      function(v) {
+        extendObj(result, 'intro', isFunction(v) ? v(result) : v)
+      }
+    )
 
     updater(initData)
 
@@ -557,13 +584,7 @@ function getBodyCss (node) {
     for (var v, ret='', i = prop[k].length; i--;) {
       v = prop[k][i]
 
-      /** Below feature moved into plugin-flexbox **/
-      // display:flex expand for vendor prefix
-      // var valueArr = k=='display' && v=='flex'
-      //   ? ['-webkit-box', '-ms-flexbox', '-webkit-flex', 'flex']
-      //   : [v]
-
-      // all value expand should be done as value function/plugin in cssobj-core >=0.5.0
+      // value expand & merge should be done as value function/plugin in cssobj-core >=0.5.0
       ret += node.inline ? k : dashify(prefixProp(k, true)) + ':' + v + ';'
     }
     return ret
@@ -581,13 +602,16 @@ var testProp  = function (list) {
   }
 }
 
-// cache cssProps
+//
+/**
+ * cache cssProps
+ * the value is JS format, will be used:
+ * 1. diff & patch properties for CSSOM
+ * 2. vendorPrefix property name checking
+ */
 var cssProps = {
   // normalize float css property
   'float': testProp(['styleFloat', 'cssFloat', 'float'])
-
-  // flex expand feature will move into plugin-flexbox
-  // 'flex': testProp(['WebkitBoxFlex', 'msFlex', 'WebkitFlex', 'flex'])
 }
 
 
@@ -596,7 +620,7 @@ function vendorPropName( name ) {
 
   // shortcut for names that are not vendor prefixed
   // when name already have '-' as first char, don't prefix
-  if ( name in emptyStyle ) return
+  if ( name in emptyStyle || name.charAt(0) == '-') return
 
   // check for vendor prefixed names
   var preName, capName = capitalize(name)
@@ -624,6 +648,9 @@ function prefixProp (name, inCSS) {
 
 function cssobj_plugin_post_cssom (option) {
   option = option || {}
+
+  // prefixes array can change the global default vendor prefixes
+  if(option.prefixes) cssPrefixes = option.prefixes
 
   var id = option.name
       ? (option.name+'').replace(/[^a-zA-Z0-9$_-]/g, '')
@@ -942,6 +969,6 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.5.4'
+cssobj.version = '0.6.0'
 
 export default cssobj;

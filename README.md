@@ -66,14 +66,22 @@ Then all `div` will have css **color: blue;**. No jQuery, no wait for **DOM**, n
 
 **npm**
 
-``` javascript
-npm install cssobj
+``` bash
+npm install cssobj  # the lib
+
+npm install -g cssobj-converter  # the cli (optional)
+
+# Use the cli:
+cssobj abc.css -o abc.js # css -> js
+cssobj ./css/            # convert the whole folder
 ```
+
+Recommanded to install the [cli converter](https://github.com/cssobj/cssobj-converter) above!
 
 **bower**
 
-``` javascript
-bower install cssobj
+``` bash
+bower install cssobj  # the lib
 ```
 
 ## Quick Start:

@@ -1,14 +1,14 @@
 /*
-  cssobj v0.6.1
-  Mon Oct 17 2016 10:35:57 GMT+0800 (HKT)
-  commit 451d0f604623b33f14456b73c21e84fefbd687bf
+  cssobj v0.6.2
+  Sun Oct 23 2016 16:50:38 GMT+0800 (HKT)
+  commit 97c3f6cf71980a8cca34e965b1dd736e01b4009a
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@0.6.1
-    edf2b2f5be3a285b17bc3c86dd33c75b8b900889
+  - cssobj-core@0.6.4
+    1a6d428bb1a5b2efaf4b7dab2bc5491c6c6b9fd1
   - cssobj-plugin-cssom@2.1.5
     48bd712baac33d8d59b8bfe647a262de2820fdb5
   - cssobj-plugin-localize@2.0.0
@@ -158,7 +158,7 @@ function isFunction (v) {
 //   https://developer.mozilla.org/en-US/docs/Web/API/CSSGroupingRule
 //   CSSPageRule is listed as derived from CSSGroupingRule, but not implemented yet.
 //   Here added @page as GroupRule, but plugin should take care of this.
-var reGroupRule = /^@(media|document|supports|page|keyframes)/i
+var reGroupRule = /^@(media|document|supports|page|[\w-]*keyframes)/i
 var reAtRule = /^\s*@/i
 
 /**
@@ -190,6 +190,10 @@ function parseObj (d, result, node, init) {
 
   if (type.call(d) == ARRAY) {
     var nodes = []
+    /* for array type, each children have a parent that not on the virtual tree,
+       see test case of @media-array for example, the array node obj=Array, but have node.selPart(no selText)
+       So have to set the right node.at/node.type from the node.key, to get right selText for children */
+    node.at = reAtRule.exec(node.key)
     for(var i = 0; i < d.length; i++) {
       var prev = node[i]
       var n = parseObj(d[i], result, node[i] || {parent: node, src: d, parentNode: nodes, index: i})
@@ -323,9 +327,9 @@ function getSel(node, result) {
       // only media allow nested and join, and have node.selPart
       if (isMedia) node.selPart = splitComma(sel.replace(reGroupRule, ''))
 
-      // combinePath is array, '' + array instead of array.join(',')
+      // combinePath is array, 'str' + array instead of array.join(',')
       node.groupText = isMedia
-        ? '@' + node.at + combinePath(getParents(ruleNode, function (v) {
+        ? '@' + node.at + combinePath(getParents(node, function (v) {
           return v.type == TYPE_GROUP
         }, 'selPart', 'selChild', 'selParent'), '', ' and')
       : sel
@@ -420,20 +424,20 @@ function parseProp (node, d, key, result, propKey) {
   }
 }
 
-function combinePath (array, prev, sep, rep) {
-  return !array.length ? prev : array[0].reduce(function (result, value) {
-    var str = prev ? prev + sep : prev
-    if (rep) {
+function combinePath (array, initialString, seperator, replaceAmpersand) {
+  return !array.length ? initialString : array[0].reduce(function (result, value) {
+    var str = initialString ? initialString + seperator : initialString
+    if (replaceAmpersand) {
       var isReplace = false
       var sugar = strSugar(value, '&', function (z) {
         isReplace = true
-        return prev
+        return initialString
       })
       str = isReplace ? sugar : str + sugar
     } else {
       str += value
     }
-    return result.concat(combinePath(array.slice(1), str, sep, rep))
+    return result.concat(combinePath(array.slice(1), str, seperator, replaceAmpersand))
   }, [])
 }
 
@@ -971,6 +975,6 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.6.1'
+cssobj.version = '0.6.2'
 
 module.exports = cssobj;

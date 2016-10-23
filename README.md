@@ -1,7 +1,7 @@
 <img align="right" src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="0" height="150" border="0"><img align="right" title="cssobj logo" alt="cssobj logo" align="bottom" src="https://avatars0.githubusercontent.com/u/20465580?v=3&s=132" border="30" hspace="0" vspace="20">
 # CSSOBJ
 
-[![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj) [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](#)
+[![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj) [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![npm](https://img.shields.io/npm/v/cssobj.svg "Version")](https://www.npmjs.com/package/cssobj) [![npm](https://img.shields.io/npm/l/cssobj.svg "License")](#)
 
 
 CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and CSS rules from js, features:
@@ -309,11 +309,12 @@ Type: **{object}**
 
 name | type | default | description
 -----|-----|-----------|---------------
+intros | Array | Objects or functions to return as preset css objects, which will combined into user passed source object.
 local | Boolean or Object | false | `true` to localize class names, using `options.local.prefix` as prefix.
 local.prefix | String | random string | prefix for localized names, will using `random()` function in [cssobj-helper](https://github.com/cssobj/cssobj-helper) if not specified or as falsy.
 local.localNames | Object | { } | predefined `key - val` to control each class name when localized.
 cssom | Object | { } | `cssom-plugin` option, supported key: `frame` as iframe DOM, `name` of style id, `attrs` for style tag.
-plugins | Object | { } | supported plugin is `post`, `value`, `selector`, each must be function or array of functions.
+plugins | Array | Functions to add different feature, for `post`, `value`, `selector`, see [plugins](#plugins) section.
 
 #### *RETURN*
 
@@ -326,6 +327,7 @@ The return value of `cssobj()` and `result.update()`, it's a js object with belo
 
 name | type | description
 -----|-----|-----------
+intro | Object | The source js object merged from `option.intros` array.
 obj | Object | The source js object for `cssobj()` function call.
 root | Object | Virtual CSSOM object parsed from `obj`, mainly used for value functions and plugins.
 nodes | Array | Array of virtual css nodes, for the convinence of `filter` or `map` etc.

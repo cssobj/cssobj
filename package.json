@@ -12,6 +12,12 @@
   ],
   "main": "dist/cssobj.cjs.js",
   "jsnext:main": "dist/cssobj.es.js",
+  "files": [
+    "dist",
+    "docs",
+    "*.ts",
+    "*.json"
+  ],
   "scripts": {
     "test": "npm run build && cd test && mocha",
     "report": "cd dist && gzip < cssobj.min.js > cssobj.min.gz && ls -lh && rm -f *.gz",

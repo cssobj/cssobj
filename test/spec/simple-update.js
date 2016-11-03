@@ -37,3 +37,9 @@ result.update()
 
 log(css(result), 'file:./simple-update.css')
 
+div.color = 'blue!important'
+
+result.update()
+
+log(css(result), 'file:./simple-update-important.css')
+

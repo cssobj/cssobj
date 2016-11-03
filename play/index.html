@@ -41,6 +41,8 @@
       &nbsp;Input Object:
     <textarea id="obj">
       {
+      '#size': {color: 'green!important', fontSize:'12px'},
+      'body #size': {color: 'red'},
       '@import ': 'url(test3.css)',
       '@import': ['url(test2.css)','url(test.css)'],
       '@namespace': 'svg url(http://www.w3.org/2000/svg)',
@@ -51,7 +53,7 @@
       '@keyframes anim1':
 {
 from: {top:'0px'},
-to: {top:'200px'}
+to: {top:'200px!important'}
       },
 '@page': {
       margin: '10%',
@@ -69,7 +71,7 @@ to: {top:'200px'}
     fontSize: 32,
     margin: 0,
     padding: 0,
-    'span,p':{color:'red', fontSize:22}
+    'span,p':{color:'red!important', fontSize:22}
   },
   '@media (min-width: 400px)': {
     '@media (max-width: 1600px)': {

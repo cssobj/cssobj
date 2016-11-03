@@ -1,7 +1,7 @@
 /*
-  cssobj v0.6.2
-  Sun Oct 23 2016 16:50:38 GMT+0800 (HKT)
-  commit 97c3f6cf71980a8cca34e965b1dd736e01b4009a
+  cssobj v0.6.3
+  Thu Nov 03 2016 19:00:06 GMT+0800 (HKT)
+  commit 9d68892fcd347235ccd8df6a5f7bf7c23caa1c9a
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -9,8 +9,8 @@
   Components version info:
   - cssobj-core@0.6.4
     1a6d428bb1a5b2efaf4b7dab2bc5491c6c6b9fd1
-  - cssobj-plugin-cssom@2.1.5
-    48bd712baac33d8d59b8bfe647a262de2820fdb5
+  - cssobj-plugin-cssom@2.1.6
+    ec55e74a8343f6114f60c1df020da0e0a4e96e74
   - cssobj-plugin-localize@2.0.0
     312ea4e5fdbc1dff201e42fd052d1dfe3d938a4e
 */
@@ -639,7 +639,7 @@ function vendorPropName( name ) {
 }
 
 // apply prop to get right vendor prefix
-// cap=0 for no cap; cap=1 for capitalize prefix
+// inCSS false=camelcase; true=dashed
 function prefixProp (name, inCSS) {
   // $prop will skip
   if(name.charAt(0)=='$') return ''
@@ -651,6 +651,35 @@ function prefixProp (name, inCSS) {
       : retName
 }
 
+/**
+ * Get value and important flag from value str
+ * @param {CSSStyleRule} rule css style rule object
+ * @param {string} prop prop to set
+ * @param {string} val value string
+ */
+function setCSSProperty (styleObj, prop, val) {
+  var value
+  var important = /(.*)!(important)\s*$/i.exec(val)
+  var propCamel = prefixProp(prop)
+  var propDash = prefixProp(prop, true)
+  if(important) {
+    value = important[1]
+    important = important[2]
+    if(styleObj.setProperty) styleObj.setProperty(propDash, value, important)
+    else {
+      // for old IE, cssText is writable, and below is valid for contain !important
+      // don't use styleObj.setAttribute since it's not set important
+      // should do: delete styleObj[propCamel], but not affect result
+
+      // only work on <= IE8: s.style['FONT-SIZE'] = '12px!important'
+      styleObj[propDash.toUpperCase()] = val
+      // refresh cssText, the whole rule!
+      styleObj.cssText = styleObj.cssText
+    }
+  } else {
+    styleObj[propCamel] = val
+  }
+}
 
 function cssobj_plugin_post_cssom (option) {
   option = option || {}
@@ -879,19 +908,17 @@ function cssobj_plugin_post_cssom (option) {
 
           // added have same action as changed, can be merged... just for clarity
           diff.added && diff.added.forEach(function (v) {
-            var prefixV = prefixProp(v)
-            prefixV && om && om.forEach(function (rule) {
+            v && om && om.forEach(function (rule) {
               try{
-                rule.style[prefixV] = node.prop[v][0]
+                setCSSProperty(rule.style, v, node.prop[v][0])
               }catch(e){}
             })
           })
 
           diff.changed && diff.changed.forEach(function (v) {
-            var prefixV = prefixProp(v)
-            prefixV && om && om.forEach(function (rule) {
+            v && om && om.forEach(function (rule) {
               try{
-                rule.style[prefixV] = node.prop[v][0]
+                setCSSProperty(rule.style, v, node.prop[v][0])
               }catch(e){}
             })
           })
@@ -975,6 +1002,6 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.6.2'
+cssobj.version = '0.6.3'
 
 module.exports = cssobj;

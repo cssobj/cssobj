@@ -1,7 +1,7 @@
 /*
-  cssobj v0.6.3
-  Thu Nov 03 2016 19:00:06 GMT+0800 (HKT)
-  commit 9d68892fcd347235ccd8df6a5f7bf7c23caa1c9a
+  cssobj v0.6.5
+  Sun Nov 06 2016 07:27:20 GMT+0800 (HKT)
+  commit 7a9f8bfad3429435cb94117c30f695d0479b0aab
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -657,7 +657,7 @@ function prefixProp (name, inCSS) {
  */
 function setCSSProperty (styleObj, prop, val) {
   var value
-  var important = /(.*)!(important)\s*$/i.exec(val)
+  var important = /^(.*)!(important)\s*$/i.exec(val)
   var propCamel = prefixProp(prop)
   var propDash = prefixProp(prop, true)
   if(important) {
@@ -1000,6 +1000,6 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.6.3'
+cssobj.version = '0.6.5'
 
 export default cssobj;

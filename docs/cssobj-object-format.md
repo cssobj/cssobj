@@ -6,25 +6,25 @@ The object format for **cssobj** is as below:
 
 ## 2. Object **key** as **CSS selector** / **CSS property** / **directive**
 
-  - If key start with **$**, it's cssobj **directive**, never rendered
-  - If value is **object like** (`Array|Object`), key will act as **CSS selector**
-  - If value is **non-object** (`String|Number|Function`, other types ignored), key will act as **CSS property**
+ 1. If key start with **$**, it's cssobj **directive**, never rendered
+ 2. If value is **object like** (`Array|Object`), key will act as **CSS selector**
+ 3. If value is **non-object** (`String|Number|Function`, other types ignored), key will act as **CSS property**
 
 ## 3. **CSS selector** rule
 
-  - Normal object **key** will be combined with **parent key** with 1 space.
+ - 1 Normal object **key** will be combined with **parent key** with 1 space.
 
 `{ ul: { 'li:active': {} } }` => `'ul li:active'`
 
-  - Any `'&'` will be replaced by parent selector; <kbd>\\&</kbd> will be escaped as `'&'`.
+ - 2 Any `'&'` will be replaced by parent selector; <kbd>\\&</kbd> will be escaped as `'&'`.
 
 `{li: { '&[title="x\\&y"]': {} } }` => `'li li[title="x&y"]'`
 
-  - `','` will be combined with **parent key** seperatedly.
+ - 3 `','` will be combined with **parent key** seperatedly.
 
 `{li: { 'p,span': {} } }` => `'li p, li span'`
 
-  - If the key start with `@media`, then:
+ - 4 If the key start with `@media`, then:
 
 ### all `@media` will be escaped as **top level** rule
 
@@ -74,15 +74,30 @@ will be:
 
 ## 4. CSS property and value rule
 
-  - If value is not **object like** (`Array|Object`), then the **key** will act as **CSS property**
+  - 1 If value is not **object like** (`Array|Object`), then the **key** will act as **CSS property**
 
-  - The property key is **camelCased**
+  - 2 The property key is **camelCased**
 
 `{p: { fontSize : '16px' } }` => `p {font-size: 16px}`
 
-  - Valid value type is `String` and `Number`, and will rendered **AS IS**
+This keep cssobj work as tested, think below
 
-  - If value type is `Array`, and it's first value is `String|Number`, then [the value will expanded](properties-with-multiple-values.md)
+```javascript
+// avoid using below:
+obj.p['font-size'] = '18px'
+
+// perfered way:
+obj.p.fontSize = '18px'
+
+// float is still float:
+obj.p.float = 'left'
+```
+
+See [List of CSS Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference), except for, using `float` instead of `cssFloat`.
+
+  - 3 Valid literal value type is `String`, `Number`, and will rendered **AS IS**. Also accept [Function Value](#s4-5)
+
+  - 4 If value type is `Array`, and it's first value is `String|Number`, then [the value will expanded](properties-with-multiple-values.md)
 
 ```javascript
 {
@@ -103,15 +118,21 @@ will be
 }
 ```
 
-  - If value type is `Function`, then the function will be evaluated with signature: `function(prev, node, result){}`
+  - 5 <a name="s4-5"></a>If value type is `Function`, then the function will be evaluated with signature: `function(prev, node, result){}`
 
 `{p: { fontSize : function(prev, node, result){return '16px'} } }` => `p {font-size: 16px}`
+
+If the function return an **Object**, it will be merged into current css props.
+
+`{p: { fontSize : function(prev, node, result){return {color: 'red', border:0} } } }` => `p { color: red; border: 0; }`
+
+See the related plugin: [cssobj-plugin-replace](https://github.com/cssobj/cssobj-plugin-replace)
 
 ## 5. CSSOBJ Directives
 
 A **directive** start with <kbd>$</kbd> char, and **never be rendered**, native support below **directives**:
 
-  - `$id`: will populate the **cssobj v-node** as reference to `result.ref` object.
+ - 1 `$id`: will populate the **cssobj v-node** as reference to `result.ref` object.
 
 ```javascript
 var obj={p: {span: { $id:'abc'} }}
@@ -120,7 +141,7 @@ var result = cssobj(obj)
 // result.ref.abc.obj === { $id:'abc'}
 ```
 
-  - `$order`: non-zero value will change the object render order
+ - 2 `$order`: non-zero value will change the object render order
 
 ```javascript
 var obj={p: {
@@ -131,7 +152,7 @@ var result = cssobj(obj)
 // span node will be evaluated first, then em node; order is B=>A
 ```
 
-  - `$test`: A `boolean` value or `function` to determine whether the node will be rendered.
+ - 3 `$test`: A `boolean` value or `function` to determine whether the node will be rendered.
 
 ```javascript
 var obj={p: {
@@ -149,4 +170,8 @@ p span { color: 'red' }
 
 **p em** never render.
 
-### more directives can be extended with **plugin**
+### More directives can be extended with **plugin**
+
+[cssobj-plugin-extend](https://github.com/cssobj/cssobj-plugin-extend)
+
+

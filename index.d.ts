@@ -11,6 +11,7 @@ declare namespace CssObj {
         frame?: any,
         prefixes?: string[],
         name?: string,
+        append?: boolean,
         attrs?: Object,
         noMedia?: boolean
     }

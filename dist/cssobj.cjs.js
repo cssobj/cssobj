@@ -1,7 +1,7 @@
 /*
-  cssobj v0.6.5
-  Sun Nov 06 2016 07:27:20 GMT+0800 (HKT)
-  commit 7a9f8bfad3429435cb94117c30f695d0479b0aab
+  cssobj v0.6.6
+  Wed Nov 09 2016 09:59:29 GMT+0800 (HKT)
+  commit 9bf5d37a0b032994bb4a023cfa84688d05027357
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -9,10 +9,10 @@
   Components version info:
   - cssobj-core@0.6.4
     1a6d428bb1a5b2efaf4b7dab2bc5491c6c6b9fd1
-  - cssobj-plugin-cssom@2.1.6
-    ec55e74a8343f6114f60c1df020da0e0a4e96e74
+  - cssobj-plugin-cssom@2.1.10
+    3e0c528ebc9f4918aa3f22ab1356cfe5e95dce05
   - cssobj-plugin-localize@2.0.0
-    312ea4e5fdbc1dff201e42fd052d1dfe3d938a4e
+    f6ce4b30435764758f6339085bc9932e798eb573
 */
 
 'use strict';
@@ -506,11 +506,15 @@ function cssobj$2 (options) {
 
 function createDOM (rootDoc, id, option) {
   var el = rootDoc.getElementById(id)
-  if(el) return el
+  var head = rootDoc.getElementsByTagName('head')[0]
+  if(el) {
+    if(option.append) return el
+    el.parentNode && el.parentNode.removeChild(el)
+  }
   el = rootDoc.createElement('style')
-  rootDoc.getElementsByTagName('head')[0].appendChild(el)
+  head.appendChild(el)
   el.setAttribute('id', id)
-  if (option && typeof option == 'object' && option.attrs)
+  if (option.attrs)
     for (var i in option.attrs) {
       el.setAttribute(i, option.attrs[i])
     }
@@ -1002,6 +1006,6 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.6.5'
+cssobj.version = '0.6.6'
 
 module.exports = cssobj;

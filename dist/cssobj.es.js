@@ -1,7 +1,7 @@
 /*
   cssobj v0.6.6
-  Wed Nov 09 2016 09:59:29 GMT+0800 (HKT)
-  commit 9bf5d37a0b032994bb4a023cfa84688d05027357
+  Wed Nov 09 2016 10:56:36 GMT+0800 (HKT)
+  commit 1e2f691bdda5a3b78304fb2916b7d1a2fbe57e78
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.

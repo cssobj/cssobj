@@ -34,10 +34,16 @@ log(css(result), 'regexp:^._\\w+_nav { color: red; }\\n$')
 var result = cssobj({
   '.nav':{
     color:'red',
-  }
+  },
+  ':global(.iconfont).edit': {
+    color:'blue'
+  },
+  '.iconfont.!edit': {
+    color:'blue'
+  },
 }, {local:{prefix:'_abc_'}})
 
-log(css(result), '._abc_nav { color: red; }\n')
+log(css(result), '._abc_nav { color: red; }\n.iconfont._abc_edit { color: blue; }\n._abc_iconfont.edit { color: blue; }\n')
 
 // test for mapSel
 log(result.mapSel('.nav'), '._abc_nav')

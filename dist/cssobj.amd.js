@@ -1,7 +1,7 @@
 /*
-  cssobj v0.6.6
-  Wed Nov 09 2016 10:56:36 GMT+0800 (HKT)
-  commit 1e2f691bdda5a3b78304fb2916b7d1a2fbe57e78
+  cssobj v0.6.7
+  Wed Nov 09 2016 17:57:34 GMT+0800 (HKT)
+  commit e3e592cd5085d5a913e5329f30468bdaae88ae2a
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -11,8 +11,8 @@
     1a6d428bb1a5b2efaf4b7dab2bc5491c6c6b9fd1
   - cssobj-plugin-cssom@2.1.10
     3e0c528ebc9f4918aa3f22ab1356cfe5e95dce05
-  - cssobj-plugin-localize@2.0.0
-    f6ce4b30435764758f6339085bc9932e798eb573
+  - cssobj-plugin-localize@2.1.0
+    3fd95903b3b422f1a7dd7530dc938d1dd8ded836
 */
 
 define('cssobj', function () { 'use strict';
@@ -947,33 +947,57 @@ function cssobj_plugin_post_cssom (option) {
 
 // cssobj plugin
 
-var reClass = /:global\s*\(((?:\s*\.[A-Za-z0-9_-]+\s*)+)\)|(\.)([!A-Za-z0-9_-]+)/g
-
 function cssobj_plugin_selector_localize(prefix, localNames) {
 
   prefix = prefix!=='' ? prefix || random() : ''
 
   localNames = localNames || {}
 
-  var replacer = function (match, global, dot, name) {
-    if (global) {
-      return global
+  var parser = function(str) {
+    var store=[], ast=[], lastAst, name, match
+    for(var c, i=0, len=str.length; i<len; i++) {
+      c=str[i]
+      lastAst = ast[0]
+      if(lastAst!=='\'' && lastAst!=='"') {
+        // not in string
+        if(c===':' && str.substr(i+1, 7)==='global(') {
+          ast.unshift('g')
+          i+=7
+          continue
+        }
+        if(~ '[(\'"'.indexOf(c)) ast.unshift(c)
+        if(~ '])'.indexOf(c)) {
+          if(c==')' && lastAst=='g') c=''
+          ast.shift(c)
+        }
+        if(c==='.' && !lastAst) {
+          if(str[i+1]=='!') {
+            i++
+          } else {
+            match = /[a-z0-9_-]+/i.exec(str.slice(i+1))
+            if(match) {
+              name = match[0]
+              c += name in localNames
+                ? localNames[name]
+                : prefix + name
+              i += name.length
+            }
+          }
+        }
+      } else {
+        if(c===lastAst) ast.shift()
+      }
+      store.push(c)
     }
-    if (name[0] === '!') {
-      return dot + name.substr(1)
-    }
-
-    return dot + (name in localNames
-                  ? localNames[name]
-                  : prefix + name)
+    return store.join('')
   }
 
-  var mapSel = function(str, isClassList) {
-    return str.replace(reClass, replacer)
+  var mapSel = function(str) {
+    return parser(str)
   }
 
   var mapClass = function(str) {
-    return mapSel((' '+str).replace(/\s+\.?/g, '.')).replace(/\./g, ' ')
+    return mapSel(str.replace(/\s+\.?/g, '.').replace(/^([^:\s.])/i, '.$1')).replace(/\./g, ' ')
   }
 
   return {
@@ -1006,7 +1030,7 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.6.6'
+cssobj.version = '0.6.7'
 
 return cssobj;
 

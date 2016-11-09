@@ -44,9 +44,12 @@ var result = cssobj({
 }, {local:{prefix:'_abc_'}})
 
 log(css(result), '._abc_nav { color: red; }\n.iconfont._abc_edit { color: blue; }\n._abc_iconfont.edit { color: blue; }\n')
+log(result.mapClass(':global(.abc .def) xyz'), ' abc def _abc_xyz')
 
 // test for mapSel
 log(result.mapSel('.nav'), '._abc_nav')
+log(result.mapSel(':global(.abc .def) xyz'), '.abc .def xyz')
+log(result.mapSel('.nav a[title=".sdf].abc:global(.def)"]'), '._abc_nav a[title=".sdf].abc:global(.def)"]')
 
 // localNames
 var result = cssobj({

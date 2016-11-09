@@ -1,7 +1,7 @@
 /*
   cssobj v0.6.7
-  Wed Nov 09 2016 17:57:34 GMT+0800 (HKT)
-  commit e3e592cd5085d5a913e5329f30468bdaae88ae2a
+  Wed Nov 09 2016 19:45:31 GMT+0800 (HKT)
+  commit d478697fb3e3d195276d96ce528aea8e3caf962e
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -10,9 +10,9 @@
   - cssobj-core@0.6.4
     1a6d428bb1a5b2efaf4b7dab2bc5491c6c6b9fd1
   - cssobj-plugin-cssom@2.1.10
-    3e0c528ebc9f4918aa3f22ab1356cfe5e95dce05
+    4daa554e421c52e218d37e3c10d1bfea5c120c0b
   - cssobj-plugin-localize@2.1.0
-    3fd95903b3b422f1a7dd7530dc938d1dd8ded836
+    b9d89ec66d5c1768d6c5fc356878faee491591ba
 */
 
 'use strict';
@@ -691,9 +691,7 @@ function cssobj_plugin_post_cssom (option) {
   // prefixes array can change the global default vendor prefixes
   if(option.prefixes) cssPrefixes = option.prefixes
 
-  var id = option.name
-      ? (option.name+'').replace(/[^a-zA-Z0-9$_-]/g, '')
-      : 'style_cssobj' + random()
+  var id = option.name || 'style_cssobj' + random()
 
   var frame = option.frame
   var rootDoc = frame ? frame.contentDocument||frame.contentWindow.document : document
@@ -954,13 +952,13 @@ function cssobj_plugin_selector_localize(prefix, localNames) {
   localNames = localNames || {}
 
   var parser = function(str) {
-    var store=[], ast=[], lastAst, name, match
-    for(var c, i=0, len=str.length; i<len; i++) {
+    var store=[], ast=[], lastAst, match
+    for(var c, n, i=0, len=str.length; i<len; i++) {
       c=str[i]
       lastAst = ast[0]
       if(lastAst!=='\'' && lastAst!=='"') {
         // not in string
-        if(c===':' && str.substr(i+1, 7)==='global(') {
+        if(!lastAst && c===':' && str.substr(i+1, 7)==='global(') {
           ast.unshift('g')
           i+=7
           continue
@@ -970,18 +968,20 @@ function cssobj_plugin_selector_localize(prefix, localNames) {
           if(c==')' && lastAst=='g') c=''
           ast.shift(c)
         }
-        if(c==='.' && !lastAst) {
-          if(str[i+1]=='!') {
-            i++
-          } else {
-            match = /[a-z0-9_-]+/i.exec(str.slice(i+1))
-            if(match) {
-              name = match[0]
-              c += name in localNames
-                ? localNames[name]
-                : prefix + name
-              i += name.length
+        if(!lastAst && c==='.') {
+          i++
+          if(str[i]!=='!') {
+            match = []
+            while( (n=str[i]) &&
+                   (n>='0'&&n<='9'||n>='a'&&n<='z'||n>='A'&&n<='Z'||n=='-'||n=='_'||n>='\u00a0'))
+              match.push(str[i++])
+            if(match.length) {
+              n = match.join('')
+              c += n in localNames
+                ? localNames[n]
+                : prefix + n
             }
+            i--
           }
         }
       } else {

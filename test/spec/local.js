@@ -50,6 +50,7 @@ log(result.mapClass(':global(.abc .def) xyz'), ' abc def _abc_xyz')
 log(result.mapSel('.nav'), '._abc_nav')
 log(result.mapSel(':global(.abc .def) xyz'), '.abc .def xyz')
 log(result.mapSel('.nav a[title=".sdf].abc:global(.def)"]'), '._abc_nav a[title=".sdf].abc:global(.def)"]')
+log(result.mapSel('.nav.选择器1.!选择器2'), '._abc_nav._abc_选择器1.选择器2')
 
 // localNames
 var result = cssobj({

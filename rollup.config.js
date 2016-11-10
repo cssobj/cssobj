@@ -14,7 +14,7 @@ var commitHashCore = readFileSync('../cssobj-core/.commithash', 'utf-8').trim()
 var commitHashCSSOM = readFileSync('../cssobj-plugin-cssom/.commithash', 'utf-8').trim()
 var commitHashLocalize = readFileSync('../cssobj-plugin-localize/.commithash', 'utf-8').trim()
 
-var banner = readFileSync('lib/banner.js', 'utf-8')
+var banner = readFileSync('lib/zbanner.js', 'utf-8')
   .replace('${version}', pkg.version)
   .replace('${versionCore}', pkgCore.version)
   .replace('${versionCSSOM}', pkgCSSOM.version)

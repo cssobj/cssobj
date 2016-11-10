@@ -19,3 +19,11 @@ result.update({p: {color: 'red'}}, 'another state')
 log(result.cssdom.id, prevID)
 log(result.state, 'another state')
 log(css(result), 'p { color: red; }\n')
+
+
+// should accept function as object
+result.update(function() {
+  return {p: {color: 'red'}}
+})
+// should keep same ID
+log(css(result), 'p { color: red; }\n')

@@ -1,13 +1,13 @@
 /*
   cssobj v0.7.0
-  Thu Nov 10 2016 11:46:25 GMT+0800 (HKT)
-  commit 359607542959be7d6efd9f8a66a4c79c83d95e5c
+  Thu Nov 10 2016 16:07:24 GMT+0800 (HKT)
+  commit fd2f4314aa72529463eec323b95fa3799ff71dc9
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@0.7.0
+  - cssobj-core@0.7.1
     1a6d428bb1a5b2efaf4b7dab2bc5491c6c6b9fd1
   - cssobj-plugin-cssom@2.1.10
     4daa554e421c52e218d37e3c10d1bfea5c120c0b
@@ -476,7 +476,7 @@ function cssobj$2 (options) {
   return function (initObj, initState) {
     var updater = function (obj, state) {
       if (arguments.length>1) result.state = state || {}
-      if(obj) result.obj = obj
+      if (obj) result.obj = isFunction(obj) ? obj() : obj
       result.root = parseObj(extendObj({}, '', result.intro, result.obj), result, result.root, true)
       applyOrder(result)
       result = applyPlugins(options, 'post', result)

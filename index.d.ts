@@ -8,9 +8,9 @@ declare namespace CssObj {
     }
 
     interface cssomOption {
+        id?: string,
         frame?: any,
-        prefixes?: string[],
-        name?: string,
+        vendors?: string[],
         append?: boolean,
         attrs?: Object,
         noMedia?: boolean

@@ -1,7 +1,7 @@
 /*
-  cssobj v0.7.0
-  Thu Nov 10 2016 16:07:24 GMT+0800 (HKT)
-  commit fd2f4314aa72529463eec323b95fa3799ff71dc9
+  cssobj v0.7.1
+  Fri Nov 11 2016 10:14:37 GMT+0800 (HKT)
+  commit 916a686b885f30306eddda9543992cdd18656d26
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -9,10 +9,10 @@
   Components version info:
   - cssobj-core@0.7.1
     1a6d428bb1a5b2efaf4b7dab2bc5491c6c6b9fd1
-  - cssobj-plugin-cssom@2.1.10
-    4daa554e421c52e218d37e3c10d1bfea5c120c0b
-  - cssobj-plugin-localize@2.1.0
-    b9d89ec66d5c1768d6c5fc356878faee491591ba
+  - cssobj-plugin-cssom@2.2.0
+    f594da8a58f04fcfeb43f0bc551cbe9c725593dd
+  - cssobj-plugin-localize@3.0.0
+    a4ffe5692fe16f820fce58d54c4c9c98691652f1
 */
 
 'use strict';
@@ -688,9 +688,9 @@ function cssobj_plugin_post_cssom (option) {
   option = option || {}
 
   // prefixes array can change the global default vendor prefixes
-  if(option.prefixes) cssPrefixes = option.prefixes
+  if(option.vendors) cssPrefixes = option.vendors
 
-  var id = option.name || 'style_cssobj' + random()
+  var id = option.id || 'cssobj' + random()
 
   var frame = option.frame
   var rootDoc = frame ? frame.contentDocument||frame.contentWindow.document : document
@@ -944,11 +944,13 @@ function cssobj_plugin_post_cssom (option) {
 
 // cssobj plugin
 
-function cssobj_plugin_selector_localize(prefix, localNames) {
+function cssobj_plugin_selector_localize(option) {
 
-  prefix = prefix!=='' ? prefix || random() : ''
+  option = option || {}
 
-  localNames = localNames || {}
+  var prefix = option.prefix = typeof option.prefix!=='string' ? random() : option.prefix
+
+  var localNames = option.localNames = option.localNames || {}
 
   var parser = function(str) {
     var store=[], ast=[], lastAst, match
@@ -1022,13 +1024,13 @@ function cssobj (obj, option, initData) {
 
   option.plugins = [].concat(
     option.plugins||[],
-    cssobj_plugin_selector_localize(option.local.prefix, option.local.localNames),
+    cssobj_plugin_selector_localize(option.local),
     cssobj_plugin_post_cssom(option.cssom)
   )
 
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.7.0'
+cssobj.version = '0.7.1'
 
 module.exports = cssobj;

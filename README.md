@@ -13,7 +13,7 @@ CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/
  - [Media query for old browsers](https://www.browserstack.com/screenshots/2930c65da0fefc313c9827cfb7b77a8be03a9207)
  - [Dynamically change CSS](https://cssobj.github.io/cssobj-demo/#demo1)
 
-Light weight (**3K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#test), Easy to use (example in [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib))
+Light weight (**4K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#test), Easy to use (example in [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib))
 
 [Live Demo](https://cssobj.github.io/cssobj-demo/)  -  [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
 
@@ -161,9 +161,38 @@ obj.div.fontSize = '14px'
 css.update()
 ```
 
+### - Dynamic caculation
+
+```js
+obj.div.width = function(){ return window.innerWidth / 3 + 'px' }
+obj.div.height = function(){ return this.width }
+result.update()
+```
+
+Then all the `div` will have same width & height, as 1/3 of window width, magicly!
+
+
 ### - @media rule work in old Browsers
 
-Just try this [demo](https://cssobj.github.io/cssobj-demo/play/), in IE 5,6,7,8!
+```js
+cssobj({
+  div:{ color:'red' },
+  '@media (max-width: 768px)':{
+    div:{ color:'green' },
+    '@media (min-width: 480px)':{
+      div:{ color:'blue' }
+    }
+  }
+})
+```
+
+Then `div` will have color as **red**, **green** and **blue** accordingly, in **ALL BROWSERS** (tested Modern & IE5+)
+
+[Demo](https://cssobj.github.io/cssobj-demo/play/) here for **@media (min-width), (max-width)** support for old browsers.
+
+Below is the screencast with **@media** rule response support in **IE 5** (oh my!)
+
+[![CSSOBJ @media support](demo-media.gif)](https://cssobj.github.io/cssobj-demo/play/)
 
 ### - Auto vendor prefixer
 
@@ -201,85 +230,21 @@ iframe.onload = function(e){
 3. When the js object changed, **cssobj** will diff CSSOM rules (**add/delete/change**) accordingly. (see [demo](https://cssobj.github.io/cssobj-demo/#demo1))
 
 
-## Benefit
+## Workflow
 
-What's the benefit?
+You can write your css as normal (e.g. *index.css*), then convert it into *index.css.js* using converter:
 
-### 1. Live update
+[cssobj-converter](https://github.com/cssobj/cssobj-converter)
 
-```js
-obj.div.fontSize = '16px'
-result.update()
+Instead of include **index.css**, you need include **index.css.js** as below:
+
+``` html
+<script src="cssobj.min.js"></script>
+<script src="index.css.js"></script>
+<script>cssobj(indexObj)</script>
 ```
 
-Then the actual style sheet will update the `div` selector rule, set `font-size` to `16px`.
-
-### 2. Dynamic caculation
-
-```js
-obj.div.width = function(){ return window.innerWidth / 3 + 'px' }
-obj.div.height = function(){ return this.width }
-result.update()
-```
-
-Then all the `div` will have same width & height, as 1/3 of window width, magicly!
-
-### 3. Hot replacement
-
-```js
-obj.div.span = {color:'green', marginLeft: '20px'}
-result.update()
-```
-
-Then the old `span` selector will be replaced by the new rule.
-
-### 4. @media support in old browsers
-
-```js
-cssobj({
-  div:{ color:'red' },
-  '@media (max-width: 768px)':{
-    div:{ color:'green' },
-    '@media (min-width: 480px)':{
-      div:{ color:'blue' }
-    }
-  }
-})
-```
-
-Then `div` will have color as **red**, **green** and **blue** accordingly, in **ALL BROWSERS** (tested Modern & IE5+)
-
-[Demo](https://cssobj.github.io/cssobj-demo/play/) here for **@media (min-width), (max-width)** support for old browsers.
-
-Below is the screencast with **@media** rule response support in **IE 5** (oh my!)
-
-[![CSSOBJ @media support](demo-media.gif)](https://cssobj.github.io/cssobj-demo/play/)
-
-### 5. Localized class names
-
-```js
-var ret = cssobj({
-  body:{ color:'red' },
-  '.item':{ color:'blue' }
-}, {local : true} )
-```
-
-will get CSSOM as below:
-
-```css
-body { color: red; }
-._1c0b3bn4_nav { color: red; }
-```
-
-There's no class name conflict. You can customize the `prefix` as you need, or turn off this feature.
-
-### 6. Small and smart
-
-Only one js file with no dependencies, **3K** gzipped.
-
-Easy to plugin, and there're plenty of them.
-
-Virtual CSSOM middle format is JS object, thus can avoid the differences of CSS engines, dynamicly caculated.
+That's all.
 
 ## API
 
@@ -313,7 +278,7 @@ intros | Array | Objects or functions to return as preset css objects, which wil
 local | Boolean or Object | false | `true` to localize class names, using `options.local.prefix` as prefix.
 local.prefix | String | random string | prefix for localized names, will using `random()` function in [cssobj-helper](https://github.com/cssobj/cssobj-helper) if not specified or as falsy.
 local.localNames | Object | { } | predefined `key - val` to control each class name when localized.
-cssom | Object | { } | `cssom-plugin` option, supported key: `frame` as iframe DOM, `name` of style id, `attrs` for style tag.
+cssom | Object | { } | `cssom-plugin` option, supported key: `frame` as iframe DOM, `id` of style id, `attrs` for style tag.
 plugins | Array | Functions to add different feature, for `post`, `value`, `selector`, see [plugins](#plugins) section.
 
 #### *RETURN*

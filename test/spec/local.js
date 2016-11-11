@@ -28,6 +28,7 @@ var result = cssobj({
   }
 }, {local:true})
 
+log(result.options.local.prefix, 'regexp:^\\w+$')
 log(css(result), 'regexp:^._\\w+_nav { color: red; }\\n$')
 
 // define prefix

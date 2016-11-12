@@ -19,7 +19,12 @@ Light weight (**4K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#te
 
 [![CSSOBJ Screenshot](demo-box.gif)](https://cssobj.github.io/cssobj-demo/#demo1)
 
+### Browser Compatible
 
+- All modern browsers
+- IE >= 6
+- Android Safari >= 4.1
+- iOS Safari >= 5
 
 ## Why?
 
@@ -117,7 +122,7 @@ var obj = {
     span: { color: 'blue' }
   }
 }
-var result = cssobj(obj, {local:true})  // { local: {prefix:'my-prefix-'} }
+var result = cssobj(obj, {local:true})  // { local: {space:'-james-'} }
 ```
 
 This will generate [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) in your `<head>`, with below css:
@@ -126,22 +131,22 @@ This will generate [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_
 body {
   color: red;
 }
-._1jkhrb92_item {
+.item_1jkhrb92_ {
   font-size: 12px;
 }
-._1jkhrb92_item span {
+.item_1jkhrb92_ span {
   color: blue;
 }
 ```
 
-Class names will add a random prefix, you can get class name using below:
+Class names will add a random string, you can get class name using below:
 
 ``` javascript
 /* want localized CSS Selector, use mapSel */
-result.mapSel('ul#nav.list')   // === "ul#nav._1jkhrb92_list"
+result.mapSel('ul#nav.list')   // === "ul#nav.list_1jkhrb92_"
 
 /* want localized space separated class names (W/O DOT), use mapClass */
-result.mapClass('item active')   // === "_1jkhrb92_item _1jkhrb92_active"
+result.mapClass('item active')   // === "item_1jkhrb92_ active_1jkhrb92_"
 ```
 
 ### - Dynamicly update you css rule
@@ -248,15 +253,11 @@ That's all.
 
 ## API
 
-### `var result = cssobj(obj, options)`
+### `var result: object = cssobj(obj: object|array, options?: object)`
 
 parse obj, generate virtual css, then render `<style>` tag into `<head>`
 
-#### *PARAMS*
-
-#### `obj`
-
-Type: **{object|array}**
+#### `obj : object|array`
 
 Nothing special, just plain js `Object`, or `Array` of `Object`, with below rules:
 
@@ -266,29 +267,22 @@ Nothing special, just plain js `Object`, or `Array` of `Object`, with below rule
 
 * if value is non-object, key will act as css property.
 
-##### [more rules can be found here](docs/cssobj-object-format.md)
+##### IMPORTANT: Please read the [cssobj input format spec](docs/cssobj-object-format.md)
 
-#### `options`
-
-Type: **{object}**
+#### `options?: object`
 
 name | type | default | description
 -----|-----|-----------|---------------
-intros | Array | Objects or functions to return as preset css objects, which will combined into user passed source object.
-local | Boolean or Object | false | `true` to localize class names, using `options.local.prefix` as prefix.
-local.prefix | String | random string | prefix for localized names, will using `random()` function in [cssobj-helper](https://github.com/cssobj/cssobj-helper) if not specified or as falsy.
-local.localNames | Object | { } | predefined `key - val` to control each class name when localized.
-cssom | Object | { } | `cssom-plugin` option, supported key: `frame` as iframe DOM, `id` of style id, `attrs` for style tag.
-plugins | Array | Functions to add different feature, for `post`, `value`, `selector`, see [plugins](#plugins) section.
+intros | Array | `[ ]` | Objects or functions to return as preset css objects, which will combined into user passed source object.
+local | Boolean\|Object | `false` | `true` to localize class names, using `options.local.space` as name space.
+local.space | String | random string | name space for localized names, will using random string if not specified.
+local.localNames | Object | `{ }` | predefined `key - val` to control each class name when localized.
+cssom | Object | `{ }` | `cssom-plugin` option, supported key: `frame` as iframe DOM, `id` of style id, `attrs` for style tag.
+plugins | Array | `[ ]` | Functions to add different feature, for `post`, `value`, `selector`, see [plugins](#plugins) section.
 
-#### *RETURN*
+### `result: object`
 
-cssobj `RESULT` object
-
-
-### `RESULT` OBJECT
-
-The return value of `cssobj()` and `result.update()`, it's a js object with below keys:
+The **return value** of `cssobj()` and `result.update()`, it's a js object with below keys:
 
 name | type | description
 -----|-----|-----------

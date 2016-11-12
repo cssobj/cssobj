@@ -17,7 +17,7 @@ declare namespace CssObj {
     }
 
     interface LocalOption {
-      prefix?: string;
+      space?: string;
       localNames?: Object;
     }
 
@@ -39,7 +39,7 @@ declare namespace CssObj {
     }
 
     interface Result {
-      update (data?: any): Result;
+      update (obj?:Object, state?: any): Result;
       cssom: HTMLStyleElement;
       data: Object;
       nodes: Node[];
@@ -50,7 +50,7 @@ declare namespace CssObj {
     }
 
     interface Static {
-        (obj: Object, options?: Options, data?: any): Result;
+        (obj: Object, options?: Options, state?: any): Result;
     }
 }
 

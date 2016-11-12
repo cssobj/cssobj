@@ -1,7 +1,7 @@
 /*
-  cssobj v0.7.1
-  Fri Nov 11 2016 10:14:37 GMT+0800 (HKT)
-  commit 916a686b885f30306eddda9543992cdd18656d26
+  cssobj v0.7.3
+  Sat Nov 12 2016 15:54:29 GMT+0800 (HKT)
+  commit a4a2c991e3ed3f3c9ebbfdcbd5d3908184a20a72
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -12,7 +12,7 @@
   - cssobj-plugin-cssom@2.2.0
     f594da8a58f04fcfeb43f0bc551cbe9c725593dd
   - cssobj-plugin-localize@3.0.0
-    a4ffe5692fe16f820fce58d54c4c9c98691652f1
+    fcb1546c1ba81821bed252880079f04cea1a6cfe
 */
 
 define('cssobj', function () { 'use strict';
@@ -58,9 +58,9 @@ function capitalize (str) {
 // random string, should used across all cssobj plugins
 var random = (function () {
   var count = 0
-  return function () {
+  return function (prefix) {
     count++
-    return '_' + Math.floor(Math.random() * Math.pow(2, 32)).toString(36) + count + '_'
+    return '_' + (prefix||'') + Math.floor(Math.random() * Math.pow(2, 32)).toString(36) + count + '_'
   }
 })()
 
@@ -948,11 +948,11 @@ function cssobj_plugin_selector_localize(option) {
 
   option = option || {}
 
-  var prefix = option.prefix = typeof option.prefix!=='string' ? random() : option.prefix
+  var space = option.space = typeof option.space!=='string' ? random() : option.space
 
   var localNames = option.localNames = option.localNames || {}
 
-  var parser = function(str) {
+  var parseSel = function(str) {
     var store=[], ast=[], lastAst, match
     for(var c, n, i=0, len=str.length; i<len; i++) {
       c=str[i]
@@ -980,7 +980,7 @@ function cssobj_plugin_selector_localize(option) {
               n = match.join('')
               c += n in localNames
                 ? localNames[n]
-                : prefix + n
+                : n + space
             }
             i--
           }
@@ -993,12 +993,8 @@ function cssobj_plugin_selector_localize(option) {
     return store.join('')
   }
 
-  var mapSel = function(str) {
-    return parser(str)
-  }
-
   var mapClass = function(str) {
-    return mapSel(str.replace(/\s+\.?/g, '.').replace(/^([^:\s.])/i, '.$1')).replace(/\./g, ' ')
+    return parseSel(str.replace(/\s+\.?/g, '.').replace(/^([^:\s.])/i, '.$1')).replace(/\./g, ' ')
   }
 
   return {
@@ -1006,8 +1002,8 @@ function cssobj_plugin_selector_localize(option) {
       // don't touch at rule's selText
       // it's copied from parent, which already localized
       if(node.at) return sel
-      if(!result.mapSel) result.mapSel = mapSel, result.mapClass = mapClass
-      return mapSel(sel)
+      if(!result.mapSel) result.mapSel = parseSel, result.mapClass = mapClass
+      return parseSel(sel)
     }
   }
 }
@@ -1019,7 +1015,7 @@ function cssobj (obj, option, initData) {
 
   var local = option.local
   option.local = !local
-    ? {prefix:''}
+    ? {space:''}
   : local && typeof local==='object' ? local : {}
 
   option.plugins = [].concat(
@@ -1031,7 +1027,7 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.7.1'
+cssobj.version = '0.7.3'
 
 return cssobj;
 

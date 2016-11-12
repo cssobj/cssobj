@@ -1,8 +1,8 @@
 div { font-size: 12px; color: blue; }
 @media (max-width: 800px) { 
-  ._prefix_active { color: purple; }
-  div ._prefix_active { color: red; }
+  .active_james_ { color: purple; }
+  div .active_james_ { color: red; }
 }
 @media (max-width: 800px) and (min-width: 100px) { 
-  div ._prefix_active { color: green; }
+  div .active_james_ { color: green; }
 }

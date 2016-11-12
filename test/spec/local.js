@@ -28,10 +28,10 @@ var result = cssobj({
   }
 }, {local:true})
 
-log(result.options.local.prefix, 'regexp:^\\w+$')
-log(css(result), 'regexp:^._\\w+_nav { color: red; }\\n$')
+log(result.options.local.space, 'regexp:^\\w+$')
+log(css(result), 'regexp:^.nav_\\w+_ { color: red; }\\n$')
 
-// define prefix
+// define space
 var result = cssobj({
   '.nav':{
     color:'red',
@@ -42,25 +42,25 @@ var result = cssobj({
   '.iconfont.!edit': {
     color:'blue'
   },
-}, {local:{prefix:'_abc_'}})
+}, {local:{space:'_abc_'}})
 
-log(css(result), '._abc_nav { color: red; }\n.iconfont._abc_edit { color: blue; }\n._abc_iconfont.edit { color: blue; }\n')
-log(result.mapClass(':global(.abc .def) xyz'), ' abc def _abc_xyz')
+log(css(result), '.nav_abc_ { color: red; }\n.iconfont.edit_abc_ { color: blue; }\n.iconfont_abc_.edit { color: blue; }\n')
+log(result.mapClass(':global(.abc .def) xyz'), ' abc def xyz_abc_')
 
 // test for mapSel
-log(result.mapSel('.nav'), '._abc_nav')
+log(result.mapSel('.nav'), '.nav_abc_')
 log(result.mapSel(':global(.abc .def) xyz'), '.abc .def xyz')
-log(result.mapSel('.nav a[title=".sdf].abc:global(.def)"]'), '._abc_nav a[title=".sdf].abc:global(.def)"]')
-log(result.mapSel('.nav.选择器1.!选择器2'), '._abc_nav._abc_选择器1.选择器2')
+log(result.mapSel('.nav a[title=".sdf].abc:global(.def)"]'), '.nav_abc_ a[title=".sdf].abc:global(.def)"]')
+log(result.mapSel('.nav.选择器1.!选择器2'), '.nav_abc_.选择器1_abc_.选择器2')
 
 // localNames
 var result = cssobj({
   '.nav':{
     color:'red',
   }
-}, {local:{prefix:'_abc_', localNames:{nav:'cde'}}})
+}, {local:{space:'_abc_', localNames:{nav:'cde'}}})
 
 log(css(result), '.cde { color: red; }\n')
 
 // test for mapSel
-log(result.mapSel('.nav .xyz'), '.cde ._abc_xyz')
+log(result.mapSel('.nav .xyz'), '.cde .xyz_abc_')

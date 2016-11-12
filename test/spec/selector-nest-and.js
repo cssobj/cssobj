@@ -15,8 +15,8 @@ var result = cssobj({
     }
   }
 }, {
-  local:{
-    prefix:'_prefix_'
+  local: {
+    space:'_james_'
   }
 })
 

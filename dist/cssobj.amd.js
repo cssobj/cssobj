@@ -1,7 +1,7 @@
 /*
   cssobj v0.7.3
-  Sat Nov 12 2016 15:54:29 GMT+0800 (HKT)
-  commit a4a2c991e3ed3f3c9ebbfdcbd5d3908184a20a72
+  Fri Nov 25 2016 19:42:23 GMT+0800 (HKT)
+  commit d1760e0ea28ef800a91364e69a7e2b3bd8c0c8c4
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -50,9 +50,6 @@ function capitalize (str) {
 }
 
 // repeat str for num times
-
-
-// don't use String.prototype.trim in cssobj, using below instead
 
 
 // random string, should used across all cssobj plugins
@@ -1011,15 +1008,15 @@ function cssobj_plugin_selector_localize(option) {
 // cssobj is simply an intergration for cssobj-core, cssom
 
 function cssobj (obj, option, initData) {
-  option = option||{}
+  option = option || {}
 
   var local = option.local
   option.local = !local
-    ? {space:''}
-  : local && typeof local==='object' ? local : {}
+    ? {space: ''}
+  : local && typeof local === 'object' ? local : {}
 
   option.plugins = [].concat(
-    option.plugins||[],
+    option.plugins || [],
     cssobj_plugin_selector_localize(option.local),
     cssobj_plugin_post_cssom(option.cssom)
   )

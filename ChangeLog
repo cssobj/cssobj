@@ -1,0 +1,10 @@
+2016-11-25  James Yang  <jamesyang999@gmail.com>
+
+        * 0.7.3
+
+        `cssobj(), result.update()` have same signature: `fn (obj?, state?) : RESULT`
+        `options.local.prefix` **renamed** to `options.local.space`
+        `options.cssom.prefixes` **renamed** to `options.cssom.vendors`
+        `options.cssom.name` **renamed** to `options.cssom.id`
+
+        After this version, the result.update accept 2 args: obj, state

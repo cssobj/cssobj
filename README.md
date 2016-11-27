@@ -18,7 +18,7 @@ CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/
 
 Light weight (**4K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#test), Easy to use (example in [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib))
 
-[API](docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
+[API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
 
 [![CSSOBJ Screenshot](demo-box.gif)](https://cssobj.github.io/cssobj-demo/#demo1)
 
@@ -132,7 +132,7 @@ result.mapSel('.nav')  // .nav_ioei2j1_
 
 ```
 
-### For more usage, please check [Usage & Example](docs/usage-example.md)
+### For more usage, please check [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
 
 ## How it worked?
 
@@ -142,7 +142,7 @@ result.mapSel('.nav')  // .nav_ioei2j1_
 
 3. When the js object changed, **cssobj** will diff CSSOM rules (**add/delete/change**) accordingly. (see [demo](https://cssobj.github.io/cssobj-demo/#demo1))
 
-## [check here for API docs](docs/api.md)
+## [check here for API docs](https://github.com/cssobj/cssobj/blob/master/docs/api.md)
 
 ## Plugins
 

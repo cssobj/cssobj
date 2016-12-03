@@ -2,15 +2,16 @@
 
 The object format for **cssobj** is as below:
 
-## 1. It's normal JS Object (`Array|Object`)
+### 1. It's normal JS Object (`Array|Object`)
 
-## 2. Object **key** as **CSS selector** / **CSS property** / **directive**
+### 2. Object **key** as **CSS selector** / **CSS property** / **directive**
 
  1. If key start with **$**, it's cssobj **directive**, never rendered
  2. If value is **object like** (`Array|Object`), key will act as **CSS selector**
  3. If value is **non-object** (`String|Number|Function`, other types ignored), key will act as **CSS property**
+ 4. **@at-rules** cannot be nested (have to be **TOP LEVEL**), except for **@at-media rule**
 
-## 3. **CSS selector** rule
+### 3. **CSS selector** rule
 
  - 1 Normal object **key** will be combined with **parent key** with 1 space.
 
@@ -26,7 +27,7 @@ The object format for **cssobj** is as below:
 
  - 4 If the key start with `@media`, then:
 
-### all `@media` will be escaped as **top level** rule
+#### all `@media` will be escaped as **top level** rule
 
 ```javascript
 {
@@ -48,7 +49,7 @@ will be:
 }
 ```
 
-### nested `@media` will have parent group condition combined:
+#### nested `@media` will have parent group condition combined:
 
 ```javascript
 {
@@ -72,7 +73,7 @@ will be:
 }
 ```
 
-## 4. CSS property and value rule
+### 4. CSS property and value rule
 
   - 1 If value is not **object like** (`Array|Object`), then the **key** will act as **CSS property**
 
@@ -128,7 +129,7 @@ If the function return an **Object**, it will be merged into current css props.
 
 See the related plugin: [cssobj-plugin-replace](https://github.com/cssobj/cssobj-plugin-replace)
 
-## 5. CSSOBJ Directives
+### 5. CSSOBJ Directives
 
 A **directive** start with <kbd>$</kbd> char, and **never be rendered**, native support below **directives**:
 
@@ -170,7 +171,7 @@ p span { color: 'red' }
 
 **p em** never render.
 
-### More directives can be extended with **plugin**
+#### More directives can be extended with **plugin**
 
 [cssobj-plugin-extend](https://github.com/cssobj/cssobj-plugin-extend)
 

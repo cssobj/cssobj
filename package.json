@@ -1,7 +1,7 @@
 {
   "name": "cssobj",
   "version": "0.7.3",
-  "description": "CSS Rules from JS, change rules dynamically, CSS in JS solution, CSSOM from js, getting and setting CSS stylesheet rules, css modules, auto prefixer, media query for old browsers. CSS in React/Angular/Vue/Ember/Mithril/jQuery",
+  "description": "CSS in JS solution, create CSS rules from JS, change CSS rules, CSSOM, localize class names, vendor prefix, media query hook, styled components helper.",
   "keywords": [
     "cssom",
     "prefixer",

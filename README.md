@@ -9,25 +9,49 @@
 
 CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and CSS rules from js, features:
 
- - **CSS Rules** create and diff
+ - **~4K min.gz**
+ - **CSS Rules** create and **diff update**
+ - [Safety of Unicode/Comma/Ampersand](https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS)
  - [Conditional apply CSS (good for SPA)](https://cssobj.github.io/cssobj-demo/test/test.html)
  - [CSS modules with local class](https://cssobj.github.io/cssobj-demo/#demo4)
- - [Auto vendor prefixer](https://www.browserstack.com/screenshots/a9be7bfdfa92aeb75a9a74465ef772c9fb1e424a)
- - [Media query for old browsers](https://www.browserstack.com/screenshots/2930c65da0fefc313c9827cfb7b77a8be03a9207)
+ - [Auto vendor prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
+ - [Media query hook](https://cssobj.github.io/cssobj-demo/#demomedia)
  - [Dynamically change CSS](https://cssobj.github.io/cssobj-demo/#demo1)
+ - [Server Side Rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
 
-Light weight (**4K gzipped**), Well [Tested](https://github.com/cssobj/cssobj#test), Easy to use (example in [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib))
+[Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
 
-[API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
+### Features Compared with similar libs
 
-[![CSSOBJ Screenshot](demo-box.gif)](https://cssobj.github.io/cssobj-demo/#demo1)
+*all the below libs will create CSS Rules from JS object*
 
-### Browser Compatible
+| Lib                   | [cssobj][] | [glamor][] | [fela][]        | [styletron][] | [cxs][]    | [aphrodite][] |
+|-----------------------|------------|------------|-----------------|---------------|------------|---------------|
+| Version               | 1.0.0      | 2.20.12    | 4.1.0           | 2.2.0         | 3.0.0      | 1.1.0         |
+| Size(min.gz)          | 4K         | 8K         | N/A             | N/A           | 6K         | 6K            |
+| [Unicode Safe][uni]   | **YES**    | *NO*       | **YES**         | *NO*          | **YES**    | *NO*          |
+| [Comma Safe][comma]   | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
+| [Ampersand Safe][amp] | **YES**    | *NO*       | NotSupport      | NotSupport    | *NO*       | NotSupport    |
+| [Keep Class Names][k] | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | **YES**       |
+| CSS Virtual Node      | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| Dynamic Update[Diff]  | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| Auto Prefixer[In-Core]| **YES**    | **YES**    | *NO*            | *NO*          | *NO*       | **YES**       |
+| Function as CSS Value | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| Conditional Apply     | **YES**    | *NO*       | **YES**[Plugin] | *NO*          | *NO*       | **YES**       |
+| Inject To DOM         | **Auto**   | **Auto**   | *Manually*      | *Manually*    | *Manually* | **Auto**      |
+| Server Rendering      | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
 
-- All modern browsers
-- IE >= 6
-- Android Safari >= 4.1
-- iOS Safari >= 5
+[cssobj]: https://github.com/cssobj/cssobj
+[glamor]: https://github.com/threepointone/glamor
+[fela]: https://github.com/rofrischmann/fela/
+[styletron]: https://github.com/rtsao/styletron
+[cxs]: https://github.com/jxnblk/cxs
+[aphrodite]: https://github.com/Khan/aphrodite
+
+[uni]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-avoid-using-unicode-unsafe-regexp
+[comma]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-split--comma-right
+[amp]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-replace--char-right
+[k]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-keep-original-class-names
 
 ## Why?
 
@@ -42,14 +66,15 @@ document.getElementById('domID').style.fontSize = '14px'
 $('div').css({color:'red', fontSize:'14px'})  // all the DIVs!
 ```
 
-**But, it's not updating CSS rules**, and may have [performance issues](http://www.quirksmode.org/dom/classchange.html)
+It's straight forward, but have [performance issues](http://www.quirksmode.org/dom/classchange.html), cannot use `pseudo-selector`, etc.
 
 [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base of browser, have good Javascript API, why not using it?
 
-This lib is modern CSSOM **create** and **diff** engine, see below:
+This lib convert JS Object into CSSOM Rules, And **diff udpate**, see below:
 
 ```javascript
-/* script in your <head> */
+import cssobj from 'cssobj'
+
 const obj = {'.nav': {color:'red', fontSize:'12px'}}
 const ret = cssobj(obj)
 ```
@@ -67,13 +92,7 @@ obj['.nav'].color = 'blue'
 ret.update()
 ```
 
-The CSS will be changed as:
-
-``` css
-.nav { color: blue; font-size: 12px; }
-```
-
-See, no wait for **DOM**, no `window.onload`, all **.nav** will have it's style changed.
+That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
 
 ## Install:
 
@@ -132,8 +151,6 @@ result.mapSel('.nav')  // .nav_ioei2j1_
 
 ```
 
-### For more usage, please check [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
-
 ## How it worked?
 
 1. **cssobj** first parse js object into **Virtual CSSOM** middle format.
@@ -144,37 +161,44 @@ result.mapSel('.nav')  // .nav_ioei2j1_
 
 ## [check here for API docs](https://github.com/cssobj/cssobj/blob/master/docs/api.md)
 
-## Plugins
-
-- [cssobj-plugin-localize](https://github.com/cssobj/cssobj-plugin-localize) Localize class names in selector
-
-- [cssobj-plugin-default-unit](https://github.com/cssobj/cssobj-plugin-default-unit) Add default unit to numeric values, e.g. width / height
-
-- [cssobj-plugin-gencss](https://github.com/cssobj/cssobj-plugin-gencss) Generate css text from virtual css
-
-- [cssobj-plugin-cssdom](https://github.com/cssobj/cssobj-plugin-cssom) Add style dom to head and update rules from virtual css diff result
-
-- [cssobj-plugin-stylize](https://github.com/cssobj/cssobj-plugin-stylize) Add style dom to head then update css from gencss plugin, small in size
-
-- [cssobj-plugin-csstext](https://github.com/cssobj/cssobj-plugin-csstext) Display cssText from CSSOM
-
-- [cssobj-plugin-replace](https://github.com/cssobj/cssobj-plugin-replace) Replace cssobj object key/value pair with new value
-
-- [cssobj-plugin-extend](https://github.com/cssobj/cssobj-plugin-extend) Extend selector to another selector, like @extend in SCSS or $extend in LESS
-
-- [cssobj-plugin-keyframes](https://github.com/cssobj/cssobj-plugin-keyframes) Make keyframes rules localized, also apply to `animation` and `animation-name`
-
-## Demos
-
-[cssobj-demo](https://github.com/cssobj/cssobj-demo)
-
 ## Tools
 
-[cssobj-converter](https://github.com/cssobj/cssobj-converter) Try [Online Version](http://convertcssobj-futurist.rhcloud.com/)
+  Convert you existing style sheet into *cssobj*:
+
+  - [CLI Converter](https://github.com/cssobj/cssobj-converter) **Recommended** CLI tools to convert CSS. Run `npm -g cssobj-converter`
+
+  - [Online Converter](http://convertcssobj-futurist.rhcloud.com/) It's free node server, slow, and unstalbe, not recommended
+
+## Plugins
+
+  - **(already in core)** [cssobj-plugin-localize](https://github.com/cssobj/cssobj-plugin-localize) Localize class names
+
+  - **(already in core)** [cssobj-plugin-cssdom](https://github.com/cssobj/cssobj-plugin-cssom) Inject style to DOM and diff update
+
+  - [cssobj-plugin-default-unit](https://github.com/cssobj/cssobj-plugin-default-unit) Add default unit to numeric values, e.g. width / height
+
+  - [cssobj-plugin-flexbox](https://github.com/cssobj/cssobj-plugin-flexbox) Make flexbox working right with auto prefixer/transform
+
+  - [cssobj-plugin-replace](https://github.com/cssobj/cssobj-plugin-replace) Merge cssobj Key/Value with new object
+
+  - [cssobj-plugin-extend](https://github.com/cssobj/cssobj-plugin-extend) Extend to another selector, like [@extend](https://sass-lang.com/documentation/file.SASS_REFERENCE.html#extend) in SCSS or [:extend](http://lesscss.org/features/#extend-feature) in LESS
+
+  - [cssobj-plugin-keyframes](https://github.com/cssobj/cssobj-plugin-keyframes) Make keyframe names localized, and apply to `animation` and `animation-name`
+
+  - [cssobj-plugin-gencss](https://github.com/cssobj/cssobj-plugin-gencss) Generate css text from Virtual CSS Node, for **Server Rendering**
 
 ## Helpers
 
-[cssobj-mithril](https://github.com/cssobj/cssobj-mithril) Help cssobj to work with [mithril](https://github.com/lhorie/mithril.js)
+  - [cssobj-helper-stylize](https://github.com/cssobj/cssobj-helper-stylize) Add css string into style dom
+
+  - [cssobj-helper-showcss](https://github.com/cssobj/cssobj-helper-showcss) Display css string from style tag
+
+  - [cssobj-mithril](https://github.com/cssobj/cssobj-mithril) Help cssobj to work with [mithril](https://github.com/lhorie/mithril.js)
+
+## Demos
+
+  - [cssobj-demo](https://github.com/cssobj/cssobj-demo)
+
 
 ## Test
 

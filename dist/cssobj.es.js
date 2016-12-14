@@ -1,7 +1,7 @@
 /*
-  cssobj v0.7.3
-  Sat Dec 03 2016 11:35:13 GMT+0800 (HKT)
-  commit ab4a8c11c087767969b0bf53a2e4cbac4c8f78f8
+  cssobj v1.0.0
+  Wed Dec 14 2016 18:15:36 GMT+0800 (HKT)
+  commit 2a9a58947d7874fc9d1aab2b9ee0f3cc53d6ec17
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -9,10 +9,10 @@
   Components version info:
   - cssobj-core@0.7.1
     1a6d428bb1a5b2efaf4b7dab2bc5491c6c6b9fd1
-  - cssobj-plugin-cssom@2.2.0
-    f594da8a58f04fcfeb43f0bc551cbe9c725593dd
+  - cssobj-plugin-cssom@2.2.1
+    d3107b4571671bb4804b6c51db09d67752327944
   - cssobj-plugin-localize@3.0.0
-    fcb1546c1ba81821bed252880079f04cea1a6cfe
+    9ccdb6859cc49982d2c745da56956984d343283d
 */
 
 // helper functions for cssobj
@@ -240,13 +240,13 @@ function parseObj (d, result, node, init) {
 
     for (var k in d) {
       // here $key start with $ is special
-      // k.charAt(0) == '$' ... but the core will calc it into node.
+      // k[0] == '$' ... but the core will calc it into node.
       // Plugins should take $ with care and mark as a special case. e.g. ignore it
       if (!own(d, k)) continue
       if (!isIterable(d[k]) || type.call(d[k]) == ARRAY && !isIterable(d[k][0])) {
 
         // it's inline at-rule: @import etc.
-        if (k.charAt(0)=='@') {
+        if (k[0]=='@') {
           processObj(
             // map @import: [a,b,c] into {a:1, b:1, c:1}
             [].concat(d[k]).reduce(function(prev, cur) {
@@ -584,7 +584,7 @@ function getBodyCss (node) {
   var prop = node.prop
   return Object.keys(prop).map(function (k) {
     // skip $prop, e.g. $id, $order
-    if(k.charAt(0)=='$') return ''
+    if(k[0]=='$') return ''
     for (var v, ret='', i = prop[k].length; i--;) {
       v = prop[k][i]
 
@@ -624,7 +624,7 @@ function vendorPropName( name ) {
 
   // shortcut for names that are not vendor prefixed
   // when name already have '-' as first char, don't prefix
-  if ( name in emptyStyle || name.charAt(0) == '-') return
+  if ( name in emptyStyle || name[0] == '-') return
 
   // check for vendor prefixed names
   var preName, capName = capitalize(name)
@@ -640,7 +640,7 @@ function vendorPropName( name ) {
 // inCSS false=camelcase; true=dashed
 function prefixProp (name, inCSS) {
   // $prop will skip
-  if(name.charAt(0)=='$') return ''
+  if(name[0]=='$') return ''
   // find name and cache the name for next time use
   var retName = cssProps[ name ] ||
       ( cssProps[ name ] = vendorPropName( name ) || name)
@@ -753,7 +753,7 @@ function cssobj_plugin_post_cssom (option) {
       // for old IE not support @media, check mediaEnabled, add child nodes
       if (node.parentRule.mediaEnabled) {
         if (!node.omRule) return node.omRule = addCSSRule(parent, selText, cssText, node)
-      }else if (node.omRule) {
+      } else if (node.omRule) {
         node.omRule.forEach(removeOneRule)
         delete node.omRule
       }
@@ -782,7 +782,7 @@ function cssobj_plugin_post_cssom (option) {
     if (node.constructor === Array) return node.map(function (v) {walk(v, store)})
 
     // skip $key node
-    if(node.key && node.key.charAt(0)=='$' || !node.prop) return
+    if(node.key && node.key[0]=='$' || !node.prop) return
 
     // nested media rule will pending proceed
     if(node.at=='media' && node.selParent && node.selParent.postArr) {
@@ -979,6 +979,7 @@ function cssobj_plugin_selector_localize(option) {
   }
 
   return {
+    space: space,
     selector: function localizeName (sel, node, result) {
       // don't touch at rule's selText
       // it's copied from parent, which already localized
@@ -1008,6 +1009,6 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '0.7.3'
+cssobj.version = '1.0.0'
 
 export default cssobj;

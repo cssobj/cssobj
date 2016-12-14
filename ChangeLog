@@ -1,3 +1,10 @@
+2016-12-14  James Yang  <jamesyang999@gmail.com>
+
+        * 1.0.0
+
+        remove IE<8 support, and 1.x will continue support IE8
+        The plan is to remove IE8 support in 2.0
+
 2016-11-25  James Yang  <jamesyang999@gmail.com>
 
         * 0.7.3

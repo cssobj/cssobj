@@ -7,7 +7,7 @@
 
 [![JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-CSS in JS solution, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and CSS rules from js, features:
+CSS in JS solution, functional update CSS rules, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and diff, features:
 
  - **~4K min.gz**
  - **CSS Rules** create and **diff update**
@@ -89,6 +89,10 @@ Want to update the rule?
 
 ```javascript
 obj['.nav'].color = 'blue'
+
+// or pass a function, cssobj will invoke it
+obj['.nav'].color = function(){ return caculated() }
+
 ret.update()
 ```
 
@@ -151,6 +155,18 @@ result.mapSel('.nav')  // .nav_ioei2j1_
 
 ```
 
+#### More to read:
+
+  - **!important** [CSSOBJ Format](https://github.com/cssobj/cssobj/wiki/Input-Object-Format)
+
+  - [Working with popular libs](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib)
+
+  - [Working with Stream](https://github.com/cssobj/cssobj/wiki/Working-With-Stream)
+
+  - [Server side rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
+
+## [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md)
+
 ## How it worked?
 
 1. **cssobj** first parse js object into **Virtual CSSOM** middle format.
@@ -159,7 +175,6 @@ result.mapSel('.nav')  // .nav_ioei2j1_
 
 3. When the js object changed, **cssobj** will diff CSSOM rules (**add/delete/change**) accordingly. (see [demo](https://cssobj.github.io/cssobj-demo/#demo1))
 
-## [check here for API docs](https://github.com/cssobj/cssobj/blob/master/docs/api.md)
 
 ## Tools
 

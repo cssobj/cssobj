@@ -1,7 +1,7 @@
 {
   "name": "cssobj",
   "version": "1.0.0",
-  "description": "CSS in JS solution, dynamically update, CSS rules from JS, change CSS rules, CSSOM, localize class names, vendor prefix, media query hook, styled components helper.",
+  "description": "CSS in JS solution, functional update CSS rules, CSSOM, localize class names, auto vendor prefixer, media query hook, styled components.",
   "keywords": [
     "cssom",
     "prefixer",
@@ -15,6 +15,7 @@
   "files": [
     "dist",
     "docs",
+    "*.md",
     "*.ts",
     "*.json"
   ],

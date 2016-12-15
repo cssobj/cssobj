@@ -1,6 +1,8 @@
 # Merge multiple objects
 
-Merge multiple object is easy, if you have all the objects, just
+Merge multiple object is easy
+
+- If you have all the objects, just
 
 ```Javascript
 // below will merge objA + objB
@@ -9,7 +11,16 @@ const obj = Object.assign( {}, objA, objB )
 const result = cssobj(obj) // one <style> have them all
 ```
 
-But if you don't know `objB` at first, you can dynamically merge them (*since 1.0.1*)
+- Or using `intros` option
+
+```Javascript
+cssobj(objA, {intros: [objB, objC]})
+// same as above, `intros` just a sugar
+```
+
+See the [clearfix intro](https://github.com/cssobj/cssobj-intro-clearfix) for more info.
+
+- But if you don't know `objB` at first, you can dynamically merge them (*since 1.0.1*)
 
 ```Javascript
 const objA = { '.nav': {color: 'red'} }

@@ -1,7 +1,7 @@
 /*
-  cssobj v1.0.0
-  Wed Dec 14 2016 18:15:36 GMT+0800 (HKT)
-  commit 2a9a58947d7874fc9d1aab2b9ee0f3cc53d6ec17
+  cssobj v1.0.1
+  Thu Dec 15 2016 11:15:44 GMT+0800 (HKT)
+  commit 282d18eb9116c2656e3d82931f31e525b2b0745e
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -981,12 +981,17 @@ function cssobj_plugin_selector_localize(option) {
   }
 
   return {
-    space: space,
     selector: function localizeName (sel, node, result) {
       // don't touch at rule's selText
       // it's copied from parent, which already localized
       if(node.at) return sel
-      if(!result.mapSel) result.mapSel = parseSel, result.mapClass = mapClass
+      if(!result.mapSel) {
+        result.space = space
+        result.localNames = localNames
+        result.mapSel = parseSel
+        result.mapClass = mapClass
+      }
+
       return parseSel(sel)
     }
   }
@@ -1011,7 +1016,7 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '1.0.0'
+cssobj.version = '1.0.1'
 
 return cssobj;
 

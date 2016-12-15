@@ -37,6 +37,8 @@ intro | Object | The source js object merged from `option.intros` array.
 obj | Object | The source js object for `cssobj()` function call.
 root | Object | Virtual CSSOM object parsed from `obj`, mainly used for value functions and plugins.
 nodes | Array | Array of virtual css nodes, for the convinence of `filter` or `map` etc.
+space | String | The current localize space, or `''` if `local:false`.
+localNames | Object | The current localize localNames.
 mapSel | Function | Input CSS selector string, return localized CSS selector string, this want to keep consistency with `h("ul#nav.list")` in any [hyperscript](https://github.com/dominictarr/hyperscript) or [virtual-hyperscript](https://github.com/Matt-Esch/virtual-dom/tree/master/virtual-hyperscript). Function signature is `function({string} cssSelector){ return {string} mappedSelector }`.
 mapClass | Function | Input space separated class list string **(WITHOUT DOT)**, return localized class list string, this want to keep consistency with `<div class="a b c"...` in HTML **class attribute**. Function signature is `function({string} classList){ return {string} mappedClassList }`.
 ref | Object | Key/value pairs for named objects. Named objects is objects with `$id` string value in `obj`.

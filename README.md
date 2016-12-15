@@ -11,6 +11,7 @@ CSS in JS solution, functional update CSS rules, create [CSSOM](https://develope
 
  - **~4K min.gz**
  - **CSS Rules** create and **diff update**
+ - [Nested Child Selector](https://cssobj.github.io/cssobj-demo/#demoprefixer)
  - [Safety of Unicode/Comma/Ampersand](https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS)
  - [Conditional apply CSS (good for SPA)](https://cssobj.github.io/cssobj-demo/test/test.html)
  - [CSS modules with local class](https://cssobj.github.io/cssobj-demo/#demo4)
@@ -25,21 +26,24 @@ CSS in JS solution, functional update CSS rules, create [CSSOM](https://develope
 
 *all the below libs will create CSS Rules from JS object*
 
-| Lib                   | [cssobj][] | [glamor][] | [fela][]        | [styletron][] | [cxs][]    | [aphrodite][] |
-|-----------------------|------------|------------|-----------------|---------------|------------|---------------|
-| Version               | 1.0.0      | 2.20.12    | 4.1.0           | 2.2.0         | 3.0.0      | 1.1.0         |
-| Size(min.gz)          | 4K         | 8K         | N/A             | N/A           | 6K         | 6K            |
-| [Unicode Safe][uni]   | **YES**    | *NO*       | **YES**         | *NO*          | **YES**    | *NO*          |
-| [Comma Safe][comma]   | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
-| [Ampersand Safe][amp] | **YES**    | *NO*       | NotSupport      | NotSupport    | *NO*       | NotSupport    |
-| [Keep Class Names][k] | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | **YES**       |
-| CSS Virtual Node      | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Dynamic Update[Diff]  | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Auto Prefixer[In-Core]| **YES**    | **YES**    | *NO*            | *NO*          | *NO*       | **YES**       |
-| Function as CSS Value | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Conditional Apply     | **YES**    | *NO*       | **YES**[Plugin] | *NO*          | *NO*       | **YES**       |
-| Inject To DOM         | **Auto**   | **Auto**   | *Manually*      | *Manually*    | *Manually* | **Auto**      |
-| Server Rendering      | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
+| Lib                    | [cssobj][] | [glamor][] | [fela][]        | [styletron][] | [cxs][]    | [aphrodite][] |
+|------------------------|------------|------------|-----------------|---------------|------------|---------------|
+| Version                | 1.0.0      | 2.20.12    | 4.1.0           | 2.2.0         | 3.0.0      | 1.1.0         |
+| Size(min.gz)           | 4K         | 8K         | N/A             | N/A           | 6K         | 6K            |
+| [Unicode Safe][uni]    | **YES**    | *NO*       | **YES**         | *NO*          | **YES**    | *NO*          |
+| Nested Selector        | **YES**    | **YES**    | NotSupport      | NotSupport    | NotSupport | NotSupport    |
+| [Comma Safe][comma]    | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
+| [Ampersand Safe][amp]  | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
+| [Keep Class Names][k]  | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | **YES**       |
+| Nested @media          | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
+| Other @-rules          | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
+| CSS Virtual Node       | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| Dynamic Update[Diff]   | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| Auto Prefixer[In-Core] | **YES**    | **YES**    | *NO*            | *NO*          | *NO*       | **YES**       |
+| Function as CSS Value  | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| Conditional Apply      | **YES**    | *NO*       | **YES**[Plugin] | *NO*          | *NO*       | **YES**       |
+| Inject To DOM          | **Auto**   | **Auto**   | *Manually*      | *Manually*    | *Manually* | **Auto**      |
+| Server Rendering       | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
 
 [cssobj]: https://github.com/cssobj/cssobj
 [glamor]: https://github.com/threepointone/glamor
@@ -75,20 +79,29 @@ This lib convert JS Object into CSSOM Rules, And **diff udpate**, see below:
 ```javascript
 import cssobj from 'cssobj'
 
-const obj = {'.nav': {color:'red', fontSize:'12px'}}
+const obj = {
+  '.nav': {
+    color: 'blue',
+    '.item': {
+      color: 'red',
+      fontSize: '12px'
+    }
+  }
+}
 const ret = cssobj(obj)
 ```
 
 it will create `<style>` tag in **head**, with below CSS:
 
 ``` css
-.nav { color: red; font-size: 12px; }
+.nav { color: blue; }
+.nav .item{ color: red; font-size: 12px; }
 ```
 
 Want to update the rule?
 
 ```javascript
-obj['.nav'].color = 'blue'
+obj['.nav'].color = 'orange'
 
 // or pass a function, cssobj will invoke it
 obj['.nav'].color = function(){ return caculated() }
@@ -143,6 +156,7 @@ Let's rock:
 const obj = require('./index.css.js')
 
 // create new <style> tag into html head, with rules in obj.
+// local: true will put class names into local space
 const result = cssobj(obj, {local: true})
 
 // update some rule
@@ -158,6 +172,8 @@ result.mapSel('.nav')  // .nav_ioei2j1_
 #### More to read:
 
   - **!important** [CSSOBJ Format](https://github.com/cssobj/cssobj/wiki/Input-Object-Format)
+
+  - [Merge multiple objects](https://github.com/cssobj/cssobj/wiki/Merge-Multiple-Objects)
 
   - [Working with popular libs](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib)
 

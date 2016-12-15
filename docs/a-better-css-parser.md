@@ -9,13 +9,13 @@ Parse CSS Selector in JS is not easy, think below problems:
   [Some Test](https://mathiasbynens.be/notes/es6-unicode-regex) may failed, example:
 
   ```Javascript
-  const string = 'a𝌆b';
+  const selector = '.a𝌆b';
 
-  console.log(/a.b/.test(string));
+  console.log(/a.b/.test(selector));
   // → false ???
   ```
   This should be solved using ES6 RegExp unicode `/u` flag, or polyfill, but that add amount of code size.
-  
+
   Better way is to avoid using RegExp to parse CSS, that is the safe way.
 
 ### Should split `,` (comma) right
@@ -30,7 +30,7 @@ Parse CSS Selector in JS is not easy, think below problems:
   
 ### Should replace `&` char right
 
-  See below object for nested (`&` == parent selector) :
+  Below object is for nested selector (`&` == parent selector) :
 
   ```Javascript
   {
@@ -39,12 +39,12 @@ Parse CSS Selector in JS is not easy, think below problems:
     }
   }
   ```
-  
-  It's simple, a css-in-js lib should avoid simple replace the `&` char, cssobj using `\\&` to escape.
-  
+
+  A css-in-js lib **should not** simplely replace the `&` char, cssobj using `\\&` to escape.
+
 ### Should keep original class names
 
-  When author write his class name, a lib should not drop it when localize:
+  When CSS Author write his class names, a lib should not replace it with other when localizing:
 
   ```Javascript
   {
@@ -54,5 +54,8 @@ Parse CSS Selector in JS is not easy, think below problems:
   }
   ```
 
-  When a lib render the object, the `.item` name should be keeped, that way user can debug easily, and may be referenced in other lib easily.
+  Instead, all the selector names from CSS Author (`.item` part) should be keeped, that way user can debug easily, and may be referenced in other lib easily.
+
+  Some lib using **hash**, or Random ID, the original CSS Author will lost his way.
+
 

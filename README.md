@@ -10,7 +10,7 @@
 CSS in JS solution, functional update CSS rules, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and diff, features:
 
  - **~4K min.gz**
- - **CSS Rules** create and **diff update**
+ - **CSS Rules** create, **Diff Update**
  - [Nested Child Selector](https://cssobj.github.io/cssobj-demo/#demoprefixer)
  - [Safety of Unicode/Comma/Ampersand](https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS)
  - [Conditional apply CSS (good for SPA)](https://cssobj.github.io/cssobj-demo/test/test.html)
@@ -28,7 +28,7 @@ CSS in JS solution, functional update CSS rules, create [CSSOM](https://develope
 
 | Lib                    | [cssobj][] | [glamor][] | [fela][]        | [styletron][] | [cxs][]    | [aphrodite][] |
 |------------------------|------------|------------|-----------------|---------------|------------|---------------|
-| Version                | 1.0.0      | 2.20.12    | 4.1.0           | 2.2.0         | 3.0.0      | 1.1.0         |
+| Version                | 1.0.1      | 2.20.12    | 4.1.0           | 2.2.0         | 3.0.0      | 1.1.0         |
 | Size(min.gz)           | 4K         | 8K         | N/A             | N/A           | 6K         | 6K            |
 | [Unicode Safe][uni]    | **YES**    | *NO*       | **YES**         | *NO*          | **YES**    | *NO*          |
 | Nested Selector        | **YES**    | **YES**    | NotSupport      | NotSupport    | NotSupport | NotSupport    |

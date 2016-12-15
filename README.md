@@ -19,6 +19,7 @@ CSS in JS solution, functional update CSS rules, create [CSSOM](https://develope
  - [Media query hook](https://cssobj.github.io/cssobj-demo/#demomedia)
  - [Dynamically change CSS](https://cssobj.github.io/cssobj-demo/#demo1)
  - [Server Side Rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
+ - **Intuitive API**
 
 [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
 
@@ -168,6 +169,8 @@ result.update()
 result.mapSel('.nav')  // .nav_ioei2j1_
 
 ```
+
+There's **only one** top level API: `cssobj( obj )`, all other things using `result.someMethods`. That's all!
 
 #### More to read:
 

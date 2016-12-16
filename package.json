@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CSS in JS solution, dynamically change and update stylesheet rules at runtime, CSSOM, localize class names, auto vendor prefixer, media query hook, styled components.",
   "keywords": [
     "cssom",
@@ -11,6 +11,7 @@
     "css modules"
   ],
   "main": "dist/cssobj.cjs.js",
+  "browser": "dist/cssobj.iife.js",
   "jsnext:main": "dist/cssobj.es.js",
   "files": [
     "dist",

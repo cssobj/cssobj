@@ -27,9 +27,9 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
 
 Render CSS string from js, localize for using in js components, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
 
-The hard part is **updating rules at runtime**.
+The hard part is **updating the rule**, rewrite the whole `<style>` tag with new string is **doing wrong**.
 
-**cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), to **diff and udpate at runtime**.
+**cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), to **diff and udpate** at **CSS Property** level.
 
 Assume you have below CSS:
 
@@ -62,19 +62,26 @@ const result = cssobj(obj)
 obj['.nav'].color = 'orange'
 
 result.update()
-// only the 'color' prop of '.nav' rule updated
 ```
+
+Only `color` of `.nav` updated, other rules and props will keep untouched.
 
 That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
 
 ## Install:
 
-**npm**
+**npm** (CJS & ES)
 
 ``` bash
 npm install cssobj  # the lib
 
 npm install -g cssobj-converter  # CLI tool (optional)
+```
+
+**use in html** (IIFE)
+
+``` html
+<script src="https://unpkg.com/cssobj"></script>
 ```
 
 ## Quick Start:

@@ -1,81 +1,44 @@
-<img align="right" src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="0" height="150" border="0"><img align="right" title="cssobj logo" alt="cssobj logo" align="bottom" src="https://avatars0.githubusercontent.com/u/20465580?v=3&s=132" border="30" hspace="0" vspace="20">
+<img align="right" title="cssobj logo" alt="cssobj logo" align="bottom" src="https://avatars0.githubusercontent.com/u/20465580?v=3&s=132" border="30" hspace="0" vspace="20">
+
 # CSSOBJ
+CSS in JS solution, **change stylesheet rules at runtime**, features:
+
+ - **~4K min.gz**
+ - **CSS Rules** create, diff
+ - [Change rules at Runtime](https://cssobj.github.io/cssobj-demo/#demo1)
+ - [TOOL to convert CSS](https://github.com/cssobj/cssobj-converter)
+ - [Nested Child Selector](https://cssobj.github.io/cssobj-demo/#demoprefixer)
+ - [Safety of Unicode/Comma/Ampersand](https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS)
+ - [Conditional apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
+ - [Local class names](https://cssobj.github.io/cssobj-demo/#demo4)
+ - [Auto vendor prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
+ - [Media query hook](https://cssobj.github.io/cssobj-demo/#demomedia)
+ - [Server Side Rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
+ - **Intuitive API**
+
+[Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj)
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![npm](https://img.shields.io/npm/v/cssobj.svg "Version")](https://www.npmjs.com/package/cssobj)
+[![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-[![JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
+## Highlight
 
-CSS in JS solution, functional update CSS rules, create [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) and diff, features:
+Render CSS string from js, localize for using in js components, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
 
- - **~4K min.gz**
- - **CSS Rules** create, **Diff Update**
- - [Nested Child Selector](https://cssobj.github.io/cssobj-demo/#demoprefixer)
- - [Safety of Unicode/Comma/Ampersand](https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS)
- - [Conditional apply CSS (good for SPA)](https://cssobj.github.io/cssobj-demo/test/test.html)
- - [CSS modules with local class](https://cssobj.github.io/cssobj-demo/#demo4)
- - [Auto vendor prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
- - [Media query hook](https://cssobj.github.io/cssobj-demo/#demomedia)
- - [Dynamically change CSS](https://cssobj.github.io/cssobj-demo/#demo1)
- - [Server Side Rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
- - **Intuitive API**
+The hard part is **updating rules at runtime**.
 
-[Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [LESS in JS](https://github.com/futurist/cssobj-less)
+**cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), to **diff and udpate at runtime**.
 
-### Features Compared with similar libs
+Assume you have below CSS:
 
-*all the below libs will create CSS Rules from JS object*
-
-| Lib                    | [cssobj][] | [glamor][] | [fela][]        | [styletron][] | [cxs][]    | [aphrodite][] |
-|------------------------|------------|------------|-----------------|---------------|------------|---------------|
-| Version                | 1.0.1      | 2.20.12    | 4.1.0           | 2.2.0         | 3.0.0      | 1.1.0         |
-| Size(min.gz)           | 4K         | 8K         | N/A             | N/A           | 6K         | 6K            |
-| [Unicode Safe][uni]    | **YES**    | *NO*       | **YES**         | *NO*          | **YES**    | *NO*          |
-| Nested Selector        | **YES**    | **YES**    | NotSupport      | NotSupport    | NotSupport | NotSupport    |
-| [Comma Safe][comma]    | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
-| [Ampersand Safe][amp]  | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
-| [Keep Class Names][k]  | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | **YES**       |
-| Nested @media          | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
-| Other @-rules          | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
-| CSS Virtual Node       | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Dynamic Update[Diff]   | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Auto Prefixer[In-Core] | **YES**    | **YES**    | *NO*            | *NO*          | *NO*       | **YES**       |
-| Function as CSS Value  | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Conditional Apply      | **YES**    | *NO*       | **YES**[Plugin] | *NO*          | *NO*       | **YES**       |
-| Inject To DOM          | **Auto**   | **Auto**   | *Manually*      | *Manually*    | *Manually* | **Auto**      |
-| Server Rendering       | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
-
-[cssobj]: https://github.com/cssobj/cssobj
-[glamor]: https://github.com/threepointone/glamor
-[fela]: https://github.com/rofrischmann/fela/
-[styletron]: https://github.com/rtsao/styletron
-[cxs]: https://github.com/jxnblk/cxs
-[aphrodite]: https://github.com/Khan/aphrodite
-
-[uni]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-avoid-using-unicode-unsafe-regexp
-[comma]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-split--comma-right
-[amp]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-replace--char-right
-[k]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-keep-original-class-names
-
-## Why?
-
-For a long time, changing CSS is via **DOM.style**, like below:
-
-``` javascript
-// vanilla
-document.getElementById('domID').style.color = 'red'
-document.getElementById('domID').style.fontSize = '14px'
-
-// jquery
-$('div').css({color:'red', fontSize:'14px'})  // all the DIVs!
+``` css
+.nav { color: blue; }
+.nav .item{ color: red; font-size: 12px; }
 ```
 
-It's straight forward, but have [performance issues](http://www.quirksmode.org/dom/classchange.html), cannot use `pseudo-selector`, etc.
-
-[CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model) is the base of browser, have good Javascript API, why not using it?
-
-This lib convert JS Object into CSSOM Rules, And **diff udpate**, see below:
+Render using CSSOBJ:
 
 ```javascript
 import cssobj from 'cssobj'
@@ -89,25 +52,17 @@ const obj = {
     }
   }
 }
-const ret = cssobj(obj)
+const result = cssobj(obj)
+// will create <style>, insert 2 CSS rules
 ```
 
-it will create `<style>` tag in **head**, with below CSS:
-
-``` css
-.nav { color: blue; }
-.nav .item{ color: red; font-size: 12px; }
-```
-
-Want to update the rule?
+**Dynamically upate a rule**:
 
 ```javascript
 obj['.nav'].color = 'orange'
 
-// or pass a function, cssobj will invoke it
-obj['.nav'].color = function(){ return caculated() }
-
-ret.update()
+result.update()
+// only the 'color' prop of '.nav' rule updated
 ```
 
 That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
@@ -129,7 +84,7 @@ npm install -g cssobj-converter  # CLI tool (optional)
 Write your CSS as normal (e.g. *index.css*), e.g.:
 
 ``` css
-.nav { color: blue; }
+.nav { color: blue; font-size: 12px; }
 ```
 
 - **Step 2**
@@ -140,11 +95,11 @@ Convert CSS file *index.css* into *index.css.js* as JS module, using [cssobj CLI
 cssobj index.css -o index.css.js
 ```
 
-The content of `index.css.js` as below (**common js** module):
+The content of `index.css.js` as below (**Common JS** module):
 
 ``` javascript
 module.exports = {
-  '.nav': { color: 'blue' }
+  '.nav': { color: 'blue', fontSize: '12px' }
 }
 ```
 
@@ -162,15 +117,21 @@ const result = cssobj(obj, {local: true})
 
 // update some rule
 obj['.nav'].color = 'red'
-obj['.nav'].fontSize = '12px'
+obj['.nav'].fontSize = function(prev){ return parseInt(prev) + 1 }  // increase font-size by 1
 result.update()
 
 // get localized class name
-result.mapSel('.nav')  // .nav_ioei2j1_
+
+console.log(result.mapSel('.nav'))  // .nav_ioei2j1_
 
 ```
 
-There's **only one** top level API: `cssobj( obj )`, all other things using `result.someMethods`. That's all!
+Let's quickly learn the API:
+
+**only one** top level method: `cssobj( obj )`, all other things using `result.someMethods`, that's all, really.
+
+#### [Documented API](https://github.com/cssobj/cssobj/blob/master/docs/api.md)
+
 
 #### More to read:
 
@@ -184,8 +145,6 @@ There's **only one** top level API: `cssobj( obj )`, all other things using `res
 
   - [Server side rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
 
-## [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md)
-
 ## How it worked?
 
 1. **cssobj** first parse js object into **Virtual CSSOM** middle format.
@@ -194,6 +153,7 @@ There's **only one** top level API: `cssobj( obj )`, all other things using `res
 
 3. When the js object changed, **cssobj** will diff CSSOM rules (**add/delete/change**) accordingly. (see [demo](https://cssobj.github.io/cssobj-demo/#demo1))
 
+## 
 
 ## Tools
 

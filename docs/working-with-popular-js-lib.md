@@ -49,6 +49,8 @@ You can just set cssobj into state in your component.
 
 [fiddle demo](https://jsfiddle.net/futurist/vk9uu520/) Please open console and see **local class names** work!
 
+Also, you can check [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx) for simplify `mapClass`.
+
 ```javascript
 import React from 'react'
 import ReactDOM from 'react-dom'

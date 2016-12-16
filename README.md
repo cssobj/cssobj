@@ -27,9 +27,9 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
 
 Render CSS string from js, localize for using in js components, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
 
-The hard part is **updating the rule**, rewrite the whole `<style>` tag with new string is **doing wrong**.
+The hard part is **updating the rule**, rewrite the whole `<style>` tag with new string is **doing wrong**
 
-**cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), to **diff and udpate** at **CSS Property** level.
+**cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), to **diff and udpate** at **CSS Property** level
 
 Assume you have below CSS:
 
@@ -64,7 +64,7 @@ obj['.nav'].color = 'orange'
 result.update()
 ```
 
-Only `color` of `.nav` updated, other rules and props will keep untouched.
+Above, **only** `color` prop in `.nav` rule updated, other rules and props will **keep untouched**.
 
 That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
 
@@ -144,6 +144,8 @@ Let's quickly learn the API:
 
   - **!important** [CSSOBJ Format](https://github.com/cssobj/cssobj/wiki/Input-Object-Format)
 
+  - [Working with Babel/JSX](https://github.com/cssobj/cssobj/wiki/Working-with-Babel-JSX)
+
   - [Merge multiple objects](https://github.com/cssobj/cssobj/wiki/Merge-Multiple-Objects)
 
   - [Working with popular libs](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib)
@@ -160,15 +162,17 @@ Let's quickly learn the API:
 
 3. When the js object changed, **cssobj** will diff CSSOM rules (**add/delete/change**) accordingly. (see [demo](https://cssobj.github.io/cssobj-demo/#demo1))
 
-## 
-
 ## Tools
 
-  Convert you existing style sheet into *cssobj*:
+  Convert existing style sheet into *cssobj*:
 
   - [CLI Converter](https://github.com/cssobj/cssobj-converter) **Recommended** CLI tools to convert CSS. Run `npm -g cssobj-converter`
 
   - [Online Converter](http://convertcssobj-futurist.rhcloud.com/) It's free node server, slow, and unstalbe, not recommended
+
+## Debug
+
+  - [cssobj-helper-showcss](https://github.com/cssobj/cssobj-helper-showcss) Display css string from style tag, for DEBUG
 
 ## Plugins
 
@@ -190,16 +194,15 @@ Let's quickly learn the API:
 
 ## Helpers
 
-  - [cssobj-helper-stylize](https://github.com/cssobj/cssobj-helper-stylize) Add css string into style dom
-
-  - [cssobj-helper-showcss](https://github.com/cssobj/cssobj-helper-showcss) Display css string from style tag
+  - [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx) Work with React, Vue etc. that can use babel+jsx
 
   - [cssobj-mithril](https://github.com/cssobj/cssobj-mithril) Help cssobj to work with [mithril](https://github.com/lhorie/mithril.js)
+
+  - [cssobj-helper-stylize](https://github.com/cssobj/cssobj-helper-stylize) Add css string into style dom
 
 ## Demos
 
   - [cssobj-demo](https://github.com/cssobj/cssobj-demo)
-
 
 ## Test
 

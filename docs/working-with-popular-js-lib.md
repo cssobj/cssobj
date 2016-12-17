@@ -49,7 +49,7 @@ You can just set cssobj into state in your component.
 
 [fiddle demo](https://jsfiddle.net/futurist/vk9uu520/) Please open console and see **local class names** work!
 
-Also, you can check [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx) for simplify `mapClass`.
+**Notice**, you should check [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx) to simplify `mapClass`.
 
 ```javascript
 import React from 'react'
@@ -90,7 +90,7 @@ ReactDOM.render(<App local={true} />, document.getElementById('container'))
 
 ## Mithril
 
-For mithril, please check this repo: [cssobj-mithril](https://github.com/cssobj/cssobj-mithril)
+For mithril, please check out [cssobj-mithril](https://github.com/cssobj/cssobj-mithril), for zero effect to `mapClass`
 
 Without above repo, you can just use mithril natively as below:
 
@@ -127,6 +127,8 @@ m.mount(document.getElementById('container'), component)
 ```
 
 ## Vue
+
+**Notice**, if you use Vue2.0, should check [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx) to simplify `mapClass`
 
 **cssobj** can use in Vue component for better capsulation.
 

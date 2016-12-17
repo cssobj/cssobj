@@ -16,7 +16,7 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
  - [Server Side Rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
  - **Intuitive API**
 
-[Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj)
+[Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [Babel/JSX](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx)
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -25,7 +25,40 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
 
 ## Highlight
 
-Render CSS string from js, localize for using in js components, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
+Render CSS string from js, localize for using in js components, it's not hard today, there are many listed below
+
+*all the below libs will create CSS Rules from JS object*
+
+| Lib                         | [cssobj][] | [glamor][] | [fela][]        | [styletron][] | [cxs][]    | [aphrodite][] |
+|-----------------------------|------------|------------|-----------------|---------------|------------|---------------|
+| Version                     | 1.0.1      | 2.20.12    | 4.1.0           | 2.2.0         | 3.0.0      | 1.1.0         |
+| Size(min.gz)                | 4K         | 8K         | N/A             | N/A           | 6K         | 6K            |
+| **Change rules at Runtime** | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| [Unicode Safe][uni]         | **YES**    | *NO*       | **YES**         | *NO*          | **YES**    | *NO*          |
+| Nested Selector             | **YES**    | **YES**    | NotSupport      | NotSupport    | NotSupport | NotSupport    |
+| [Comma Safe][comma]         | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
+| [Ampersand Safe][amp]       | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
+| [Keep Class Names][k]       | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | **YES**       |
+| Nested @media               | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
+| Other @-rules               | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
+| CSS Virtual Node            | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| Auto Prefixer[In-Core]      | **YES**    | **YES**    | *NO*            | *NO*          | *NO*       | **YES**       |
+| Function as CSS Value       | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
+| Conditional Apply           | **YES**    | *NO*       | **YES**[Plugin] | *NO*          | *NO*       | **YES**       |
+| Inject To DOM               | **Auto**   | **Auto**   | *Manually*      | *Manually*    | *Manually* | **Auto**      |
+| Server Rendering            | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
+
+[cssobj]: https://github.com/cssobj/cssobj
+[glamor]: https://github.com/threepointone/glamor
+[fela]: https://github.com/rofrischmann/fela/
+[styletron]: https://github.com/rtsao/styletron
+[cxs]: https://github.com/jxnblk/cxs
+[aphrodite]: https://github.com/Khan/aphrodite
+
+[uni]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-avoid-using-unicode-unsafe-regexp
+[comma]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-split--comma-right
+[amp]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-replace--char-right
+[k]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-keep-original-class-names
 
 The hard part is **updating the rule**, rewrite the whole `<style>` tag with new string is **doing wrong**
 
@@ -35,7 +68,7 @@ Assume you have below CSS:
 
 ``` css
 .nav { color: blue; }
-.nav .item{ color: red; font-size: 12px; }
+.nav .item { color: red; font-size: 12px; }
 ```
 
 Render using CSSOBJ:
@@ -52,8 +85,12 @@ const obj = {
     }
   }
 }
-const result = cssobj(obj)
-// will create <style>, insert 2 CSS rules
+
+const result = cssobj(obj, {local: true})
+// will create <style>, insert 2 CSS rules, with namespace: _1jkhrb92_
+
+result.mapClass(<ul className='nav'><li className='item'>ITEM</li></ul>)  // with babel-plugin-transform-cssobj-jsx
+// <ul class="nav_1jkhrb92_"><li "item_1jkhrb92_"></li></ul>
 ```
 
 **Dynamically upate a rule**:

@@ -7,19 +7,27 @@ With the plugin [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/ba
 ``` javascript
 const style = cssobj(obj)
 
-const html = (
-    <div className={'nav', style}>
-    <p className={'!news item active', style}> </p></div>
+const html = style.mapClass(
+    <div className='nav'>
+    <p className='!news item active'> </p></div>
 )
 ```
 
-The plugin will transform into below:
+The plugin will transform into below JSX:
 
 ``` javascript
 const html = (
-    <div className={result.mapClass('nav')}>
-    <p className={result.mapClass('!news item active')}> </p></div>
+    <div className={style.mapClass('nav')}>
+    <p className={style.mapClass('!news item active')}> </p></div>
 )
+```
+
+And the conterpart HTML render result is:
+
+```html
+<div class="nav_f8w2b7i1_">
+  <p class="news item_f8w2b7i1_ active_f8w2b7i1_"></p>
+</div>
 ```
 
 Just a sugar, but more handy.

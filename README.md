@@ -88,10 +88,10 @@ const obj = {
 }
 
 const result = cssobj(obj, {local: true})
-// will create <style>, insert 2 CSS rules, with namespace: _1jkhrb92_
+// will create <style>, insert 2 CSS rules, random namespace: _1jkhrb92_
 
 result.mapClass(<ul className='nav'><li className='item'>ITEM</li></ul>)  // with babel-plugin-transform-cssobj-jsx
-// <ul class="nav_1jkhrb92_"><li "item_1jkhrb92_"></li></ul>
+// <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
 ```
 
 **Dynamically upate a rule**:
@@ -160,14 +160,14 @@ const obj = require('./index.css.js')
 // local: true will put class names into local space
 const result = cssobj(obj, {local: true})
 
+result.mapClass(<JSX>)  // map the whole JSX, with babel-plugin-transform-cssobj-jsx
+result.mapClass('classA')  // only get the map of classA
+
+// later
 // update some rule
 obj['.nav'].color = 'red'
 obj['.nav'].fontSize = function(prev){ return parseInt(prev) + 1 }  // increase font-size by 1
 result.update()
-
-// get localized class name
-
-console.log(result.mapSel('.nav'))  // .nav_ioei2j1_
 
 ```
 
@@ -181,6 +181,8 @@ Let's quickly learn the API:
 #### More to read:
 
   - **!important** [CSSOBJ Format](https://github.com/cssobj/cssobj/wiki/Input-Object-Format)
+
+  - [Understand Localization](https://github.com/cssobj/cssobj/wiki/Understand-Localization)
 
   - [Working with Babel/JSX](https://github.com/cssobj/cssobj/wiki/Working-with-Babel-JSX)
 

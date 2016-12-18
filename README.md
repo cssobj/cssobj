@@ -41,6 +41,7 @@ Render CSS string from js, localize for using in js components, it's not hard to
 | [Ampersand Safe][amp]       | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
 | [Keep Class Names][k]       | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | **YES**       |
 | Nested @media               | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
+| [@media work in **IE8**][ie]| **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
 | Other @-rules               | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
 | CSS Virtual Node            | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
 | Auto Prefixer[In-Core]      | **YES**    | **YES**    | *NO*            | *NO*          | *NO*       | **YES**       |
@@ -60,10 +61,21 @@ Render CSS string from js, localize for using in js components, it's not hard to
 [comma]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-split--comma-right
 [amp]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-replace--char-right
 [k]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-keep-original-class-names
+[ie]: https://github.com/cssobj/cssobj/wiki/How-@media-work-in-IE8
 
-The hard part is **updating the rule**, rewrite the whole `<style>` tag with new string is **doing wrong**
+## The Hard Part
 
-**cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), to **diff and udpate** at **CSS Property** level
+The hard part is **dynamically update rules at runtime**, replace `<style>` tag with new string is **doing wrong**
+
+**cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), **diff object, udpate rule** at stylesheet **Property** level
+
+In above table, cssobj is the **unique** lib that can:
+
+ - [Dynamically change rules at run time](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
+
+ - [Use functions as CSS value (Powerful!)](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
+
+ - [@media work under IE8][ie] (add some IE8 hook bundle size (0.3K), no perf decreased)
 
 Assume you have below CSS:
 
@@ -154,19 +166,19 @@ Let's rock:
 
 ``` javascript
 // import your css module
-const obj = require('./index.css.js')
+const obj = require('./index.css')
 
-// create new <style> tag into html head, with rules in obj.
-// local: true will put class names into local space
+// create <style> tag in <head>, with rules in obj.
+// `local: true` will put class names into local space
 const result = cssobj(obj, {local: true})
 
 result.mapClass(<JSX>)  // map the whole JSX, with babel-plugin-transform-cssobj-jsx
-result.mapClass('classA')  // only get the map of classA
+result.mapClass('classA')  // get the map of 'classA'
 
 // later
 // update some rule
 obj['.nav'].color = 'red'
-obj['.nav'].fontSize = function(prev){ return parseInt(prev) + 1 }  // increase font-size by 1
+obj['.nav'].fontSize = function(prevVal){ return parseInt(prevVal) + 1 }  // increase font-size by 1
 result.update()
 
 ```

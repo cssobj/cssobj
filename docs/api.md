@@ -14,7 +14,7 @@ Nothing special, just plain js `Object`, or `Array` of `Object`, with below rule
 
 * if value is non-object, key will act as css property.
 
-##### IMPORTANT: Please read the [cssobj input format spec](docs/cssobj-object-format.md)
+##### IMPORTANT: Please read the [cssobj input format spec](https://github.com/cssobj/cssobj/wiki/Input-Object-Format)
 
 #### `options?: object`
 

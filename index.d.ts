@@ -8,16 +8,17 @@ declare namespace CssObj {
     }
 
     interface cssomOption {
-        id?: string,
-        frame?: any,
-        vendors?: string[],
-        append?: boolean,
-        attrs?: Object,
-        noMedia?: boolean
+      id?: string;
+      frame?: any;
+      vendors?: string[];
+      append?: boolean;
+      attrs?: Object;
+      noMedia?: boolean;
     }
 
     interface LocalOption {
       space?: string;
+      random?(): string;
       localNames?: Object;
     }
 
@@ -47,6 +48,10 @@ declare namespace CssObj {
       options: Options;
       ref: Object;
       root: Node;
+      space: string;
+      localNames: Object;
+      mapClass(classList: string): string;
+      mapSel(selector: string): string;
     }
 
     interface Static {

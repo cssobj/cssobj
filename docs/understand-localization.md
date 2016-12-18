@@ -69,9 +69,9 @@ There're **2** way get your finally names: `result.mapClass` and `result.mapSel`
 
 ### `result.mapClass` map to **classList**
 
-  What is `classList`? It's same as `className='a b c'`, the `a b c` part is a `classList`, **no dot** in front, and **space seperated**
+  What is `classList`? Think `<div className='a b c'`, the `a b c` is a `classList`: **no dot** in front, **space seperated**
 
-  Use `result.mapClass` to get `classList` in your MVC application, like **React**, **Vue**, **Angular**, **Mithril** etc.
+  Use `result.mapClass` get `classList` in your MVC application
 
   ```Javascript
   const html = <div className={result.mapClass('classA classB classC')}></div>
@@ -85,7 +85,7 @@ There're **2** way get your finally names: `result.mapClass` and `result.mapSel`
 
   You can add escape sign: **!** in front of a class, to **escape** the class from transform, say, using **global** name space
 
-  If using `result.mapClass('classA !classB classC')`, the result:
+  Code `result.mapClass('classA !classB classC')`, the result:
 
   ```html
   <div class="classA_i3e8bsj_ classB classC_i3e8bsj_"></div>
@@ -106,6 +106,7 @@ There're **2** way get your finally names: `result.mapClass` and `result.mapSel`
 
   // get localized selector
   $( result.mapSel('ul.nav li') ).hide()
+  // => $('ul.nav_i3e8bsj_ li').hide()
   ```
 
 - **hyperscript**
@@ -115,6 +116,7 @@ There're **2** way get your finally names: `result.mapClass` and `result.mapSel`
 
   // get localized selector
   h( result.mapSel('div.menu') , h( result.mapSel('ul.!nav') , ...))
+  // => h('div.menu_i3e8bsj_', h('ul.nav', ...))
   ```
 
   Also, you can add the escape sign: **!** in front of class to force it use **global space**, cssobj won't touch the name

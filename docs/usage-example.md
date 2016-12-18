@@ -1,3 +1,5 @@
+# Usage & Example
+
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
@@ -108,13 +110,11 @@ cssobj({
 })
 ```
 
-Then `div` will have color as **red**, **green** and **blue** accordingly, in **ALL BROWSERS** (tested Modern & IE5+)
+Then `div` will have color as **red**, **green** and **blue** accordingly (tested Modern & **IE8**)
 
-[Demo](https://cssobj.github.io/cssobj-demo/play/) here for **@media (min-width), (max-width)** support for old browsers.
+**IE8** don't support `@media`, cssobj will listen to `window.resize` event, to **dynamically enable rule or disable rule** in `@media scope`
 
-Below is the screencast with **@media** rule response support in **IE 5** (oh my!)
-
-[![CSSOBJ @media support](demo-media.gif)](https://cssobj.github.io/cssobj-demo/play/)
+[Demo](https://cssobj.github.io/cssobj-demo/play/) for **@media (min-width), (max-width)**
 
 ### - Auto vendor prefixer
 

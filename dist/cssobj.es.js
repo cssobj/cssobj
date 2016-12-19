@@ -1,7 +1,7 @@
 /*
-  cssobj v1.0.3
-  Sat Dec 17 2016 18:22:06 GMT+0800 (HKT)
-  commit fb85892b53e506b1e53410fe0b4449091a6a4c8c
+  cssobj v1.0.4
+  Mon Dec 19 2016 19:31:07 GMT+0800 (HKT)
+  commit 758fd98078541487fe57a47862a81324b8c527ae
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -11,8 +11,8 @@
     22f19d897282e56fe7134a5d578152046770d58d
   - cssobj-plugin-cssom@3.0.0
     23445070d1843c35fdcbaf4b4dbe21989859dca5
-  - cssobj-plugin-localize@3.1.0
-    5ddc5ff4bbcf8a7578b92f894689753e38ea37ff
+  - cssobj-plugin-localize@3.2.0
+    4542f1481fdba8963a47278c58884c17d8c85f48
 */
 
 // helper functions for cssobj
@@ -113,6 +113,34 @@ function splitComma (str) {
     if (!n && c == ',') d.push(str.substring(prev, i)), prev = i + 1
   }
   return d.concat(str.substring(prev))
+}
+
+// split char aware of syntax
+function syntaxSplit (str, splitter, keepSplitter, test, final) {
+  var isString, isFeature, isSplitter, lastAst,
+      feature = [], segment = [], result = [], ast = [], len = str.length
+  for (var c, i = 0; i <= len; i++) {
+    c = str.charAt(i)
+    lastAst = ast[0]
+    isString = lastAst == '\'' || lastAst == '"'
+    if (!isString) {
+      if ('[(\'"'.indexOf(c) >= 0) ast.unshift(c)
+      if ('])'.indexOf(c) >= 0) ast.shift()
+    } else {
+      if (c == lastAst) ast.shift()
+    }
+    if (lastAst) {
+      segment.push(c)
+    } else {
+      isFeature = test && c && test(c, i, segment, result)
+      isSplitter = c == splitter || !c
+      if (isSplitter && !keepSplitter) c = ''
+      if (isFeature) feature.push(c)
+      if (!isFeature || isSplitter) segment.push(feature.length ? final(feature.join('')) : '', c), feature = []
+      if (isSplitter) result.push(segment.join('')), segment = []
+    }
+  }
+  return result
 }
 
 // checking for valid css value
@@ -925,6 +953,16 @@ function cssobj_plugin_post_cssom (option) {
 
 // cssobj plugin
 
+function isClassName (char, i, segment) {
+  return i>0 && !segment.length && (char == '!'
+          || char >= '0' && char <= '9'
+          || char >= 'a' && char <= 'z'
+          || char >= 'A' && char <= 'Z'
+          || char == '-'
+          || char == '_'
+          || char >= '\u00a0')
+}
+
 function cssobj_plugin_selector_localize(option) {
 
   option = option || {}
@@ -935,45 +973,22 @@ function cssobj_plugin_selector_localize(option) {
 
   var localNames = option.localNames = option.localNames || {}
 
+  var localize = function(name) {
+    return name[0]=='!'
+      ? name.slice(1)
+      : (name in localNames
+         ? localNames[name]
+         : name + space)
+  }
+
   var parseSel = function(str) {
-    var store=[], ast=[], lastAst, match
-    for(var c, n, i=0, len=str.length; i<len; i++) {
-      c=str[i]
-      lastAst = ast[0]
-      if(lastAst!=='\'' && lastAst!=='"') {
-        // not in string
-        if(!lastAst && c===':' && str.substr(i+1, 7)==='global(') {
-          ast.unshift('g')
-          i+=7
-          continue
-        }
-        if(~ '[(\'"'.indexOf(c)) ast.unshift(c)
-        if(~ '])'.indexOf(c)) {
-          if(c==')' && lastAst=='g') c=''
-          ast.shift(c)
-        }
-        if(!lastAst && c==='.') {
-          i++
-          if(str[i]!=='!') {
-            match = []
-            while( (n=str[i]) &&
-                   (n>='0'&&n<='9'||n>='a'&&n<='z'||n>='A'&&n<='Z'||n=='-'||n=='_'||n>='\u00a0'))
-              match.push(str[i++])
-            if(match.length) {
-              n = match.join('')
-              c += n in localNames
-                ? localNames[n]
-                : n + space
-            }
-            i--
-          }
-        }
-      } else {
-        if(c===lastAst) ast.shift()
-      }
-      store.push(c)
-    }
-    return store.join('')
+    return syntaxSplit(
+      str,
+      '.',
+      true,
+      isClassName,
+      localize
+    ).join('')
   }
 
   var mapClass = function(str) {
@@ -1016,6 +1031,6 @@ function cssobj (obj, option, initData) {
   return cssobj$2(option)(obj, initData)
 }
 
-cssobj.version = '1.0.3'
+cssobj.version = '1.0.4'
 
 export default cssobj;

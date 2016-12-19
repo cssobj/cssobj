@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "CSS in JS solution, dynamically change and update stylesheet rules at runtime, CSSOM, localize class names, auto vendor prefixer, media query hook, styled components.",
   "keywords": [
     "cssom",

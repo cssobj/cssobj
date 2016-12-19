@@ -1,4 +1,4 @@
-### Compared with similar libs
+# Compared With Similar Libs
 
 *all the below libs will create CSS Rules from JS object*
 
@@ -13,6 +13,7 @@
 | [Ampersand Safe][amp]       | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
 | [Keep Class Names][k]       | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | **YES**       |
 | Nested @media               | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
+| [@media work in **IE8**][ie]| **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
 | Other @-rules               | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
 | CSS Virtual Node            | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
 | Auto Prefixer[In-Core]      | **YES**    | **YES**    | *NO*            | *NO*          | *NO*       | **YES**       |
@@ -32,4 +33,4 @@
 [comma]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-split--comma-right
 [amp]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-replace--char-right
 [k]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-keep-original-class-names
-
+[ie]: https://github.com/cssobj/cssobj/wiki/How-@media-work-in-IE8

@@ -36,7 +36,7 @@ var result = cssobj({
   '.nav':{
     color:'red',
   },
-  ':global(.iconfont).edit': {
+  '.!iconfont.edit': {
     color:'blue'
   },
   '.iconfont.!edit': {
@@ -45,12 +45,12 @@ var result = cssobj({
 }, {local:{space:'_abc_'}})
 
 log(css(result), '.nav_abc_ { color: red; }\n.iconfont.edit_abc_ { color: blue; }\n.iconfont_abc_.edit { color: blue; }\n')
-log(result.mapClass(':global(.abc .def) xyz'), ' abc def xyz_abc_')
+log(result.mapClass('.!abc .!def xyz'), ' abc def xyz_abc_')
 
 // test for mapSel
 log(result.mapSel('.nav'), '.nav_abc_')
-log(result.mapSel(':global(.abc .def) xyz'), '.abc .def xyz')
-log(result.mapSel('.nav a[title=".sdf].abc:global(.def)"]'), '.nav_abc_ a[title=".sdf].abc:global(.def)"]')
+log(result.mapSel('.!abc .!def xyz'), '.abc .def xyz')
+log(result.mapSel('.nav a[title=".sdf].abc.!def"]'), '.nav_abc_ a[title=".sdf].abc.!def"]')
 log(result.mapSel('.nav.选择器1.!选择器2'), '.nav_abc_.选择器1_abc_.选择器2')
 
 // localNames

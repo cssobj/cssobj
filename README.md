@@ -23,59 +23,27 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
 [![npm](https://img.shields.io/npm/v/cssobj.svg "Version")](https://www.npmjs.com/package/cssobj)
 [![Coverage Status](https://coveralls.io/repos/github/cssobj/cssobj-core/badge.svg?branch=master)](https://coveralls.io/github/cssobj/cssobj-core?branch=master)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+[ie]: https://github.com/cssobj/cssobj/wiki/How-@media-work-in-IE8
 
 ## Highlight
 
-Render CSS string from js, localize for using in js components, it's not hard today, there are many listed below
-
-*all the below libs will create CSS Rules from JS object*
-
-| Lib                         | [cssobj][] | [glamor][] | [fela][]        | [styletron][] | [cxs][]    | [aphrodite][] |
-|-----------------------------|------------|------------|-----------------|---------------|------------|---------------|
-| Version                     | 1.0.1      | 2.20.12    | 4.1.0           | 2.2.0         | 3.0.0      | 1.1.0         |
-| Size(min.gz)                | 4K         | 8K         | N/A             | N/A           | 6K         | 6K            |
-| **Change rules at Runtime** | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| [Unicode Safe][uni]         | **YES**    | *NO*       | **YES**         | *NO*          | **YES**    | *NO*          |
-| Nested Selector             | **YES**    | **YES**    | NotSupport      | NotSupport    | NotSupport | NotSupport    |
-| [Comma Safe][comma]         | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
-| [Ampersand Safe][amp]       | **YES**    | *NO*       | NotSupport      | NotSupport    | NotSupport | NotSupport    |
-| [Keep Class Names][k]       | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | **YES**       |
-| Nested @media               | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
-| [@media work in **IE8**][ie]| **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Other @-rules               | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
-| CSS Virtual Node            | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Auto Prefixer[In-Core]      | **YES**    | **YES**    | *NO*            | *NO*          | *NO*       | **YES**       |
-| Function as CSS Value       | **YES**    | *NO*       | *NO*            | *NO*          | *NO*       | *NO*          |
-| Conditional Apply           | **YES**    | *NO*       | **YES**[Plugin] | *NO*          | *NO*       | **YES**       |
-| Inject To DOM               | **Auto**   | **Auto**   | *Manually*      | *Manually*    | *Manually* | **Auto**      |
-| Server Rendering            | **YES**    | **YES**    | **YES**         | **YES**       | **YES**    | **YES**       |
-
-[cssobj]: https://github.com/cssobj/cssobj
-[glamor]: https://github.com/threepointone/glamor
-[fela]: https://github.com/rofrischmann/fela/
-[styletron]: https://github.com/rtsao/styletron
-[cxs]: https://github.com/jxnblk/cxs
-[aphrodite]: https://github.com/Khan/aphrodite
-
-[uni]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-avoid-using-unicode-unsafe-regexp
-[comma]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-split--comma-right
-[amp]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-replace--char-right
-[k]: https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS#should-keep-original-class-names
-[ie]: https://github.com/cssobj/cssobj/wiki/How-@media-work-in-IE8
-
-## The Hard Part
+Render CSS string from js, pack style sheet into js component, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
 
 The hard part is **dynamically update rules at runtime**, replace `<style>` tag with new string is **doing wrong**
 
 **cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), **diff object, udpate rule** at stylesheet **Property** level
 
-In above table, cssobj is the **unique** lib that can:
+In addition to many basic features of CSS-in-JS technology, cssobj is the **unique** lib that focus on:
 
  - [Dynamically change rules at run time](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
 
- - [Use functions as CSS value (Powerful!)](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
+ - [Use JS function as CSS value (Powerful!)](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
 
- - [@media work under IE8][ie] (add some IE8 hook bundle size (0.3K), no perf decreased)
+ - **Nested stylesheet optimization**, similar to [SCSS](http://sass-lang.com/)/[LESS](http://lesscss.org/) in browser, but tiny
+
+ - **Stylesheet virtualization**
+
+ - [@media work under IE8][ie] (A bonus, add some IE8 bundle size (0.3K), no perf decreased)
 
 Assume you have below CSS:
 
@@ -89,6 +57,7 @@ Render using CSSOBJ:
 ```javascript
 import cssobj from 'cssobj'
 
+// nested source object
 const obj = {
   '.nav': {
     color: 'blue',

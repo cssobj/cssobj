@@ -131,5 +131,5 @@ You can add **$order** directive (default value is **0**), to change there execu
 
 Above, the execute order is `box1 ($order:0) -> box3 ($order:1) -> box2 ($order:2)`
 
-This time it's worked right
+This time it's worked right. [See the DEMO here](https://cssobj.github.io/cssobj-demo/#demo5)
 

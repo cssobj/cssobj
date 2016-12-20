@@ -35,13 +35,13 @@ The hard part is **dynamically update rules at runtime**, replace `<style>` tag 
 
 In addition to many basic features of CSS-in-JS technology, cssobj is the **unique** lib that focus on:
 
- - [Dynamically change rules at run time](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
-
- - [Use JS function as CSS value (Powerful!)](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
+ - **Stylesheet virtualization**
 
  - **Nested stylesheet optimization**, similar to [SCSS](http://sass-lang.com/)/[LESS](http://lesscss.org/) in browser, but tiny
 
- - **Stylesheet virtualization**
+ - [Dynamically change rules at run time](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
+
+ - [Use JS function as CSS value (Powerful!)](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
 
  - [@media work under IE8][ie] (A bonus, add some IE8 bundle size (0.3K), no perf decreased)
 
@@ -166,6 +166,8 @@ Let's quickly learn the API:
   - [Understand Localization](https://github.com/cssobj/cssobj/wiki/Understand-Localization)
 
   - [Working with Babel/JSX](https://github.com/cssobj/cssobj/wiki/Working-with-Babel-JSX)
+
+  - [Application Structure](https://github.com/cssobj/cssobj/wiki/Application-Module-Structure)
 
   - [Merge multiple objects](https://github.com/cssobj/cssobj/wiki/Merge-Multiple-Objects)
 

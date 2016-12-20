@@ -1,18 +1,18 @@
 /*
   cssobj v1.0.4
-  Tue Dec 20 2016 12:15:25 GMT+0800 (HKT)
-  commit 30d7ec65a94ce7f71cfeb9d86c3016f64d3c29e9
+  Tue Dec 20 2016 15:55:33 GMT+0800 (HKT)
+  commit d78627ce087a8bcac5efb747df5a106e7ed10a7e
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@1.0.1
-    91f508f2657db2cc3b6762db34cf2b2472bb4330
+  - cssobj-core@1.0.2
+    575e94d0fe859469e0bcbbe666a07f44e8d8b501
   - cssobj-plugin-cssom@3.0.0
     23445070d1843c35fdcbaf4b4dbe21989859dca5
-  - cssobj-plugin-localize@3.2.1
-    f8c482f099a597ffb1d3f43d6ca36947e64fb666
+  - cssobj-plugin-localize@3.2.2
+    c77b11b6bf023afd4cea7f30147e05027d21d0e5
 */
 
 define('cssobj', function () { 'use strict';
@@ -112,6 +112,7 @@ function getParents (node, test, key, childrenKey, parentKey) {
 
 // split selector with splitter, aware of css attributes
 function splitSelector (sel, splitter) {
+  if (sel.indexOf(splitter) < 0) return [sel]
   for (var c, i = 0, n = 0, instr = '', prev = 0, d = []; c = sel.charAt(i); i++) {
     if (instr) {
       if (c == instr) instr = ''

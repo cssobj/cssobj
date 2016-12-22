@@ -28,7 +28,7 @@ var result = cssobj({
   }
 }, {local:true})
 
-log(result.options.local.space, 'regexp:^\\w+$')
+log(result.config.local.space, 'regexp:^\\w+$')
 log(css(result), 'regexp:^.nav_\\w+_ { color: red; }\\n$')
 
 // define space

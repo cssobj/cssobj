@@ -22,8 +22,8 @@ var pagecss = cssobj(
     },
     textarea:{
       width:'100%',
-      height:function(prev, node, result) {
-        return result.ref.con.lastVal.height
+      height:function(v) {
+        return v.result.ref.con.lastVal.height
       },
       padding:2,
       border:'1px solid black'
@@ -51,7 +51,7 @@ var pagecss = cssobj(
       position: 'absolute',
       background: 'yellow',
       top: 0,
-      left: function(prev) {
+      left: function(v) {
         return winWidth && winWidth/2 - this.width/2
       }
     }

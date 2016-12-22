@@ -30,8 +30,8 @@ result.update()  // color is now 'blue'
 
 
 // using function as value:
-obj.div.color = function(prev, node, result){
-  return result.data.color
+obj.div.color = function(v){
+  return v.result.data.color
 }
 result.update({color:'blue'})  // color is now 'blue'
 
@@ -105,14 +105,14 @@ result.update()
 If you set function for prop's value:
 
 ```javascript
-obj.div.span.fontSize = function(prev, node, result){
-  return 1 + prev
+obj.div.span.fontSize = function(v) {
+  return 1 + v.prev
 }
 
 ```
 
-Please think of the below options:
+`v` have below properties:
 
- - prev : Last valid css value for this property, that is: returns like `null` will ignored by **cssobj**
- - node : The current **virtual css** node generated from `cssobj-core`, commonly, you can check `node.prop` object for current rule's value
- - result : The **cssobj** result object
+ - `v.prev` : Last valid css value for this property, that is: returns like `null` will ignored by **cssobj**
+ - `v.node` : The current **virtual css** node generated from `cssobj-core`, commonly, you can check `node.prop` object for current rule's value
+ - `v.result` : The **cssobj** result object

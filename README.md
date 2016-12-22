@@ -147,7 +147,7 @@ result.mapClass('classA')  // get the map of 'classA'
 // later
 // update some rule
 obj['.nav'].color = 'red'
-obj['.nav'].fontSize = function(prevVal){ return parseInt(prevVal) + 1 }  // increase font-size by 1
+obj['.nav'].fontSize = function(v){ return parseInt(v.prev) + 1 }  // increase font-size by 1
 result.update()
 
 ```

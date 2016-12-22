@@ -119,13 +119,13 @@ will be
 }
 ```
 
-  - 5 <a name="s4-5"></a>If value type is `Function`, then the function will be evaluated with signature: `function(prev, node, result){}`
+  - 5 <a name="s4-5"></a>If value type is `Function`, then the function will be evaluated with signature: `function(v){}`
 
-`{p: { fontSize : function(prev, node, result){return '16px'} } }` => `p {font-size: 16px}`
+`{p: { fontSize : function(v){return '16px'} } }` => `p {font-size: 16px}`
 
 If the function return an **Object**, it will be merged into current css props.
 
-`{p: { fontSize : function(prev, node, result){return {color: 'red', border:0} } } }` => `p { color: red; border: 0; }`
+`{p: { fontSize : function(v){return {color: 'red', border: v => v.prev + 1} } } }` => `p { color: red; border: v=>v.prev+1; }`
 
 See the related plugin: [cssobj-plugin-replace](https://github.com/cssobj/cssobj-plugin-replace)
 

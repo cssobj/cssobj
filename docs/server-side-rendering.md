@@ -14,17 +14,21 @@ const cssobj_plugin_gencss = require('cssobj-plugin-gencss')
 const cssobj = cssobj_core({
   plugins: [
     // order is important
-    cssobj_plugin_localize({space: 'your_space_name', localNames: {}})
-    cssobj_plugin_gencss({indent:'\t', newLine: '\n'})
+    cssobj_plugin_localize({space: 'your_space_name', localNames: {}})  // will add result.mapClass prop etc.
+    cssobj_plugin_gencss({indent:'\t', newLine: '\n'})  // will add result.css prop
   ]
 })
 
+// result.css is available
 console.log(cssobj(your_obj1).css)
 console.log(cssobj(your_obj2).css)
 
 ```
 
 If you don't need localized class names (`result.mapSel` & `result.mapClass`), you should remove `cssobj_plugin_localize` lines in above.
+
+**Notice** when you don't include `cssobj_plugin_localize` in your plugins, you **CANNOT** use `result.mapClass`, `result.mapSel`, `result.space`, `result.localNames`, since that 4 props was added by that plugin. Any call of the above 4 method/props will throw errors!
+
 
 ## Caveat
 

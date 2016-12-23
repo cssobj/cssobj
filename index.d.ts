@@ -43,7 +43,7 @@ declare namespace CssObj {
     interface Result {
       update (obj?:Object, state?: any): Result;
       cssom: HTMLStyleElement;
-      data: Object;
+      state: Object;
       nodes: Node[];
       obj: Object;
       config: Config;

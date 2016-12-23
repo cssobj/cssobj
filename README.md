@@ -113,7 +113,7 @@ localClassName = result.mapClass('nav')
 // nav_1jkhrb92_
 ```
 
-For this first time render, the `font-size` currently is `12px`, and `@media` just work under IE8, then
+For this first time render, all class names added a random suffix `_1jkhrb92_`, the `font-size` is `12px`, and `@media` just work under IE8, then
 
 ``` javascript
 result.update()

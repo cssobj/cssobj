@@ -123,18 +123,28 @@ result.update()
 // font-size  ->  14px
 ```
 
-**Control stylesheet from your source object**:
+**Change stylesheet from your source object**:
 
 ```javascript
 // result.obj === source object above
+
+// change a css property
 result.obj['.nav'].color = 'orange'
+
+// remove a css property
+delete result.obj['.nav'].height
+
+// add a new css property
+result.obj['.nav'].width = 200
 
 result.update()
 // color      ->  'orange'
-// font-size  ->   15px
+// height     ->   REMOVED!
+// width      ->   200px
+// font-size  ->   15px  // value function auto updated
 ```
 
-Above, **only** `color` and `font-size` properties updated, other rules and props will **keep untouched**
+Above, **only** `.nav` rule and `font-size` prop updated, other rules and props will **keep untouched**
 
 That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
 

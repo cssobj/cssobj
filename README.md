@@ -144,11 +144,18 @@ result.obj['.nav'].a = { color: 'blue', '&:hover': {textDecoration: 'none'} }
 delete result.obj['.nav']['.item']
 
 result.update()
+
 // color      ->  'orange'
 // height     ->   REMOVED!
 // width      ->   200px (ADDED!)
 // a, a:hover ->   ADDED!
 // .item      ->   REMOVED!
+
+// OR feed a new obj
+result.update(newObj)
+
+// cssobj will diff with prev obj, keep same part, change diffed part in stylesheet!
+
 ```
 
 Above, **only** diffed rules and prop updated, other rules and props will **keep untouched**

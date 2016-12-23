@@ -5,7 +5,7 @@ var colors = {
 
 var result = cssobj({'p':{
   color: function(v) {
-    return v.prev ? colors[v.prev] : 'black'
+    return v.cooked ? colors[v.cooked] : 'black'
   },
   'display':function() {
     return [{display:['-webkit-box', '-moz-box']}, 'flex', {flexWrap: 'wrap'}]

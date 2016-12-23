@@ -6,15 +6,12 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
  - **~4K min.gz**
  - **CSS Rules** create, diff
  - [Change rules at Runtime](https://cssobj.github.io/cssobj-demo/#demo1)
- - [TOOL to convert CSS](https://github.com/cssobj/cssobj-converter)
  - [Nested Child Selector](https://cssobj.github.io/cssobj-demo/#demoprefixer)
  - [Safety of Unicode/Comma/Ampersand](https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS)
  - [Conditional apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
  - [Local class names](https://cssobj.github.io/cssobj-demo/#demo4)
  - [Auto vendor prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
  - [Media query hook](https://cssobj.github.io/cssobj-demo/#demomedia)
- - [Server Side Rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
- - **Intuitive API**
 
 [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [Babel/JSX](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx)
 
@@ -45,45 +42,100 @@ In addition to many basic features of CSS-in-JS technology, cssobj is the **uniq
 
  - [@media work under IE8][ie] (A bonus, add some IE8 bundle size (0.3K), no perf decreased)
 
-Assume you have below CSS:
+Assume you have below CSS, `font-size` need to increase by 1 when user click
 
 ``` css
 .nav { color: blue; }
 .nav .item { color: red; font-size: 12px; }
+@media (max-width: 800px) {
+  .nav { color: #333; }
+  .nav:hover { color: #666; }
+}
 ```
 
-Render using CSSOBJ:
+If use [Babel](http://babeljs.io/docs/usage/cli/), see below (with [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj)):
 
 ```javascript
-import cssobj from 'cssobj'
+const result = CSSOBJ`
+---
+# use YAML as config
+plugins:
+  - default-unit: px
+---
 
-// nested source object
-const obj = {
+// SCSS style
+.nav {
+  color: blue;
+
+  // nested selector, function as value
+  .item { color: red; font-size: ${v => v.raw ? v.raw + 1 : 12} }
+
+  // @media rule
+  @media (max-width: 800px) {
+    color: #333;
+    &:hover {
+      color: #666;
+    }
+  }
+
+}
+`
+
+// above will create <style>, insert CSS rules, random namespace: _1jkhrb92_
+
+result.mapClass(<ul class='nav'><li class='item'>ITEM</li></ul>)
+// <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
+```
+
+If **NOT use Babel**, check the the render result:
+
+``` Javascript
+import cssobj from "cssobj";
+import cssobj_plugin_default_unit from "cssobj-plugin-default-unit";
+const result = cssobj({
   '.nav': {
     color: 'blue',
     '.item': {
       color: 'red',
-      fontSize: '12px'
+      fontSize: v => v.raw ? v.raw + 1 : 12
+    },
+    '@media (max-width: 800px)': {
+      color: '#333',
+      '&:hover': {
+        color: '#666'
+      }
     }
   }
-}
+}, {
+  plugins: [cssobj_plugin_default_unit('px')]
+});
 
-const result = cssobj(obj, {local: true})
-// will create <style>, insert 2 CSS rules, random namespace: _1jkhrb92_
-
-result.mapClass(<ul className='nav'><li className='item'>ITEM</li></ul>)  // with babel-plugin-transform-cssobj-jsx
-// <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
+localClassName = result.mapClass('nav')
+// nav_1jkhrb92_
 ```
 
-**Dynamically upate a rule**:
+First time render, the `font-size` currently is `12px`, then
 
-```javascript
-obj['.nav'].color = 'orange'
+``` javascript
+result.update()
+// font-size  ->  13px
 
 result.update()
+// font-size  ->  14px
 ```
 
-Above, **only** `color` prop in `.nav` rule updated, other rules and props will **keep untouched**.
+**Control stylesheet from your source object**:
+
+```javascript
+// result.obj === source object in above
+result.obj['.nav'].color = 'orange'
+
+result.update()
+// color      ->  'orange'
+// font-size  ->   15px
+```
+
+Above, **only** `color` and `font-size` properties updated, other rules and props will **keep untouched**
 
 That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
 
@@ -94,16 +146,20 @@ That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/mast
 ``` bash
 npm install cssobj  # the lib
 
-npm install -g cssobj-converter  # CLI tool (optional)
+# When you use Babel
+npm install babel-plugin-transform-cssobj
+
+# When **NOT** use Babel, install the convert tool
+npm install -g cssobj-converter
 ```
 
-**use in html** (IIFE)
+**use in browser** (IIFE)
 
 ``` html
 <script src="https://unpkg.com/cssobj"></script>
 ```
 
-## Quick Start:
+## Work Flow ( How the [babel-plugin-transform-cssobj][babel] does, you can do it manually )
 
 - **Step 1**
 
@@ -141,20 +197,20 @@ const obj = require('./index.css')
 // `local: true` will put class names into local space
 const result = cssobj(obj, {local: true})
 
-result.mapClass(<JSX>)  // map the whole JSX, with babel-plugin-transform-cssobj-jsx
-result.mapClass('classA')  // get the map of 'classA'
+result.mapClass(<JSX>)  // map the whole JSX, with Babel
+result.mapClass('classA')  // get the map of 'classA', without Babel
 
 // later
 // update some rule
 obj['.nav'].color = 'red'
-obj['.nav'].fontSize = function(v){ return parseInt(v.prev) + 1 }  // increase font-size by 1
+obj['.nav'].fontSize = function(v){ return parseInt(v.cooked) + 1 }  // increase font-size by 1
 result.update()
 
 ```
 
 Let's quickly learn the API:
 
-**only one** top level method: `cssobj( obj )`, all other things using `result.someMethods`, that's all, really.
+**only one** top level method: `cssobj( obj, config )`, all other things using `result.someMethods`, that's all, really.
 
 #### [Documented API](https://github.com/cssobj/cssobj/blob/master/docs/api.md)
 
@@ -217,7 +273,7 @@ Let's quickly learn the API:
 
 ## Helpers
 
-  - [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx) Work with React, Vue etc. that can use babel+jsx
+  - [babel-plugin-transform-cssobj][babel] Work with React, Vue etc. that can use babel+jsx
 
   - [cssobj-mithril](https://github.com/cssobj/cssobj-mithril) Help cssobj to work with [mithril](https://github.com/lhorie/mithril.js)
 
@@ -239,3 +295,4 @@ cssobj is wrapper for [cssobj-core](https://github.com/cssobj/cssobj-core), [plu
 
 MIT
 
+[babel]: https://github.com/cssobj/babel-plugin-transform-cssobj

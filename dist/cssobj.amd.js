@@ -1,14 +1,14 @@
 /*
-  cssobj v1.1.0
-  Thu Dec 22 2016 22:16:29 GMT+0800 (HKT)
-  commit 6a2d9a0e51d1b76c33287a0594724f323fa01d97
+  cssobj v1.1.2
+  Fri Dec 23 2016 14:56:21 GMT+0800 (HKT)
+  commit ae0db2ba95692335390a261fce03c81abda20665
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@1.1.0
-    5a3ef4e8916ae1edc3dc8ab7031156135ab52a69
+  - cssobj-core@1.1.2
+    4f605fa24554b465bd7767905911f2188bc992da
   - cssobj-plugin-cssom@3.0.0
     23445070d1843c35fdcbaf4b4dbe21989859dca5
   - cssobj-plugin-localize@3.2.2
@@ -80,22 +80,15 @@ function arrayKV (obj, k, v, reverse, unique) {
 }
 
 // replace find in str, with rep function result
-function strSugar (str, find, rep) {
-  return str.replace(
-    new RegExp('\\\\?(' + find + ')', 'g'),
-    function (m, z) {
-      return m == z ? rep(z) : z
-    }
-  )
-}
+
 
 // get parents array from node (when it's passed the test)
 function getParents (node, test, key, childrenKey, parentKey) {
-  var i, len, p = node, path = []
+  var i, v, p = node, path = []
   while (p) {
     if (test(p)) {
       if (childrenKey) {
-        for (i = 0, len = path.length; i < len; i++) {
+        for (i = 0; i < path.length; i++) {
           arrayKV(p, childrenKey, path[i], false, true)
         }
       }
@@ -106,8 +99,9 @@ function getParents (node, test, key, childrenKey, parentKey) {
     }
     p = p.parent
   }
-  for (i = 0, len = path.length; i < len; i++) {
-    path[i] = key ? path[i][key] : path[i]
+  for (i = 0; i < path.length; i++) {
+    v = path[i]
+    path[i] = key ? v[key] : v
   }
 
   return path
@@ -232,6 +226,7 @@ function parseObj (d, result, node, init) {
       node.test = test
     }
     var children = node.children = node.children || {}
+    node.lastRaw = node.rawVal || {}
     node.lastVal = {}
     node.rawVal = {}
     node.prop = {}
@@ -395,15 +390,22 @@ function parseProp (node, d, key, result, propKey) {
   // corner case: propKey==='' ?? below line will do wrong!!
   // if(!propName) return
 
-  var prev = prevVal && prevVal[propName]
+  var raw = node.lastRaw[propName],
+      prev = prevVal && prevVal[propName],
+      argObj = {node:node, result:result}
+
+  if (raw) argObj.raw = raw[0]
 
   ![].concat(d[key]).forEach(function (v) {
+    // prepare value function args
+    argObj.cooked = prev
+
     // pass lastVal if it's function
-    var rawVal = isFunction(v)
-        ? v({prev:prev, node:node, result:result})
+    argObj.raw = raw = isFunction(v)
+        ? v(argObj)
         : v
 
-    var val = applyPlugins(result.config, 'value', rawVal, propName, node, result, propKey)
+    var val = applyPlugins(result.config, 'value', raw, propName, node, result, propKey)
 
     // check and merge only format as Object || Array of Object, other format not accepted!
     if (isIterable(val)) {
@@ -411,10 +413,10 @@ function parseProp (node, d, key, result, propKey) {
         if (own(val, k)) parseProp(node, val, k, result, propName)
       }
     } else {
-      arrayKV(
+      arrayKV (
         node.rawVal,
         propName,
-        rawVal,
+        raw,
         true
       )
       if (isValidCSSValue(val)) {
@@ -439,16 +441,12 @@ function parseProp (node, d, key, result, propKey) {
   }
 }
 
-function combinePath (array, initialString, seperator, replaceAmpersand) {
-  return !array.length ? initialString : array[0].reduce(function (result, value) {
-    var str = initialString ? initialString + seperator : initialString
+function combinePath (array, parentSel, seperator, replaceAmpersand) {
+  return !array.length ? parentSel : array[0].reduce(function (result, value) {
+    var part, str = parentSel ? parentSel + seperator : parentSel
     if (replaceAmpersand) {
-      var isReplace = false
-      var sugar = strSugar(value, '&', function (z) {
-        isReplace = true
-        return initialString
-      })
-      str = isReplace ? sugar : str + sugar
+      part = splitSelector( value, '&' )
+      str = part.length > 1 ? part.join(parentSel) : str + value
     } else {
       str += value
     }
@@ -1020,7 +1018,7 @@ function cssobj (obj, config, state) {
   return cssobj$2(config)(obj, state)
 }
 
-cssobj.version = '1.1.0'
+cssobj.version = '1.1.2'
 
 return cssobj;
 

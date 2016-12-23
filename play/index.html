@@ -9,7 +9,7 @@
         <script type="text/javascript" src="http://cdn.staticfile.org/json3/3.3.2/json3.min.js"></script>
         <![endif]-->
     <script type="text/javascript" src="../dist/cssobj.iife.js"></script>
-    <script type="text/javascript" src="../node_modules/cssobj-plugin-value-default-unit/dist/cssobj-plugin-value-default-unit.iife.js"></script>
+    <script type="text/javascript" src="../node_modules/cssobj-plugin-default-unit/dist/cssobj-plugin-default-unit.iife.js"></script>
     <script type="text/javascript" src="./browser-detection.js"></script>
   </head>
   <body>
@@ -102,7 +102,7 @@ to: {top:'200px!important'}
 var count = 1
   var result = cssobj(
          {
-},{cssom:{noMedia:false}, plugins: {value: cssobj_plugin_value_default_unit()}})
+},{cssom:{noMedia:false}, plugins: [cssobj_plugin_default_unit()]})
 var objDom = document.getElementById('obj')
 
 function updateCSSText() {

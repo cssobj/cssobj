@@ -137,14 +137,33 @@ delete result.obj['.nav'].height
 // add a new css property
 result.obj['.nav'].width = 200
 
+// add a new rule
+result.obj['.nav'].a = { color: 'blue', '&:hover': {textDecoration: 'none'} }
+
+// delete a rule
+delete result.obj['.nav']['.item']
+
 result.update()
 // color      ->  'orange'
 // height     ->   REMOVED!
-// width      ->   200px
-// font-size  ->   15px  // value function auto updated
+// width      ->   200px (ADDED!)
+// a, a:hover ->   ADDED!
+// .item      ->   REMOVED!
 ```
 
-Above, **only** `.nav` rule and `font-size` prop updated, other rules and props will **keep untouched**
+Above, **only** diffed rules and prop updated, other rules and props will **keep untouched**
+
+Current stylesheet become:
+
+``` css
+.nav_1jkhrb92_ { color: orange; width: 200px; }
+@media (max-width: 800px) {
+  .nav_1jkhrb92_ { color: #333; }
+  .nav_1jkhrb92_:active { color: #666; }
+}
+.nav_1jkhrb92_ a { color: blue; }
+.nav_1jkhrb92_ a:hover { text-decoration: none; }
+```
 
 That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
 

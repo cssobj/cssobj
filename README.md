@@ -13,7 +13,7 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
  - [Auto vendor prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
  - [Media query hook](https://cssobj.github.io/cssobj-demo/#demomedia)
 
-[Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [Babel/JSX](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx)
+[Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [Babel/JSX](https://github.com/cssobj/babel-plugin-transform-cssobj)
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -26,7 +26,7 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
 
 Render CSS string from js, pack style sheet into js component, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
 
-The hard part is **dynamically update rules at runtime**, replace `<style>` tag with new string is **doing wrong**
+The hard part is **dynamically update rules at runtime**, replace `<style>` tag with new string is the wrong way
 
 **cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), **diff object, udpate rule** at stylesheet **Property** level
 
@@ -49,16 +49,16 @@ Assume you have below CSS, `font-size` need to increase by 1 when user click
 .nav .item { color: red; font-size: 12px; }
 @media (max-width: 800px) {
   .nav { color: #333; }
-  .nav:hover { color: #666; }
+  .nav:active { color: #666; }
 }
 ```
 
 If use [Babel](http://babeljs.io/docs/usage/cli/), see below (with [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj)):
 
 ```javascript
+// create <style>, insert CSS rules, random namespace: _1jkhrb92_
 const result = CSSOBJ`
 ---
-# use YAML as config
 plugins:
   - default-unit: px
 ---
@@ -73,21 +73,18 @@ plugins:
   // @media rule
   @media (max-width: 800px) {
     color: #333;
-    &:hover {
+    &:active {
       color: #666;
     }
   }
 
 }
 `
-
-// above will create <style>, insert CSS rules, random namespace: _1jkhrb92_
-
 result.mapClass(<ul class='nav'><li class='item'>ITEM</li></ul>)
 // <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
 ```
 
-If **NOT use Babel**, check the the render result:
+If **NOT use Babel**, check the the above render result:
 
 ``` Javascript
 import cssobj from "cssobj";
@@ -101,7 +98,7 @@ const result = cssobj({
     },
     '@media (max-width: 800px)': {
       color: '#333',
-      '&:hover': {
+      '&:active': {
         color: '#666'
       }
     }
@@ -114,7 +111,7 @@ localClassName = result.mapClass('nav')
 // nav_1jkhrb92_
 ```
 
-First time render, the `font-size` currently is `12px`, then
+For this first time render, the `font-size` currently is `12px`, then
 
 ``` javascript
 result.update()
@@ -127,7 +124,7 @@ result.update()
 **Control stylesheet from your source object**:
 
 ```javascript
-// result.obj === source object in above
+// result.obj === source object above
 result.obj['.nav'].color = 'orange'
 
 result.update()
@@ -146,10 +143,10 @@ That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/mast
 ``` bash
 npm install cssobj  # the lib
 
-# When you use Babel
+# When use Babel
 npm install babel-plugin-transform-cssobj
 
-# When **NOT** use Babel, install the convert tool
+# When **NOT** use Babel, install the converter
 npm install -g cssobj-converter
 ```
 
@@ -159,7 +156,7 @@ npm install -g cssobj-converter
 <script src="https://unpkg.com/cssobj"></script>
 ```
 
-## Work Flow ( How the [babel-plugin-transform-cssobj][babel] does, you can do it manually )
+## Work Flow (How the [babel-plugin-transform-cssobj][babel] does, you can do it manually)
 
 - **Step 1**
 
@@ -197,13 +194,12 @@ const obj = require('./index.css')
 // `local: true` will put class names into local space
 const result = cssobj(obj, {local: true})
 
-result.mapClass(<JSX>)  // map the whole JSX, with Babel
-result.mapClass('classA')  // get the map of 'classA', without Babel
+result.mapClass(<JSX>)  // with Babel
+result.mapClass('classA')  // without Babel
 
-// later
 // update some rule
 obj['.nav'].color = 'red'
-obj['.nav'].fontSize = function(v){ return parseInt(v.cooked) + 1 }  // increase font-size by 1
+obj['.nav'].fontSize = v => parseInt(v.cooked) + 1  // increase font-size by 1
 result.update()
 
 ```

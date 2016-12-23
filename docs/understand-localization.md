@@ -130,7 +130,7 @@ There're **2** way get your finally names: `result.mapClass` and `result.mapSel`
 
   Check below **helper lib** to simplify the code of `mapClass` and `mapSel`
 
-  - **Babel JSX** [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx)
+  - **Babel JSX** [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj)
 
   - **Mithril** [cssobj-mithril](https://github.com/cssobj/cssobj-mithril)
 

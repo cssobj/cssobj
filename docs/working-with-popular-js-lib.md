@@ -49,7 +49,7 @@ You can just set cssobj into state in your component.
 
 [fiddle demo](https://jsfiddle.net/futurist/vk9uu520/) Please open console and see **local class names** work!
 
-**Notice**, you should check [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx) to simplify `mapClass`.
+**Notice**, you should check [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj) to simplify `mapClass`.
 
 ```javascript
 import React from 'react'
@@ -128,7 +128,7 @@ m.mount(document.getElementById('container'), component)
 
 ## Vue
 
-**Notice**, if you use Vue2.0, should check [babel-plugin-transform-cssobj-jsx](https://github.com/cssobj/babel-plugin-transform-cssobj-jsx) to simplify `mapClass`
+**Notice**, if you use Vue2.0, should check [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj) to simplify `mapClass`
 
 **cssobj** can use in Vue component for better capsulation.
 

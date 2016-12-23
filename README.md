@@ -66,6 +66,7 @@ plugins:
 // SCSS style
 .nav {
   color: blue;
+  height: 100;
 
   // nested selector, function as value
   .item { color: red; font-size: ${v => v.raw ? v.raw + 1 : 12} }
@@ -92,6 +93,7 @@ import cssobj_plugin_default_unit from "cssobj-plugin-default-unit";
 const result = cssobj({
   '.nav': {
     color: 'blue',
+    height: 100,
     '.item': {
       color: 'red',
       fontSize: v => v.raw ? v.raw + 1 : 12

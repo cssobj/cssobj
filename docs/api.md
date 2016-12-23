@@ -34,7 +34,7 @@ The **return value** of `cssobj()` and `result.update()`, it's a js object with 
 
 name | type | description
 -----|-----|-----------
-intro | Object | The source js object merged from `option.intros` array.
+intro | Object | The source js object merged from `config.intros` array.
 obj | Object | The source js object for `cssobj()` function call.
 root | Object | Virtual CSSOM object parsed from `obj`, mainly used for value functions and plugins.
 nodes | Array | Array of virtual css nodes, for the convinence of `filter` or `map` etc.

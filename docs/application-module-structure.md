@@ -16,7 +16,7 @@ For example, you have an photo application, that user can choose layout of their
 
 // state can be mobile, or pc
 export const float = opt => ({
-  .img { width: opt.width + 'px', float:'left', padding: (_,_,result) => result.state.platform == 'mobile' ? '0px' : '30px' }
+  .img { width: opt.width + 'px', float:'left', padding: v => v.result.state.platform == 'mobile' ? '0px' : '30px' }
 })
 
 export const flex = opt => ({

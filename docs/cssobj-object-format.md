@@ -119,7 +119,7 @@ will be
 }
 ```
 
-  - 5 <a name="s4-5"></a>If value type is `Function`, then the function will be evaluated with signature: `function(v){}`
+  - 5 <a name="s4-5"></a>If value type is `Function`, then the function will be evaluated with signature: `function(v: object{prev,node,result} ){ }`
 
 `{p: { fontSize : function(v){return '16px'} } }` => `p {font-size: 16px}`
 

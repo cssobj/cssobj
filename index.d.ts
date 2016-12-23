@@ -1,13 +1,14 @@
 // cssobj definition
 
 declare namespace CssObj {
-    interface Options {
+    interface Config {
       local?: boolean | LocalOption;
-      cssom?: cssomOption;
+      cssom?: CssomOption;
       plugins?: any[];
+      state?: Object;
     }
 
-    interface cssomOption {
+    interface CssomOption {
       id?: string;
       frame?: any;
       vendors?: string[];
@@ -45,7 +46,7 @@ declare namespace CssObj {
       data: Object;
       nodes: Node[];
       obj: Object;
-      options: Options;
+      config: Config;
       ref: Object;
       root: Node;
       space: string;
@@ -55,7 +56,7 @@ declare namespace CssObj {
     }
 
     interface Static {
-        (obj: Object, options?: Options, state?: any): Result;
+        (obj: Object, config?: Config, state?: any): Result;
     }
 }
 

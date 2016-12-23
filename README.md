@@ -26,9 +26,9 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
 
 Render CSS string from js, pack style sheet into js component, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
 
-The hard part is **dynamically update rules at runtime**, replace `<style>` tag with new string is the wrong way
+The hard part is **dynamically update rules at runtime**, replace `<style>` tag with new string wrong
 
-**cssobj** using [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), **diff object, udpate rule** at stylesheet **Property** level
+**cssobj** use [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), **diff object, udpate rule** at stylesheet **Property** level
 
 In addition to many basic features of CSS-in-JS technology, cssobj is the **unique** lib that focus on:
 
@@ -111,7 +111,7 @@ localClassName = result.mapClass('nav')
 // nav_1jkhrb92_
 ```
 
-For this first time render, the `font-size` currently is `12px`, then
+For this first time render, the `font-size` currently is `12px`, and `@media` just work under IE8, then
 
 ``` javascript
 result.update()

@@ -28,9 +28,9 @@ CSS in JS solution, **name space** (local) your stylesheet, **change rules at ru
 
 Render CSS string from js, pack style sheet into js component, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
 
-The hard part is **dynamically update rules at runtime**, replace `<style>` tag with new string wrong
+The hard part is **dynamically update rules at runtime**, replace `<style>` tag with whole new string is **doing wrong**
 
-**cssobj** use [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), **diff object, udpate rule** at stylesheet **Property** level
+`cssobj` use [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), **diff object, udpate rule** at stylesheet **Property** level
 
 In addition to many basic features of CSS-in-JS technology, cssobj is the **unique** lib that focus on:
 
@@ -44,11 +44,11 @@ In addition to many basic features of CSS-in-JS technology, cssobj is the **uniq
 
  - [@media work under IE8][ie] (A bonus, add some IE8 bundle size (0.3K), no perf decreased)
 
-Assume you have below CSS, `font-size` need to increase by 1 when user click
+Assume we have below CSS, the `font-size` need to be **increased by 1** each time when user clicked
 
 ``` css
 .nav { color: blue; }
-.nav .item { color: red; font-size: 12px; }
+.nav .item { color: red; font-size: 12px; /* font-size need to be changed by user */ }
 @media (max-width: 800px) {
   .nav { color: #333; }
   .nav:active { color: #666; }
@@ -58,24 +58,28 @@ Assume you have below CSS, `font-size` need to increase by 1 when user click
 If use [Babel](http://babeljs.io/docs/usage/cli/), see below (with [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj)):
 
 ```javascript
-// create <style>, insert CSS rules, random namespace: _1jkhrb92_
-const result = CSSOBJ`
+// create <style> in <head>, insert CSS rules, random namespace: _1jkhrb92_
+
+// The babel-plugin only transform: CSSOBJ `text`
+
+const result = CSSOBJ `
 ---
+# cssobj config
 plugins:
   - default-unit: px
 ---
-
-// Write SCSS style directly
+// stylesheet, SCSS style (nested)
 .nav {
   color: blue;
   height: 100;
 
-  // nested selector, function as value
+  // font-size is a function
   .item { color: red; font-size: ${v => v.raw ? v.raw + 1 : 12} }
 
-  // @media rule
+  // nested @media
   @media (max-width: 800px) {
     color: #333;
+    // & = parent selector = .nav
     &:active {
       color: #666;
     }
@@ -87,7 +91,7 @@ result.mapClass(<ul class='nav'><li class='item'>ITEM</li></ul>)
 // <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
 ```
 
-If **NOT use Babel**, check below render result:
+If **NOT Use Babel**, check below rendered result:
 
 ``` Javascript
 import cssobj from "cssobj";
@@ -115,9 +119,11 @@ localClassName = result.mapClass('nav')
 // nav_1jkhrb92_
 ```
 
-For this first time render, all class names added a random suffix `_1jkhrb92_`, the `font-size` is `12px`, and `@media` just work under IE8
-
-The Rendered CSS (**random name space**: `_1jkhrb92_`):
+For this first time render,
+all class names added a random suffix `_1jkhrb92_`,
+the `font-size` is `12px`,
+and `@media` just work under IE8,
+the `<style>` tag which `cssobj` created now contains:
 
 ``` css
 .nav_1jkhrb92_ { color: blue; height: 100px; }
@@ -128,7 +134,17 @@ The Rendered CSS (**random name space**: `_1jkhrb92_`):
 }
 ```
 
-**Update css rules automatically (value function calculated)**
+**Update CSS Value**
+
+Since we already have a function as the value:
+
+  `fontSize: v => v.raw ? v.raw + 1 : 12`
+
+ - the value (===`v.raw`) initialised with `12` (`default-unit` plugin will add `px` when rendering, that is `v.cooked` === `12px`)
+
+ - each call of the function will increase `font-size` by 1
+
+So, just need call `result.update`, the function invoked, stylesheet updated, automatically:
 
 ``` javascript
 result.update()
@@ -138,12 +154,18 @@ result.update()
 // font-size  ->  14px
 ```
 
-Above, only `font-size` prop changed, all other things **keep untouched**
+Above, each `result.update` only change `font-size`, all other things **keep untouched**
 
-**Change stylesheet from your js object**:
+**Change stylesheet from source JS Object**:
+
+When the source JS Object (`first arg of cssobj()`) have no changes,
+`result.update` only invoke the value function (here, the above `font-size` function),
+
+Otherwise, it will look into the source JS Object, find which part have been changed (**diff**),
+and update stylesheet accordingly. See below:
 
 ```javascript
-// result.obj === source js object
+// result.obj === reference of the source js object
 
 // change a css property
 result.obj['.nav'].color = 'orange'
@@ -162,11 +184,11 @@ delete result.obj['.nav']['.item']
 
 result.update()
 
-// color      ->  'orange'
-// height     ->   REMOVED!
-// width      ->   200px (ADDED!)
-// a, a:hover ->   ADDED!
-// .item      ->   REMOVED!
+// color      ->  'orange' (PROP CHANGED)
+// height     ->   (PROP REMOVED)
+// width      ->   200px (PROP ADDED)
+// a, a:hover ->   (RULE ADDED)
+// .item      ->   (RULE REMOVED)
 
 ```
 
@@ -184,7 +206,7 @@ Now, the stylesheet becomes:
 .nav_1jkhrb92_ a:hover { text-decoration: none; }
 ```
 
-**Diff with NEW js object**
+**Diff with NEW JS Object**
 
 ``` javascript
 const newObj = { '.nav': { width: 100, a: { color: 'blue' } } }
@@ -200,6 +222,7 @@ Now, the stylesheet becomes:
 /* below 2 rules keeped */
 .nav_1jkhrb92_ { width: 100px; }
 .nav_1jkhrb92_ a { color: blue; }
+
 /* other rules gone */
 ```
 
@@ -227,7 +250,7 @@ npm install -g cssobj-converter
 
 ## Work Flow
 
-It's also how the [babel-plugin-transform-cssobj][babel] does (roughly), let's do it manually (more control)
+It's how the [babel-plugin-transform-cssobj][babel] does (roughly), but below steps have more control
 
 - **Step 1**
 
@@ -239,9 +262,10 @@ Write your CSS as normal (e.g. *index.css*), e.g.:
 
 - **Step 2**
 
-Convert CSS file *index.css* into *index.css.js* as JS module, using [cssobj CLI tool](https://github.com/cssobj/cssobj-converter):
+Convert CSS file *index.css* into *index.css.js* as JS module, using [cssobj-converter](https://github.com/cssobj/cssobj-converter):
 
 ``` bash
+# in command line
 cssobj index.css -o index.css.js
 ```
 

@@ -2,13 +2,13 @@
 
 # CSSOBJ [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj)
 
-CSS in JS solution, **name space** your stylesheet, **change rules at runtime**, features:
+CSS in JS solution, **name space** (local) your stylesheet, **change rules at runtime**, features:
 
  - **~4K min.gz**
  - **Support Any CSS Selector/Value**
  - [Can Write SCSS/LESS Directly](https://github.com/cssobj/babel-plugin-transform-cssobj)
  - [**CSS Rules** Create, Update](https://cssobj.github.io/cssobj-demo/#demo1)
- - [Put class names into local space **No Conflict Anymore**](https://cssobj.github.io/cssobj-demo/#demo4)
+ - [Put class names into local space **No Conflict**](https://cssobj.github.io/cssobj-demo/#demo4)
  - [Nested Child Selector](https://cssobj.github.io/cssobj-demo/#demoprefixer)
  - [Conditional Apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
  - [Auto Vendor Prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
@@ -87,7 +87,7 @@ result.mapClass(<ul class='nav'><li class='item'>ITEM</li></ul>)
 // <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
 ```
 
-If **NOT use Babel**, check the the above render result:
+If **NOT use Babel**, check below render result:
 
 ``` Javascript
 import cssobj from "cssobj";
@@ -115,7 +115,20 @@ localClassName = result.mapClass('nav')
 // nav_1jkhrb92_
 ```
 
-For this first time render, all class names added a random suffix `_1jkhrb92_`, the `font-size` is `12px`, and `@media` just work under IE8, then
+For this first time render, all class names added a random suffix `_1jkhrb92_`, the `font-size` is `12px`, and `@media` just work under IE8
+
+The Rendered CSS (**random name space**: `_1jkhrb92_`):
+
+``` css
+.nav_1jkhrb92_ { color: blue; height: 100px; }
+.nav_1jkhrb92_ .item_1jkhrb92_ { color: red; font-size: 12px; }
+@media (max-width: 800px) {
+  .nav_1jkhrb92_ { color: rgb(51, 51, 51); }
+  .nav_1jkhrb92_:active { color: rgb(102, 102, 102); }
+}
+```
+
+**Update css rules automatically (value function calculated)**
 
 ``` javascript
 result.update()
@@ -124,6 +137,8 @@ result.update()
 result.update()
 // font-size  ->  14px
 ```
+
+Above, only `font-size` prop changed, all other things **keep untouched**
 
 **Change stylesheet from your js object**:
 
@@ -153,17 +168,11 @@ result.update()
 // a, a:hover ->   ADDED!
 // .item      ->   REMOVED!
 
-// OR feed a new obj
-const newObj = { '.nav': { width: 100 } }
-result.update(newObj)
-// cssobj will diff with prev obj, keep same part, change diffed part in stylesheet!
-// cssobj will change width to 100px, drop all other rules/props
-
 ```
 
 Above, **only** diffed rules and prop updated, other rules and props will **keep untouched**
 
-Current stylesheet become:
+Now, the stylesheet becomes:
 
 ``` css
 .nav_1jkhrb92_ { color: orange; width: 200px; }
@@ -173,6 +182,25 @@ Current stylesheet become:
 }
 .nav_1jkhrb92_ a { color: blue; }
 .nav_1jkhrb92_ a:hover { text-decoration: none; }
+```
+
+**Diff with NEW js object**
+
+``` javascript
+const newObj = { '.nav': { width: 100, a: { color: 'blue' } } }
+result.update(newObj)
+// cssobj will DIFF with old obj, keep same part, change diffed part in stylesheet!
+// .nav, .nav a   rules keeped
+// width -> 100px, drop all other rules/props
+```
+
+Now, the stylesheet becomes:
+
+``` css
+/* below 2 rules keeped */
+.nav_1jkhrb92_ { width: 100px; }
+.nav_1jkhrb92_ a { color: blue; }
+/* other rules gone */
 ```
 
 That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)

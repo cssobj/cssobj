@@ -1,22 +1,22 @@
 <img align="right" title="cssobj logo" alt="cssobj logo" align="bottom" src="https://avatars0.githubusercontent.com/u/20465580?v=3&s=132" border="30" hspace="0" vspace="20">
 
-# CSSOBJ
-CSS in JS solution, **change stylesheet rules at runtime**, features:
+# CSSOBJ [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj)
+
+CSS in JS solution, **name space** your stylesheet, **change rules at runtime**, features:
 
  - **~4K min.gz**
- - **CSS Rules** create, diff
- - [Change rules at Runtime](https://cssobj.github.io/cssobj-demo/#demo1)
+ - **Support Any CSS Selector/Value**
+ - [Can Write SCSS/LESS Directly](https://github.com/cssobj/babel-plugin-transform-cssobj)
+ - [**CSS Rules** Create, Update](https://cssobj.github.io/cssobj-demo/#demo1)
+ - [Put class names into local space **No Conflict Anymore**](https://cssobj.github.io/cssobj-demo/#demo4)
  - [Nested Child Selector](https://cssobj.github.io/cssobj-demo/#demoprefixer)
- - [Safety of Unicode/Comma/Ampersand](https://github.com/cssobj/cssobj/wiki/A-Better-CSS-in-JS)
- - [Conditional apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
- - [Local class names](https://cssobj.github.io/cssobj-demo/#demo4)
- - [Auto vendor prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
- - [Media query hook](https://cssobj.github.io/cssobj-demo/#demomedia)
+ - [Conditional Apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
+ - [Auto Vendor Prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
+ - [Media Query hook for IE8](https://cssobj.github.io/cssobj-demo/#demomedia)
 
 [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [Babel/JSX](https://github.com/cssobj/babel-plugin-transform-cssobj)
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
-[![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![npm](https://img.shields.io/npm/v/cssobj.svg "Version")](https://www.npmjs.com/package/cssobj)
 [![Coverage Status](https://coveralls.io/repos/github/cssobj/cssobj-core/badge.svg?branch=master)](https://coveralls.io/github/cssobj/cssobj-core?branch=master)
 [![dependencies Status](https://david-dm.org/cssobj/cssobj/status.svg)](https://david-dm.org/cssobj/cssobj)
@@ -65,7 +65,7 @@ plugins:
   - default-unit: px
 ---
 
-// SCSS style
+// Write SCSS style directly
 .nav {
   color: blue;
   height: 100;
@@ -154,9 +154,10 @@ result.update()
 // .item      ->   REMOVED!
 
 // OR feed a new obj
+const newObj = { '.nav': { width: 100 } }
 result.update(newObj)
-
 // cssobj will diff with prev obj, keep same part, change diffed part in stylesheet!
+// cssobj will change width to 100px, drop all other rules/props
 
 ```
 

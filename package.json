@@ -43,7 +43,7 @@
     "chai": "*",
     "gulp": "*",
     "gulp-bump": "*",
-    "mocha": "*"
+    "mocha": "*",
     "rollup-plugin-replace": "*",
     "rollup-watch": "*",
     "walk": "*"

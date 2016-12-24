@@ -196,7 +196,9 @@ npm install -g cssobj-converter
 <script src="https://unpkg.com/cssobj"></script>
 ```
 
-## Work Flow (How the [babel-plugin-transform-cssobj][babel] does, you can do it manually)
+## Work Flow
+
+It's also how the [babel-plugin-transform-cssobj][babel] does (roughly), let's do it manually (more control)
 
 - **Step 1**
 

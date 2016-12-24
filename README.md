@@ -19,7 +19,9 @@ CSS in JS solution, **change stylesheet rules at runtime**, features:
 [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![npm](https://img.shields.io/npm/v/cssobj.svg "Version")](https://www.npmjs.com/package/cssobj)
 [![Coverage Status](https://coveralls.io/repos/github/cssobj/cssobj-core/badge.svg?branch=master)](https://coveralls.io/github/cssobj/cssobj-core?branch=master)
+[![dependencies Status](https://david-dm.org/cssobj/cssobj/status.svg)](https://david-dm.org/cssobj/cssobj)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+
 [ie]: https://github.com/cssobj/cssobj/wiki/How-@media-work-in-IE8
 
 ## Highlight
@@ -123,10 +125,10 @@ result.update()
 // font-size  ->  14px
 ```
 
-**Change stylesheet from your source object**:
+**Change stylesheet from your js object**:
 
 ```javascript
-// result.obj === source object above
+// result.obj === source js object
 
 // change a css property
 result.obj['.nav'].color = 'orange'

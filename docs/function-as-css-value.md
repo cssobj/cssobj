@@ -4,8 +4,30 @@ In cssobj, if value type is **function**, then the function will be evaluated wi
 
 ```Javascript
 function(v){} -> string|number|object
-// v: object {prev, node, result}
+// v: object {raw, cooked, node, result}
 ```
+
+The `v` param is an object that have members:
+
+  - **raw** value of original js object (evaled when it's a function), don't add any plugins
+
+  - **cooked** result value of `raw` + `plugins`
+
+  - **node** current node of the closest object
+
+  - **result** current result object of cssobj
+
+Example:
+
+  ```javascript
+  var result = cssobj(
+    { p: {width: [100, v => console.log(v) ]} },
+    { plugins: [ defaultUnit('px') ] }
+  )
+  // { raw: 100, cooked: '100px', node: Object, result: Object }
+  ```
+
+The return value:
 
  1. If the function return `string|number`, then the prop will update to that
 

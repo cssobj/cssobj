@@ -17,9 +17,9 @@ The object format for **cssobj** is as below:
 
 `{ ul: { 'li:active': {} } }` => `'ul li:active'`
 
- - 2 Any `'&'` will be replaced by parent selector; <kbd>\\&</kbd> will be escaped as `'&'`.
+ - 2 Any `'&'` will be replaced by parent selector
 
-`{li: { '&[title="x\\&y"]': {} } }` => `'li li[title="x&y"]'`
+`{li: { '&[title="x,&y"]': {} } }` => `'li li[title="x,&y"]'`
 
  - 3 `','` will be combined with **parent key** seperatedly.
 
@@ -119,9 +119,15 @@ will be
 }
 ```
 
-  - 5 <a name="s4-5"></a>If value type is `Function`, then the function will be evaluated with signature: `function(v: object{prev,node,result} ){ }`
+  - 5 <a name="s4-5"></a>If value type is `Function`, then the function will be evaluated with signature:
 
-`{p: { fontSize : function(v){return '16px'} } }` => `p {font-size: 16px}`
+  `function(v: object{raw,cooked,node,result} ){ } -> string|number|object`
+
+  Exmaple:
+
+  `{p: { fontSize : function(v){return '16px'} } }` => `p {font-size: 16}`
+
+  More info, plesae refer to [Function as CSS Value](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
 
 If the function return an **Object**, it will be merged into current css props.
 

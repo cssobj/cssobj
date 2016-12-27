@@ -1,10 +1,11 @@
-# Dynamically update css
+# Dynamically update css, CRUD of stylesheet
 
 Think below code at head of your page:
 
 ```javascript
 var obj = {
   div: {
+    $id: 'div',
     fontSize: '14px',
     lineHeight: 1.5,
     color: 'red'
@@ -16,7 +17,7 @@ var result = cssobj(obj)
 ```
 
 
-About **dynamically update css**, think below options:
+For CRUD (Create, Read, Update, Delete), **dynamically change css**, see below:
 
 ## 1. Update property values
 
@@ -91,6 +92,15 @@ delete obj.div.span
 result.update()
 ```
 
+## 7. Read a rule
+
+Although `cssobj` can manage everything, you read the rule in stylesheet
+
+```javascript
+result.ref.div.omRule
+// => [CSSStyleRule]
+```
+
 # All the above can use `function` instead:
 
 ```javascript
@@ -106,13 +116,14 @@ If you set function for prop's value:
 
 ```javascript
 obj.div.span.fontSize = function(v) {
-  return 1 + v.prev
+  return 1 + v.raw
 }
 
 ```
 
 `v` have below properties:
 
- - `v.prev` : Last valid css value for this property, that is: returns like `null` will ignored by **cssobj**
+ - `v.raw` : Source JS value for this property, that is: **before** any plugin, and validation check
+ - `v.cooked` : Last valid css value for this property, that is: returns like `null` will ignored by **cssobj**
  - `v.node` : The current **virtual css** node generated from `cssobj-core`, commonly, you can check `node.prop` object for current rule's value
  - `v.result` : The **cssobj** result object

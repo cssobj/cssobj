@@ -2,17 +2,18 @@
 
 # CSSOBJ [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj)
 
-CSS in JS solution, **name space** (local) your stylesheet, **change rules at runtime**, features:
+Runtime stylesheet manager, turn CSS into JS module, stylesheet CRUD (Create, Read, Update, Delete), solve common problems of CSS-in-JS.
 
- - **~4K min.gz**
- - **Support Any CSS Selector/Value**
+ - ~4K min.gz
+ - Support Any CSS Selector/Value
  - [Can Write SCSS/LESS Directly](https://github.com/cssobj/babel-plugin-transform-cssobj)
- - [**CSS Rules** Create, Update](https://cssobj.github.io/cssobj-demo/#demo1)
+ - [CSS Rules CRUD](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
  - [Put class names into local space **No Conflict**](https://cssobj.github.io/cssobj-demo/#demo4)
- - [Nested Child Selector](https://cssobj.github.io/cssobj-demo/#demoprefixer)
+ - [Use JS function as CSS value](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
  - [Conditional Apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
  - [Auto Vendor Prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
  - [Media Query hook for IE8](https://cssobj.github.io/cssobj-demo/#demomedia)
+ - [Server Rendering][server]
 
 [Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [Babel/JSX](https://github.com/cssobj/babel-plugin-transform-cssobj)
 
@@ -26,23 +27,15 @@ CSS in JS solution, **name space** (local) your stylesheet, **change rules at ru
 
 ## Highlight
 
-Render CSS string from js, pack style sheet into js component, it's not hard today, [there are many](https://github.com/cssobj/cssobj/wiki/Compared-with-similar-libs)
+`cssobj` can manage your stylesheet, turn static stylesheet into **dynamic js module**, focus on:
 
-The hard part is **dynamically update rules at runtime**, replace `<style>` tag with whole new string is **doing wrong**
+ - Stylesheet virtualization and related tool sets
 
-`cssobj` use [CSSOM](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model), **diff object, udpate rule** at stylesheet **Property** level
+ - Tiny size and simple API
 
-In addition to many basic features of CSS-in-JS technology, cssobj is the **unique** lib that focus on:
+ - Nested selector, like SCSS/LESS
 
- - **Stylesheet virtualization**
-
- - **Nested stylesheet optimization**, similar to [SCSS](http://sass-lang.com/)/[LESS](http://lesscss.org/) in browser, but tiny
-
- - [Dynamically change rules at run time](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
-
- - [Use JS function as CSS value (Powerful!)](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
-
- - [@media work under IE8][ie] (A bonus, add some IE8 bundle size (0.3K), no perf decreased)
+ - [Stylesheet CRUD](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
 
 Assume we have below CSS, the `font-size` need to be **increased by 1** each time when user clicked
 
@@ -54,6 +47,8 @@ Assume we have below CSS, the `font-size` need to be **increased by 1** each tim
   .nav:active { color: #666; }
 }
 ```
+
+Normally, it's hard to touch the `font-size` property from JS, so let's turn this stylesheet into **dynamic JS module** using `cssobj`
 
 If use [Babel](http://babeljs.io/docs/usage/cli/), see below (with [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj)):
 
@@ -68,7 +63,7 @@ const result = CSSOBJ `
 plugins:
   - default-unit: px
 ---
-// stylesheet, SCSS style (nested)
+// SCSS style (nested)
 .nav {
   color: blue;
   height: 100;
@@ -120,9 +115,9 @@ localClassName = result.mapClass('nav')
 ```
 
 For this first time render,
-all class names added a random suffix `_1jkhrb92_`,
+all class names add a random suffix `_1jkhrb92_`,
 the `font-size` is `12px`,
-and `@media` just work under IE8,
+`@media` just work under IE8,
 the `<style>` tag which `cssobj` created now contains:
 
 ``` css
@@ -134,7 +129,9 @@ the `<style>` tag which `cssobj` created now contains:
 }
 ```
 
-**Update CSS Value**
+Think this: one `cssobj` instance === one `<style>` tag + `A manager from JS`
+
+#### Update CSS Value
 
 Since we already have a function as the value:
 
@@ -154,9 +151,9 @@ result.update()
 // font-size  ->  14px
 ```
 
-Above, each `result.update` only change `font-size`, all other things **keep untouched**
+Above, only `font-size` changed, all other things **keep untouched**
 
-**Change stylesheet from source JS Object**:
+#### CRUD (Create, Read, Update, Delete) stylesheet from JS
 
 When the source JS Object (`first arg of cssobj()`) have no changes,
 `result.update` only invoke the value function (here, the above `font-size` function),
@@ -192,7 +189,7 @@ result.update()
 
 ```
 
-Above, **only** diffed rules and prop updated, other rules and props will **keep untouched**
+Above, **only** diffed part updated, other rules and props will **keep untouched**
 
 Now, the stylesheet becomes:
 
@@ -257,21 +254,23 @@ It's how the [babel-plugin-transform-cssobj][babel] does (roughly), but below st
 Write your CSS as normal (e.g. *index.css*), e.g.:
 
 ``` css
+// file: index.css
 .nav { color: blue; font-size: 12px; }
 ```
 
 - **Step 2**
 
-Convert CSS file *index.css* into *index.css.js* as JS module, using [cssobj-converter](https://github.com/cssobj/cssobj-converter):
+Turn it into JS module, using [cssobj-converter](https://github.com/cssobj/cssobj-converter):
 
 ``` bash
 # in command line
 cssobj index.css -o index.css.js
 ```
 
-The content of `index.css.js` as below (**Common JS** module):
+The result
 
 ``` javascript
+// file: index.css.js
 module.exports = {
   '.nav': { color: 'blue', fontSize: '12px' }
 }
@@ -322,7 +321,7 @@ Let's quickly learn the API:
 
   - [Working with Stream](https://github.com/cssobj/cssobj/wiki/Working-With-Stream)
 
-  - [Server side rendering](https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering)
+  - [Server side rendering][server]
 
 ## How it worked?
 
@@ -387,3 +386,4 @@ cssobj is wrapper for [cssobj-core](https://github.com/cssobj/cssobj-core), [plu
 MIT
 
 [babel]: https://github.com/cssobj/babel-plugin-transform-cssobj
+[server]: https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering

@@ -1,7 +1,7 @@
 {
   "name": "cssobj",
   "version": "1.1.2",
-  "description": "Runtime stylesheet manager, turn CSS into JS module, stylesheet CRUD (Create, Read, Update, Delete) in CSSOM, solve common problems of CSS-in-JS, name space (local) class names, vendor prefix, media query hook, styled components",
+  "description": "Runtime stylesheet manager, turn CSS into dynamic JS module, pack CSS into MVC components, [CRUD][] (Create, Read, Update, Delete) of CSS in CSSOM, also solve common problems of CSS-in-JS, name space (local) class names, vendor prefix, media query hook, styled components",
   "keywords": [
     "cssom",
     "prefixer",

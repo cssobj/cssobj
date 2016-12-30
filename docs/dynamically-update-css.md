@@ -1,6 +1,6 @@
 # Dynamically update css, CRUD of stylesheet
 
-Think below code at head of your page:
+Below example, `cssobj` will create `<style>` tag in HEAD, render CSS rules inside
 
 ```javascript
 var obj = {
@@ -13,7 +13,6 @@ var obj = {
 }
 var result = cssobj(obj)
 
-// you want change css later... ...
 ```
 
 
@@ -32,13 +31,13 @@ result.update()  // color is now 'blue'
 
 // using function as value:
 obj.div.color = function(v){
-  return v.result.data.color
+  return randomColor()
 }
-result.update({color:'blue'})  // color is now 'blue'
+result.update()  // color is now random
 
 ```
 
-## 2. Remove properties
+## 2. Delete/Remove properties
 
 You want to remove `'fontSize'` and `'lineHeight'`, code as below:
 
@@ -52,7 +51,7 @@ result.update()
 
 ```
 
-## 3. Add new properties
+## 3. Create/Add new properties
 
 You want to add `'float'` and `'clear'`.
 
@@ -64,7 +63,7 @@ obj.div.clear = 'both'
 result.update()
 ```
 
-## 4. Add new rules
+## 4. Create/Add new rules
 
 You want to add `':after'` rule, and `div span` rule
 
@@ -74,7 +73,7 @@ obj.div.span = { fontSize: '18px' }
 result.update()
 ```
 
-## 5. Replace rules
+## 5. Update/Replace rules
 
 You want to replace the whole rule
 
@@ -83,7 +82,7 @@ obj.div.span = { color: 'green', fontSize: '20px' }
 result.update()
 ```
 
-## 6. Remove rules
+## 6. Delete/Remove rules
 
 You want to remove `div span` rule
 
@@ -94,11 +93,23 @@ result.update()
 
 ## 7. Read a rule
 
-Although `cssobj` can manage everything, you read the rule in stylesheet
+Although `cssobj` can manage everything, you read the rule in stylesheet manually
 
 ```javascript
-result.ref.div.omRule
+const rule = result.ref.div.omRule
 // => [CSSStyleRule]
+rule.color = 'red'
+```
+
+## 8. Delete/Destroy cssobj
+
+Currently, `cssobj` don't provide `result.destroy()` or similar method, you should manually destroy things:
+
+```javascript
+// remove <style> tag
+result.cssdom.parentNode.removeChild(el)
+// GC result
+result = null
 ```
 
 # All the above can use `function` instead:
@@ -110,15 +121,15 @@ obj.div.span = function() {
 result.update()
 ```
 
-**the options for prop's function**
+**the parameter for value function**
 
 If you set function for prop's value:
 
 ```javascript
 obj.div.span.fontSize = function(v) {
+  console.log(v.raw, v.cooked, v.node, v.result)
   return 1 + v.raw
 }
-
 ```
 
 `v` have below properties:

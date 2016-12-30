@@ -2,12 +2,12 @@
 
 # CSSOBJ [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj)
 
-Runtime stylesheet manager, turn CSS into JS module, stylesheet CRUD (Create, Read, Update, Delete), solve common problems of CSS-in-JS.
+Runtime stylesheet manager, turn CSS into dynamic JS module, pack CSS into MVC components, [CRUD][] (Create, Read, Update, Delete) of CSS, also solve common problems of CSS-in-JS.
 
- - ~4K min.gz
+ - ~4K min.gz, simple API
  - Support Any CSS Selector/Value
  - [Can Write SCSS/LESS Directly](https://github.com/cssobj/babel-plugin-transform-cssobj)
- - [CSS Rules CRUD](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
+ - [CSS Rules CRUD][CRUD]
  - [Put class names into local space **No Conflict**](https://cssobj.github.io/cssobj-demo/#demo4)
  - [Use JS function as CSS value](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
  - [Conditional Apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
@@ -15,7 +15,7 @@ Runtime stylesheet manager, turn CSS into JS module, stylesheet CRUD (Create, Re
  - [Media Query hook for IE8](https://cssobj.github.io/cssobj-demo/#demomedia)
  - [Server Rendering][server]
 
-[Wiki](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Live Demo](https://cssobj.github.io/cssobj-demo/) - [Github Repo](https://github.com/cssobj/cssobj) - [Babel/JSX](https://github.com/cssobj/babel-plugin-transform-cssobj)
+[Usage](https://github.com/cssobj/cssobj#usage) - [Wiki](https://github.com/cssobj/cssobj/wiki) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Demo](https://cssobj.github.io/cssobj-demo/) - [Repo](https://github.com/cssobj/cssobj) - [Babel](https://github.com/cssobj/cssobj#work-flow-with-babel-see-also-without-babel-version) - [Without Babel](https://github.com/cssobj/cssobj#work-flow-without-babel)
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 [![npm](https://img.shields.io/npm/v/cssobj.svg "Version")](https://www.npmjs.com/package/cssobj)
@@ -23,34 +23,164 @@ Runtime stylesheet manager, turn CSS into JS module, stylesheet CRUD (Create, Re
 [![dependencies Status](https://david-dm.org/cssobj/cssobj/status.svg)](https://david-dm.org/cssobj/cssobj)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-[ie]: https://github.com/cssobj/cssobj/wiki/How-@media-work-in-IE8
 
-## Highlight
+## Install:
 
-`cssobj` can manage your stylesheet, turn static stylesheet into **dynamic js module**, focus on:
+**NPM**
 
- - Stylesheet virtualization and related tool sets
+``` bash
+npm install cssobj  # the lib
 
- - Tiny size and simple API
+# When use Babel
+npm install babel-plugin-transform-cssobj
 
- - Nested selector, like SCSS/LESS
-
- - [Stylesheet CRUD](https://github.com/cssobj/cssobj/wiki/Dynamically-update-css)
-
-Assume we have below CSS, the `font-size` need to be **increased by 1** each time when user clicked
-
-``` css
-.nav { color: blue; }
-.nav .item { color: red; font-size: 12px; /* font-size need to be changed by user */ }
-@media (max-width: 800px) {
-  .nav { color: #333; }
-  .nav:active { color: #666; }
-}
+# When **NOT** use Babel, install the converter
+npm install -g cssobj-converter
 ```
 
-Normally, it's hard to touch the `font-size` property from JS, so let's turn this stylesheet into **dynamic JS module** using `cssobj`
+**Use In Browser**
 
-If use [Babel](http://babeljs.io/docs/usage/cli/), see below (with [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj)):
+``` html
+<script src="https://unpkg.com/cssobj"></script>
+```
+
+## Usage
+
+Below example, `cssobj` will create `<style>` tag in HEAD, render CSS rules inside
+
+```javascript
+import cssobj from 'cssobj'
+
+var obj = {
+  div: {
+    $id: 'div', // a ref to CSS rules [optional]
+    fontSize: '14px',
+    lineHeight: 1.5,
+    color: 'red'
+  }
+}
+var result = cssobj(obj)
+
+```
+
+The rendered CSS
+
+``` css
+div { font-size: 14px; line-height: 1.5; color: red; }
+```
+
+Let's quickly learn the API:
+
+**only one** top level method: `cssobj( obj, [config] )`, all other things using `result.someMethods`, that's all, really.
+
+For CRUD (Create, Read, Update, Delete), **dynamically change above CSS**, see below:
+
+### 1. Update property values
+
+You want to change color to `'blue'`
+
+```javascript
+
+// using static value:
+obj.div.color = 'blue'
+result.update()  // color is now 'blue'
+
+
+// using function as value:
+obj.div.color = function(v){
+  return randomColor()
+}
+result.update()  // color is now random
+
+```
+
+### 2. Delete/Remove properties
+
+You want to remove `'fontSize'` and `'lineHeight'`
+
+It's just work as you expected:
+
+```javascript
+
+delete obj.div.fontSize
+delete obj.div.lineHeight
+result.update()
+
+```
+
+### 3. Create/Add new properties
+
+You want to add `'float'` and `'clear'`
+
+It's just work as you expected:
+
+```javascript
+obj.div.float = 'left'
+obj.div.clear = 'both'
+result.update()
+```
+
+### 4. Create/Add new rules
+
+You want to add `':after'` rule, and `div span` rule
+
+```javascript
+obj.div['&:after'] = { fontSize:'10px', content:'"---"' }
+obj.div.span = { fontSize: '18px' }
+result.update()
+```
+
+### 5. Update/Replace rules
+
+You want to replace the whole rule
+
+```javascript
+obj.div.span = { color: 'green', fontSize: '20px' }
+result.update()
+```
+
+**All the above can use `function` instead**
+
+```javascript
+obj.div.span = function() {
+  return { color: randomColor(), fontSize: currentSize + 'px' }
+}
+result.update()
+```
+
+### 6. Delete/Remove rules
+
+You want to remove `div span` rule
+
+```javascript
+delete obj.div.span
+result.update()
+```
+
+### 7. Read a rule
+
+Although `cssobj` can manage everything, you read the rule in stylesheet manually
+
+```javascript
+const rule = result.ref.div.omRule
+// => [CSSStyleRule]
+rule.color = 'red'
+```
+
+### 8. Delete/Destroy cssobj
+
+Currently, `cssobj` don't provide `result.destroy()` or similar method, you should manually destroy things:
+
+```javascript
+// remove <style> tag
+result.cssdom.parentNode.removeChild(el)
+// GC result
+result = null
+```
+
+## Work Flow with Babel, See also [Without Babel Version](https://github.com/cssobj/cssobj#work-flow-without-babel)
+
+If use [Babel](http://babeljs.io/docs/usage/cli/), recommended the [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj)
 
 ```javascript
 // create <style> in <head>, insert CSS rules, random namespace: _1jkhrb92_
@@ -82,11 +212,11 @@ plugins:
 
 }
 `
-result.mapClass(<ul class='nav'><li class='item'>ITEM</li></ul>)
+const html = result.mapClass(<ul class='nav'><li class='item'>ITEM</li></ul>)
 // <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
 ```
 
-If **NOT Use Babel**, check below rendered result:
+Rendered result as below:
 
 ``` Javascript
 import cssobj from "cssobj";
@@ -110,8 +240,7 @@ const result = cssobj({
   plugins: [cssobj_plugin_default_unit('px')]
 });
 
-localClassName = result.mapClass('nav')
-// nav_1jkhrb92_
+const html = <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
 ```
 
 For this first time render,
@@ -129,7 +258,7 @@ the `<style>` tag which `cssobj` created now contains:
 }
 ```
 
-Think this: one `cssobj` instance === one `<style>` tag + `A manager from JS`
+Think this: one `cssobj` instance === A `<style>` tag with rules <kbd>+</kbd> `A manager from JS`
 
 #### Update CSS Value
 
@@ -203,7 +332,7 @@ Now, the stylesheet becomes:
 .nav_1jkhrb92_ a:hover { text-decoration: none; }
 ```
 
-**Diff with NEW JS Object**
+#### Diff with NEW JS Object
 
 ``` javascript
 const newObj = { '.nav': { width: 100, a: { color: 'blue' } } }
@@ -225,33 +354,17 @@ Now, the stylesheet becomes:
 
 That's it, see more [Usage & Example](https://github.com/cssobj/cssobj/blob/master/docs/usage-example.md)
 
-## Install:
+## Work Flow (Without Babel)
 
-**npm** (CJS & ES)
+First install [cssobj-converter](https://github.com/cssobj/cssobj-converter)
 
-``` bash
-npm install cssobj  # the lib
-
-# When use Babel
-npm install babel-plugin-transform-cssobj
-
-# When **NOT** use Babel, install the converter
+``` javascript
 npm install -g cssobj-converter
 ```
 
-**use in browser** (IIFE)
-
-``` html
-<script src="https://unpkg.com/cssobj"></script>
-```
-
-## Work Flow
-
-It's how the [babel-plugin-transform-cssobj][babel] does (roughly), but below steps have more control
-
 - **Step 1**
 
-Write your CSS as normal (e.g. *index.css*), e.g.:
+Write your CSS as normal (e.g. *index.css*)
 
 ``` css
 // file: index.css
@@ -260,10 +373,10 @@ Write your CSS as normal (e.g. *index.css*), e.g.:
 
 - **Step 2**
 
-Turn it into JS module, using [cssobj-converter](https://github.com/cssobj/cssobj-converter):
+Turn it into JS module, from `cssobj-converter` CLI
 
 ``` bash
-# in command line
+# in command line, run cssobj-converter
 cssobj index.css -o index.css.js
 ```
 
@@ -297,10 +410,6 @@ obj['.nav'].fontSize = v => parseInt(v.cooked) + 1  // increase font-size by 1
 result.update()
 
 ```
-
-Let's quickly learn the API:
-
-**only one** top level method: `cssobj( obj, config )`, all other things using `result.someMethods`, that's all, really.
 
 #### [Documented API](https://github.com/cssobj/cssobj/blob/master/docs/api.md)
 
@@ -387,3 +496,6 @@ MIT
 
 [babel]: https://github.com/cssobj/babel-plugin-transform-cssobj
 [server]: https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering
+[ie]: https://github.com/cssobj/cssobj/wiki/How-@media-work-in-IE8
+[CRUD]: https://github.com/cssobj/cssobj/wiki/Dynamically-update-css
+[CSSOM]: http://dev.w3.org/csswg/cssom/

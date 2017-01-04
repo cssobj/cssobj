@@ -2,7 +2,7 @@
 
 # CSSOBJ [![Join the chat at https://gitter.im/css-in-js/cssobj](https://badges.gitter.im/css-in-js/cssobj.svg)](https://gitter.im/css-in-js/cssobj)
 
-Runtime stylesheet manager, turn CSS into dynamic JS module, pack CSS into MVC components, [CRUD][] (Create, Read, Update, Delete) of CSS, also solve common problems of CSS-in-JS.
+Runtime CSS manager, Turn CSS into dynamic JS module, Stylesheet [CRUD][] (Create, Read, Update, Delete) in CSSOM, Solve common problems of CSS-in-JS.
 
  - ~4K min.gz, simple API
  - Support Any CSS Selector/Value
@@ -71,7 +71,7 @@ div { font-size: 14px; line-height: 1.5; color: red; }
 
 Let's quickly learn the API:
 
-**only one** top level method: `cssobj( obj, [config] )`, all other things using `result.someMethods`, that's all, really.
+**Only One** top level method: `cssobj( obj, [config] )`, all other things using `result.someMethods`, that's all, really.
 
 For CRUD (Create, Read, Update, Delete), **dynamically change above CSS**, see below:
 
@@ -178,6 +178,8 @@ result.cssdom.parentNode.removeChild(el)
 result = null
 ```
 
+Think of this: one `cssobj` instance === A `<style>` tag with rules <kbd>+</kbd> `A manager from JS`
+
 ## Work Flow with Babel, See also [Without Babel Version](https://github.com/cssobj/cssobj#work-flow-without-babel)
 
 If use [Babel](http://babeljs.io/docs/usage/cli/), recommended the [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj)
@@ -212,8 +214,8 @@ plugins:
 
 }
 `
-const html = result.mapClass(<ul class='nav'><li class='item'>ITEM</li></ul>)
-// <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
+const html = result.mapClass(<ul class='nav'><li class='item active'>ITEM</li></ul>)
+// <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_ active_1jkhrb92_"></li></ul>
 ```
 
 Rendered result as below:
@@ -240,7 +242,7 @@ const result = cssobj({
   plugins: [cssobj_plugin_default_unit('px')]
 });
 
-const html = <ul class="nav_1jkhrb92_"><li class="item_1jkhrb92_"></li></ul>
+const html = <ul class={result.mapClass('nav')}><li class={result.mapClass('item active')}></li></ul>
 ```
 
 For this first time render,
@@ -257,8 +259,6 @@ the `<style>` tag which `cssobj` created now contains:
   .nav_1jkhrb92_:active { color: rgb(102, 102, 102); }
 }
 ```
-
-Think this: one `cssobj` instance === A `<style>` tag with rules <kbd>+</kbd> `A manager from JS`
 
 #### Update CSS Value
 

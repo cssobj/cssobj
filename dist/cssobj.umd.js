@@ -15,7 +15,11 @@
     c77b11b6bf023afd4cea7f30147e05027d21d0e5
 */
 
-'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define('cssobj', factory) :
+  (global.cssobj = factory());
+}(this, (function () { 'use strict';
 
 // helper functions for cssobj
 
@@ -1020,4 +1024,6 @@ function cssobj (obj, config, state) {
 
 cssobj.version = '1.1.3'
 
-module.exports = cssobj;
+return cssobj;
+
+})));

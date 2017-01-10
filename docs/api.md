@@ -25,7 +25,7 @@ local | Boolean\|Object | `false` | `true` to localize class names, using `confi
 local.space | String | random string | name space for localized names, will using random string if not specified.
 local.localNames | Object | `{ }` | predefined `key - val` to control each class name when localized.
 cssom | Object | `{ }` | `cssom-plugin` option, supported key: `frame` as iframe DOM, `id` of style id, `attrs` for style tag.
-plugins | Array | `[ ]` | Functions to add different feature, for `post`, `value`, `selector`, see [plugins](#plugins) section.
+plugins | Array | `[ ]` | Functions to add different feature, for `post`, `value`, `selector`, see [plugins](https://github.com/cssobj/cssobj#plugins) section.
 state | Object | `undefined` | Default state when state arguments is falsy.
 
 ### `result: object`

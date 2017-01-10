@@ -25,7 +25,7 @@
     "test": "cd test && mocha",
     "lint": "standard ./lib",
     "report": "cd dist && gzip < cssobj.min.js > cssobj.min.gz && ls -lh && rm -f *.gz",
-    "build": "git rev-parse HEAD > .commithash && rollup -c && uglifyjs dist/cssobj.iife.js -cm -o dist/cssobj.min.js",
+    "build": "git rev-parse HEAD > .commithash && rollup -c && uglifyjs dist/cssobj.umd.js -cm -o dist/cssobj.min.js",
     "make": "gulp bump && npm run build"
   },
   "repository": {

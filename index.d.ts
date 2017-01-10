@@ -33,11 +33,24 @@ declare namespace CssObj {
 
     interface Node {
       children: Object;
+      key: string;
+      obj: Object;
+      parent: Object;
       diff?: Object;
+      omRule?: Object[];
+      parentRule?: any;
+      rawVal?: Object;
       lastVal?: Object;
-      parentRule: any;
-      prevVal: any;
-      prop: Object;
+      lastRaw?: Object;
+      lastVal?: Object;
+      prevVal?: any;
+      prop?: Object;
+      selPart?: string[];
+      selText?: string;
+      selTextPart?: string;
+      groupText?: string;
+      at?: string;
+      type?: string;
     }
 
     interface Result {

@@ -454,6 +454,8 @@ result.update()
 
 ## Plugins
 
+  About writing a plugin, See: [plugin-guide](https://github.com/cssobj/cssobj/wiki/Plugin-Guide)
+
   - **(already in core)** [cssobj-plugin-localize](https://github.com/cssobj/cssobj-plugin-localize) Localize class names
 
   - **(already in core)** [cssobj-plugin-cssdom](https://github.com/cssobj/cssobj-plugin-cssom) Inject style to DOM and diff update

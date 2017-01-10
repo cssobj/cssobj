@@ -1,7 +1,7 @@
 /*
   cssobj v1.1.3
-  Wed Jan 04 2017 14:34:15 GMT+0800 (HKT)
-  commit ba25ae801e990c7260748bfa4d53b130c63c5e9c
+  Tue Jan 10 2017 17:05:33 GMT+0800 (HKT)
+  commit 75c3ed7d6f87e6f9859ffd9fb02d72690c5705ed
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.

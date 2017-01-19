@@ -26,7 +26,7 @@ Runtime CSS manager, Turn CSS into dynamic JS module, Stylesheet [CRUD][] (Creat
 
 ## Install:
 
-**NPM**
+#### npm
 
 ``` bash
 npm install cssobj  # the lib
@@ -38,7 +38,7 @@ npm install babel-plugin-transform-cssobj
 npm install -g cssobj-converter
 ```
 
-**Use In Browser**
+#### browser
 
 ``` html
 <script src="https://unpkg.com/cssobj"></script>
@@ -46,32 +46,38 @@ npm install -g cssobj-converter
 
 ## Usage
 
-Below example, `cssobj` will create `<style>` tag in HEAD, render CSS rules inside
+First see this [SIMPLE DEMO](http://jsbin.com/cibetuc/edit?html,js,output)
+
+In the example, `cssobj` will create `<style>` tag in HEAD, render CSS rules inside
 
 ```javascript
 import cssobj from 'cssobj'
 
 var obj = {
   div: {
-    $id: 'div', // a ref to CSS rules [optional]
-    fontSize: '14px',
-    lineHeight: 1.5,
-    color: 'red'
+    backgroundColor: 'yellow',
+    color: 'red',
+    // simulate 50vh in CSS3
+    height: () => window.innerHeight/2 + 'px'
   }
 }
 var result = cssobj(obj)
 
+// dynamic update height when resize
+window.onresize = () => result.update()
 ```
 
-The rendered CSS
+The rendered CSS (`height` is **dynamically** set to 50% of window height)
 
 ``` css
-div { font-size: 14px; line-height: 1.5; color: red; }
+div { background-color: yellow; color: red; height: 600px; }
 ```
 
-Let's quickly learn the API:
+If you read the code, you've learned the API already:
 
 **Only One** top level method: `cssobj( obj, [config] )`, all other things using `result.someMethods`, that's all, really.
+
+## Stylesheet CRUD
 
 For CRUD (Create, Read, Update, Delete), **dynamically change above CSS**, see below:
 
@@ -96,14 +102,13 @@ result.update()  // color is now random
 
 ### 2. Delete/Remove properties
 
-You want to remove `'fontSize'` and `'lineHeight'`
+You want to remove `backgroundColor`
 
 It's just work as you expected:
 
 ```javascript
 
-delete obj.div.fontSize
-delete obj.div.lineHeight
+delete obj.div.backgroundColor
 result.update()
 
 ```
@@ -162,8 +167,8 @@ result.update()
 Although `cssobj` can manage everything, you read the rule in stylesheet manually
 
 ```javascript
-const rule = result.ref.div.omRule
-// => [CSSStyleRule]
+const rule = result.root.children.div.omRule[0]
+// => CSSStyleRule
 rule.color = 'red'
 ```
 
@@ -192,6 +197,7 @@ If use [Babel](http://babeljs.io/docs/usage/cli/), recommended the [babel-plugin
 const result = CSSOBJ `
 ---
 # cssobj config
+local: true
 plugins:
   - default-unit: px
 ---
@@ -239,6 +245,7 @@ const result = cssobj({
     }
   }
 }, {
+  local: true,
   plugins: [cssobj_plugin_default_unit('px')]
 });
 

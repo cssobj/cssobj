@@ -23,7 +23,7 @@ cssobj(obj, { plugins: [
 
 Currently cssobj support below types
 
-- **selector**: `function (selector: string, node: Node, result: Result) -> string`
+### **selector**: `function (selector: string, node: Node, result: Result) -> string`
 
   `selector` is current selector name according to CSS,
   including normal `@-rules`, **but except for** group @-rules
@@ -47,7 +47,7 @@ Currently cssobj support below types
 
   See also: [cssobj-plugin-localize](https://github.com/cssobj/cssobj-plugin-localize)
 
-- **value**: `function (value: string, key: string, node: Node, result: Result) -> string`
+### **value**: `function (value: string, key: string, node: Node, result: Result) -> string`
 
   `value` is the value according to raw `JS Source Object Value`
 
@@ -69,7 +69,7 @@ Currently cssobj support below types
 
   See also: [cssobj-plugin-default-unit](https://github.com/cssobj/cssobj-plugin-default-unit)
 
-- **post**: `function (result: Result) -> string`
+### **post**: `function (result: Result) -> string`
 
   Do something with cssobj `result` object, like generate css text, do sth with `<style>` tag, etc.
 
@@ -81,12 +81,12 @@ Currently cssobj support below types
 
   As a convention of [existing plugins](https://github.com/cssobj/cssobj#plugins), plugin author can use below style:
 
-- wrap plugin object into a **function call**, with below signature:
+### wrap plugin object into a **function call**, with below signature:
 
   `function(option: Object) -> Object({ plugin_type: function })`
 
   The function should accept **only one** argument, `option` can be Object that contain many member value
 
-- use [helper functions](https://github.com/cssobj/cssobj-helper) when possible
+### use [helper functions](https://github.com/cssobj/cssobj-helper) when possible
 
   The helper functions are used in core and many plugins, use them will benefit for better optimization (size, compatibility, etc.)

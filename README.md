@@ -53,7 +53,7 @@ In the example, `cssobj` will create `<style>` tag in HEAD, render CSS rules ins
 ```javascript
 import cssobj from 'cssobj'
 
-var obj = {
+const obj = {
   div: {
     backgroundColor: 'yellow',
     color: 'red',
@@ -61,7 +61,7 @@ var obj = {
     height: () => window.innerHeight/2 + 'px'
   }
 }
-var result = cssobj(obj)
+const result = cssobj(obj)
 
 // dynamic update height when resize
 window.onresize = () => result.update()
@@ -79,7 +79,7 @@ If you read the code, you've learned the API already:
 
 ## Stylesheet CRUD
 
-For CRUD (Create, Read, Update, Delete), **dynamically change above CSS**, see below:
+The power of cssobj is CSS CRUD (Create, Read, Update, Delete), **dynamically change above CSS**, see below:
 
 ### 1. Update property values
 
@@ -184,6 +184,35 @@ result = null
 ```
 
 Think of this: one `cssobj` instance === A `<style>` tag with rules <kbd>+</kbd> `A manager from JS`
+
+## Localize class names
+
+Passing `local: true` as option, cssobj will add a random `name space` into all **class names**, this is called `localize`:
+
+``` javascript
+const result = cssobj(
+  {
+    '.nav': {color: 'red'}
+  },
+  { local: true }
+)
+```
+
+Rendered CSS:
+
+``` css
+.nav_1lwyllh4_ {color: red;}
+```
+
+You can get this `name space` using `result.space`, or using below methods:
+
+``` javascript
+// As HTML class attribute
+result.mapClass('nav active')  // [string] 'nav_1lwyllh4_ active_1lwyllh4_'
+
+// As CSS selector
+result.mapSel('.nav li.item')  // [string] '.nav_1lwyllh4_ li.item_1lwyllh4_'
+```
 
 ## Work Flow with Babel, See also [Without Babel Version](https://github.com/cssobj/cssobj#work-flow-without-babel)
 

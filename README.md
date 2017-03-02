@@ -77,59 +77,6 @@ If you read the code, you've learned the API already:
 
 **Only One** top level method: `cssobj( obj, [config] )`, all other things using `result.someMethods`, that's all, really.
 
-## At-Rules
-
-All `@-rules` work as expected, and `@media` can be nested at any level:
-
-```javascript
-cssobj({
-  '.nav':{
-    width: '1024px',
-    '@media print': {
-      display: 'none'
-    }
-  }
-})
-```
-Above will hide `.nav` when print.
-
-``` javascript
-cssobj({
-  '@keyframes changeColor': {
-    '0%': { backgroundColor: 'green' },
-    '100%': { backgroundColor: 'yellow' }
-  },
-  '.nav': {
-    backgroundColor: 'red',
-    animation: '5s infinite changeColor'
-  }
-})
-```
-
-Notice above `@keyframes`, it **have to be in top level** of your source object, aka cannot be nested into `.nav`,
-that is different from `@media` rule, which allow nested at any level, or nested into another `@media`:
-
-``` javascript
-cssobj({
-  h3:{
-    color: 'blue',
-    '@media (min-width: 400px)': {
-      color: 'red',
-      '@media (max-width: 500px)': {
-          color: 'green'
-      }
-    },
-    '@media (min-width: 500px)': {
-      color: 'purple'
-    }
-  }
-})
-```
-
-Above, what's the color will be? You can take a try and see what's the final CSS will be.
-
-There's a hidden [JS Bin](https://jsbin.com/lavatit/edit?html,js,output)...
-
 ## Stylesheet CRUD
 
 The power of cssobj is CSS CRUD (Create, Read, Update, Delete), **dynamically change above CSS**, see below:
@@ -237,6 +184,59 @@ result = null
 ```
 
 Think of this: one `cssobj` instance === A `<style>` tag with rules <kbd>+</kbd> `A manager from JS`
+
+## At-Rules
+
+All `@-rules` work as expected, and `@media` can be nested at any level:
+
+```javascript
+cssobj({
+  '.nav':{
+    width: '1024px',
+    '@media print': {
+      display: 'none'
+    }
+  }
+})
+```
+Above will hide `.nav` when print.
+
+``` javascript
+cssobj({
+  '@keyframes changeColor': {
+    '0%': { backgroundColor: 'green' },
+    '100%': { backgroundColor: 'yellow' }
+  },
+  '.nav': {
+    backgroundColor: 'red',
+    animation: '5s infinite changeColor'
+  }
+})
+```
+
+Notice above `@keyframes`, it **have to be in top level** of your source object, aka cannot be nested into `.nav`,
+that is different from `@media` rule, which allow nested at any level, or nested into another `@media`:
+
+``` javascript
+cssobj({
+  h3:{
+    color: 'blue',
+    '@media (min-width: 400px)': {
+      color: 'red',
+      '@media (max-width: 500px)': {
+          color: 'green'
+      }
+    },
+    '@media (min-width: 500px)': {
+      color: 'purple'
+    }
+  }
+})
+```
+
+Above, what's the color will be? You can take a try and see what's the final CSS will be.
+
+There's a hidden [JS Bin](https://jsbin.com/lavatit/edit?html,js,output)...
 
 ## Localize class names
 

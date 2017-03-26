@@ -1,7 +1,7 @@
 /*
-  cssobj v1.1.3
-  Tue Jan 10 2017 17:05:33 GMT+0800 (HKT)
-  commit 75c3ed7d6f87e6f9859ffd9fb02d72690c5705ed
+  cssobj v1.1.4
+  Sun Mar 26 2017 22:57:56 GMT+0800 (HKT)
+  commit 79bf3c8770c31515b6c3b58e30d535632c99956f
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -9,8 +9,8 @@
   Components version info:
   - cssobj-core@1.1.3
     bdfe87d2817097b1e3d512386a1df612d045abf4
-  - cssobj-plugin-cssom@3.0.0
-    23445070d1843c35fdcbaf4b4dbe21989859dca5
+  - cssobj-plugin-cssom@3.0.2
+    1d8ba43f3225fcc47da6b51c33b725b5678ee255
   - cssobj-plugin-localize@3.2.2
     c77b11b6bf023afd4cea7f30147e05027d21d0e5
 */
@@ -611,7 +611,7 @@ function getBodyCss (node) {
       v = prop[k][i]
 
       // value expand & merge should be done as value function/plugin in cssobj-core >=0.5.0
-      ret += node.inline ? k : dashify(prefixProp(k, true)) + ':' + v + ';'
+      ret += node.inline ? k : prefixProp(k, true) + ':' + v + ';'
     }
     return ret
   })
@@ -667,8 +667,8 @@ function prefixProp (name, inCSS) {
   var retName = cssProps[ name ] ||
       ( cssProps[ name ] = vendorPropName( name ) || name)
   return inCSS   // if hasPrefix in prop
-      ? cssPrefixesReg.test(retName) ? capitalize(retName) : name=='float' && name || retName  // fix float in CSS, avoid return cssFloat
-      : retName
+    ? dashify(cssPrefixesReg.test(retName) ? capitalize(retName) : name=='float' && name || retName)  // fix float in CSS, avoid return cssFloat
+  : retName
 }
 
 /**
@@ -1022,7 +1022,7 @@ function cssobj (obj, config, state) {
   return cssobj$2(config)(obj, state)
 }
 
-cssobj.version = '1.1.3'
+cssobj.version = '1.1.4'
 
 return cssobj;
 

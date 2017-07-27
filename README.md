@@ -12,7 +12,6 @@ Runtime CSS manager, Turn CSS into dynamic JS module, Stylesheet [CRUD][] (Creat
  - [Use JS function as CSS value](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
  - [Conditional Apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
  - [Auto Vendor Prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
- - [Media Query hook for IE8](https://cssobj.github.io/cssobj-demo/#demomedia)
  - [Server Rendering][server]
 
 [Usage](https://github.com/cssobj/cssobj#usage) - [Wiki](https://github.com/cssobj/cssobj/wiki) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Demo](https://cssobj.github.io/cssobj-demo/) - [Repo](https://github.com/cssobj/cssobj) - [Babel](https://github.com/cssobj/cssobj#work-flow-with-babel-see-also-without-babel-version) - [Without Babel](https://github.com/cssobj/cssobj#work-flow-without-babel)
@@ -201,6 +200,38 @@ cssobj({
 ```
 Above will hide `.nav` when print.
 
+You can **emit** any `@media` rule by `cssom.media` option:
+
+```javascript
+const result = cssobj({
+  '.nav':{
+    width: '1024px',
+    '@media print': {
+      color: 'red'
+    }
+  }
+}, { cssom: { media:'' } })
+
+result.config.cssom.media = 'print'
+result.update()
+
+```
+
+Above will switch to `print` view, with below CSS:
+
+```css
+nav {width: 1024px;}
+nav {color: red;}
+```
+
+Then switch back:
+
+```js
+result.config.cssom.media = ''
+result.update()
+```
+
+
 ``` javascript
 cssobj({
   '@keyframes changeColor': {
@@ -337,7 +368,6 @@ const html = <ul class={result.mapClass('nav')}><li class={result.mapClass('item
 For this first time render,
 all class names add a random suffix `_1jkhrb92_`,
 the `font-size` is `12px`,
-`@media` just work under IE8,
 the `<style>` tag which `cssobj` created now contains:
 
 ``` css
@@ -587,6 +617,5 @@ MIT
 
 [babel]: https://github.com/cssobj/babel-plugin-transform-cssobj
 [server]: https://github.com/cssobj/cssobj/wiki/Server-Side-Rendering
-[ie]: https://github.com/cssobj/cssobj/wiki/How-@media-work-in-IE8
 [CRUD]: https://github.com/cssobj/cssobj/wiki/Dynamically-update-css
 [CSSOM]: http://dev.w3.org/csswg/cssom/

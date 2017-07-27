@@ -1,0 +1,4 @@
+h3 { color: red; }
+@media print { 
+  h3 { color: orange; }
+}

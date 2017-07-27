@@ -28,7 +28,7 @@ var banner = readFileSync('lib/zbanner.js', 'utf-8')
 export default {
   entry: lib,
   moduleName: 'cssobj',
-  moduleId: 'cssobj',
+  amd: {id: 'cssobj'},
   plugins: [
     replace({
       include: lib,

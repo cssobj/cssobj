@@ -1,3 +1,11 @@
+2017-07-27  James Yang  <jamesyang999@gmail.com>
+
+        * 1.2.0
+        add $groupTest for group rule
+        add cssom.media to switch media type (emit media rules inside)
+        remove cssom.noMedia, instead use $groupTest
+        remove IE8 @media hook, use $groupTest for @media switch
+
 2016-12-24  James Yang  <jamesyang999@gmail.com>
 
         * 1.1.2

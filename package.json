@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Runtime CSS manager, Turn CSS into dynamic JS module, Stylesheet CRUD (Create, Read, Update, Delete) in CSSOM, Solve common problems of CSS-in-JS, name space (local) class names, media query hook for IE8, styled components",
   "keywords": [
     "cssom",
@@ -41,6 +41,7 @@
   "dependencies": {},
   "devDependencies": {
     "chai": "*",
+    "cssobj-plugin-default-unit": "^2.3.4",
     "gulp": "*",
     "gulp-bump": "*",
     "mocha": "*",

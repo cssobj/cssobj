@@ -26,7 +26,10 @@ function runPhantom (root, fileName, done) {
 
     for(var i = 0, len = group.length; i < len; i++) {
       var text = group[i].split('******')
-      if(text.length<2) return done('wrong test format')
+      if(text.length<2) {
+        console.log(group)
+        return done('wrong test format')
+      }
 
       var str2 = text[1]
       if(/^file:/.test(str2)) {
@@ -35,12 +38,12 @@ function runPhantom (root, fileName, done) {
         } catch(e) {
           return done(e)
         }
-        expect(text[0]).equal(str2)
+        expect(text[0]).equal(str2, fileName)
       } else if(/^regexp:/.test(str2)){
         str2 = str2.replace(/^regexp:/,'')
-        expect(text[0]).match(new RegExp(str2))
+        expect(text[0]).match(new RegExp(str2), fileName)
       } else {
-        expect(text[0]).equal(str2)
+        expect(text[0]).equal(str2, fileName)
       }
 
     }
@@ -59,10 +62,14 @@ var walker = walk.walkSync('./spec', {
 function walkFile(root, stat, next) {
 
   if(!/\.js$/i.test(stat.name)) return next()
-
+  
+  // only below?
+  // if(!/nomedia/.test(stat.name)) return next()
+  
   describe('test case in '+root, function () {
 
     this.slow(3000)
+    this.timeout(50000)
 
     it('file '+stat.name, function (done) {
       runPhantom(root, stat.name, done)

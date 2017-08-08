@@ -14,7 +14,7 @@ declare namespace CssObj {
       vendors?: string[];
       append?: boolean;
       attrs?: Object;
-      noMedia?: boolean;
+      media?: string | RegExp;
     }
 
     interface LocalOption {
@@ -42,7 +42,6 @@ declare namespace CssObj {
       rawVal?: Object;
       lastVal?: Object;
       lastRaw?: Object;
-      lastVal?: Object;
       prevVal?: any;
       prop?: Object;
       selPart?: string[];

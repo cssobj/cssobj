@@ -1,7 +1,7 @@
 /*
-  cssobj v1.2.0
-  Thu Jul 27 2017 17:05:47 GMT+0800 (CST)
-  commit 26c3532bd45ad746d381f8b2767d52f5a8c5b095
+  cssobj v1.2.1
+  Tue Aug 08 2017 14:34:19 GMT+0800 (CST)
+  commit f4275ef5f0c0c77716c98a34e482c50b20e34390
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -1048,7 +1048,7 @@ function cssobj (obj, config, state) {
   return cssobj$2(config)(obj, state)
 }
 
-cssobj.version = '1.2.0';
+cssobj.version = '1.2.1';
 
 return cssobj;
 

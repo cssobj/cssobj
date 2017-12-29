@@ -1,14 +1,14 @@
 /*
-  cssobj v1.2.1
-  Tue Aug 08 2017 14:34:19 GMT+0800 (CST)
-  commit f4275ef5f0c0c77716c98a34e482c50b20e34390
+  cssobj v1.2.2
+  Fri Dec 29 2017 21:19:08 GMT+0800 (CST)
+  commit d9e745c66fa2da272e2e73614bd52e082b9cb83e
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@1.1.5
-    9459706b9a78c8a1e3f91f85d8b683911e340c54
+  - cssobj-core@1.1.6
+    5ceb86b401e3cca9a6b98e6320264f873fb5e8ec
   - cssobj-plugin-cssom@4.0.0
     d7f505abd6e375cc6d90e5e4a061fd21d47c2e3e
   - cssobj-plugin-localize@3.2.3
@@ -211,6 +211,7 @@ function parseObj (d, result, node, init) {
     }
     return nodes
   } else {
+    if (d[KEY_ID]) result.ref[d[KEY_ID]] = node;
     // it's no need to check (type.call(d) == OBJECT)
     // isIterable will filter only ARRAY/OBJECT
     // other types will goto parseProp function
@@ -231,7 +232,6 @@ function parseObj (d, result, node, init) {
     node.rawVal = {};
     node.prop = {};
     node.diff = {};
-    if (d[KEY_ID]) result.ref[d[KEY_ID]] = node;
     var order = d[KEY_ORDER] | 0;
     var funcArr = [];
 
@@ -1048,6 +1048,6 @@ function cssobj (obj, config, state) {
   return cssobj$2(config)(obj, state)
 }
 
-cssobj.version = '1.2.1';
+cssobj.version = '1.2.2';
 
 module.exports = cssobj;

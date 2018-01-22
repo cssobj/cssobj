@@ -1,14 +1,14 @@
 /*
-  cssobj v1.2.2
-  Fri Dec 29 2017 21:19:08 GMT+0800 (CST)
-  commit d9e745c66fa2da272e2e73614bd52e082b9cb83e
+  cssobj v1.2.3
+  Mon Jan 22 2018 09:52:51 GMT+0800 (CST)
+  commit 0c2588ee3314c88a3508ec6a4577c3225125785d
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@1.1.6
-    5ceb86b401e3cca9a6b98e6320264f873fb5e8ec
+  - cssobj-core@1.1.7
+    319d94d9d6c0ee455ed0dfe0c7f796298a145250
   - cssobj-plugin-cssom@4.0.0
     d7f505abd6e375cc6d90e5e4a061fd21d47c2e3e
   - cssobj-plugin-localize@3.2.3
@@ -78,7 +78,7 @@ function extendObj (obj, key, source) {
 
 // ensure obj[k] as array, then push v into it
 function arrayKV (obj, k, v, reverse, unique) {
-  obj[k] = k in obj ? [].concat(obj[k]) : [];
+  obj[k] = k in obj ? (Array.isArray(obj[k]) ? obj[k] : [obj[k]]) : [];
   if(unique && obj[k].indexOf(v)>-1) return
   reverse ? obj[k].unshift(v) : obj[k].push(v);
 }
@@ -1052,7 +1052,7 @@ function cssobj (obj, config, state) {
   return cssobj$2(config)(obj, state)
 }
 
-cssobj.version = '1.2.2';
+cssobj.version = '1.2.3';
 
 return cssobj;
 

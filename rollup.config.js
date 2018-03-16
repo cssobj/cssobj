@@ -1,6 +1,8 @@
 // rollup.config.js
 import { readFileSync } from 'fs'
 import replace from 'rollup-plugin-replace'
+import commonjs from 'rollup-plugin-commonjs'
+import nodeResolve from 'rollup-plugin-node-resolve'
 
 var pkg = JSON.parse(readFileSync('package.json', 'utf-8'))
 var pkgCore = JSON.parse(readFileSync('../cssobj-core/package.json', 'utf-8'))
@@ -35,7 +37,9 @@ export default {
       delimiters: [ '<@', '@>' ],
       sourceMap: true,
       values: { 'VERSION': pkg.version }
-    })
+    }),
+    nodeResolve(),
+    commonjs(),
   ],
   banner: banner,
   targets: [

@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "Runtime CSS manager, Turn CSS into dynamic JS module, Stylesheet CRUD (Create, Read, Update, Delete) in CSSOM, Solve common problems of CSS-in-JS, name space (local) class names",
   "keywords": [
     "cssinjs",
@@ -47,6 +47,9 @@
     "gulp": "*",
     "gulp-bump": "*",
     "mocha": "*",
+    "rollup": "^0.57.0",
+    "rollup-plugin-commonjs": "^8.3.0",
+    "rollup-plugin-node-resolve": "^3.2.0",
     "rollup-plugin-replace": "*",
     "rollup-watch": "*",
     "walk": "*"

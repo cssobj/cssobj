@@ -53,6 +53,7 @@ declare namespace CssObj {
     }
 
     interface Result {
+      set (path:string[], props:Object): void;
       update (obj?:Object, state?: any): Result;
       cssom: HTMLStyleElement;
       state: Object;

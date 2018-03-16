@@ -54,3 +54,6 @@ result.update()
 
 log(css(result), 'file:./simple-update-base64.css')
 
+result.set(['$div'], {fontSize:'18px !important', backgroundImage:null})
+log(css(result), 'file:./simple-update-important.css')
+

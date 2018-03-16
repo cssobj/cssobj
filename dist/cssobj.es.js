@@ -1,7 +1,7 @@
 /*
-  cssobj v1.3.1
-  Fri Mar 16 2018 16:23:14 GMT+0800 (CST)
-  commit eca34592bc4dbdd540152263cd89b30d6e0294ce
+  cssobj v1.3.2
+  Sat Mar 17 2018 07:08:37 GMT+0800 (CST)
+  commit 7cc35ea87694cffffd60a83612257b18e968ce76
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -9,7 +9,7 @@
   Components version info:
   - cssobj-core@1.1.9
     319d94d9d6c0ee455ed0dfe0c7f796298a145250
-  - cssobj-plugin-cssom@4.1.2
+  - cssobj-plugin-cssom@4.1.3
     f9994b7f360e9e68a40278cff6596b7e2925f203
   - cssobj-plugin-localize@3.2.4
     4a290d8a6ae49ef5bb937b769469ef30863799fe
@@ -1108,6 +1108,6 @@ function cssobj$1 (obj, config, state) {
   return cssobj(config)(obj, state)
 }
 
-cssobj$1.version = '1.3.1';
+cssobj$1.version = '1.3.2';
 
 export default cssobj$1;

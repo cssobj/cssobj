@@ -1,13 +1,13 @@
 /*
-  cssobj v1.3.0
-  Fri Mar 16 2018 16:08:07 GMT+0800 (CST)
-  commit 51ba42096226c9ec062a6f607d00f78b27c94cbe
+  cssobj v1.3.1
+  Fri Mar 16 2018 16:23:14 GMT+0800 (CST)
+  commit eca34592bc4dbdd540152263cd89b30d6e0294ce
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@1.1.8
+  - cssobj-core@1.1.9
     319d94d9d6c0ee455ed0dfe0c7f796298a145250
   - cssobj-plugin-cssom@4.1.2
     f9994b7f360e9e68a40278cff6596b7e2925f203
@@ -128,9 +128,10 @@ function extendObj (obj, key, source) {
 
 // ensure obj[k] as array, then push v into it
 function arrayKV (obj, k, v, reverse, unique) {
-  obj[k] = k in obj ? (Array.isArray(obj[k]) ? obj[k] : [obj[k]]) : [];
-  if(unique && obj[k].indexOf(v)>-1) return
-  reverse ? obj[k].unshift(v) : obj[k].push(v);
+  var d = obj[k];
+  d = obj[k] = k in obj ? (Array.isArray(d) ? d : [d]) : [];
+  if(unique && d.indexOf(v)>-1) return
+  reverse ? d.unshift(v) : d.push(v);
 }
 
 // get parents array from node (when it's passed the test)
@@ -1110,7 +1111,7 @@ function cssobj$1 (obj, config, state) {
   return cssobj(config)(obj, state)
 }
 
-cssobj$1.version = '1.3.0';
+cssobj$1.version = '1.3.1';
 
 return cssobj$1;
 

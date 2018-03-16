@@ -1,13 +1,13 @@
 /*
   cssobj v1.3.0
-  Fri Mar 16 2018 15:59:08 GMT+0800 (CST)
-  commit da803dca1d0bf66a2217ed25077f3745e6f09663
+  Fri Mar 16 2018 16:08:07 GMT+0800 (CST)
+  commit 51ba42096226c9ec062a6f607d00f78b27c94cbe
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
 
   Components version info:
-  - cssobj-core@1.1.7
+  - cssobj-core@1.1.8
     319d94d9d6c0ee455ed0dfe0c7f796298a145250
   - cssobj-plugin-cssom@4.1.2
     f9994b7f360e9e68a40278cff6596b7e2925f203
@@ -510,7 +510,7 @@ function applyPlugins (opt, type) {
 }
 
 function applyOrder (opt) {
-  if (!opt._order) return
+  if (opt._order==null) return
   opt._order
     .sort(function (a, b) {
       return a.order - b.order
@@ -520,7 +520,7 @@ function applyOrder (opt) {
         f[0](f[1]);
       });
     });
-  delete opt._order;
+  opt._order = [];
 }
 
 function cssobj (config) {

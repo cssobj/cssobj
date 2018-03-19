@@ -5,13 +5,13 @@
 Runtime CSS manager, Turn CSS into dynamic JS module, Stylesheet [CRUD][] (Create, Read, Update, Delete) in CSSOM, Solve common problems of CSS-in-JS.
 
  - ~4K min.gz, simple API
- - Support Any CSS Selector/Value
- - [Can Write SCSS/LESS Directly](https://github.com/cssobj/babel-plugin-transform-cssobj)
+ - Nested rules, support any CSS selector/value
+ - Minimal work to migrate
+ - [Work with DOM Frameworks](https://github.com/cssobj/cssobj/wiki/Work-with-popular-JS-Lib)
  - [CSS Rules CRUD][CRUD]
  - [Put class names into local space **No Conflict**](https://cssobj.github.io/cssobj-demo/#demo4)
  - [Use JS function as CSS value](https://github.com/cssobj/cssobj/wiki/Function-as-CSS-Value)
  - [Conditional Apply CSS](https://cssobj.github.io/cssobj-demo/test/test.html)
- - [Auto Vendor Prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
  - [Server Rendering][server]
 
 [Usage](https://github.com/cssobj/cssobj#usage) - [Wiki](https://github.com/cssobj/cssobj/wiki) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Demo](https://cssobj.github.io/cssobj-demo/) - [React](https://github.com/cssobj/cssobj#react) - [Babel](https://github.com/cssobj/cssobj#work-flow-with-babel-see-also-without-babel-version)

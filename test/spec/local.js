@@ -45,7 +45,7 @@ var result = cssobj({
 }, {local:{space:'_abc_'}})
 
 log(css(result), '.nav_abc_ { color: red; }\n.iconfont.edit_abc_ { color: blue; }\n.iconfont_abc_.edit { color: blue; }\n')
-log(result.mapClass('.!abc .!def xyz'), ' abc def xyz_abc_')
+log(result.mapClass('.!abc .!def xyz'), 'abc def xyz_abc_')
 
 // test for mapSel
 log(result.mapSel('.nav'), '.nav_abc_')

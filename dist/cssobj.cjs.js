@@ -1,7 +1,7 @@
 /*
-  cssobj v1.3.2
-  Sat Mar 17 2018 07:08:37 GMT+0800 (CST)
-  commit 7cc35ea87694cffffd60a83612257b18e968ce76
+  cssobj v1.3.4
+  Mon Mar 19 2018 10:17:01 GMT+0800 (CST)
+  commit a9fc5485f6b26b616beb48f97effd0496ffa4785
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -9,10 +9,10 @@
   Components version info:
   - cssobj-core@1.1.9
     319d94d9d6c0ee455ed0dfe0c7f796298a145250
-  - cssobj-plugin-cssom@4.1.3
-    f9994b7f360e9e68a40278cff6596b7e2925f203
-  - cssobj-plugin-localize@3.2.4
-    4a290d8a6ae49ef5bb937b769469ef30863799fe
+  - cssobj-plugin-cssom@4.1.4
+    18b665ff6051ae754c0956ea1c278d0a4cda112c
+  - cssobj-plugin-localize@3.3.0
+    0be8b99e45fdd4add3334f436fe819d9bc123b61
 */
 
 'use strict';
@@ -957,8 +957,8 @@ function cssobj_plugin_post_cssom (option) {
       prevMedia = option.media;
       checkMediaList();
 
-      result.set = function(path, newObj){
-        if(!Array.isArray(path)) return
+      result.set = function(cssPath, newObj){
+        var path = Array.isArray(cssPath) ? cssPath : [cssPath];
         var srcObj = result.obj;
         if(isString(path[0]) && path[0][0]==='$') {
           srcObj = result.ref[path.shift().slice(1)].obj;
@@ -1070,7 +1070,7 @@ function cssobj_plugin_selector_localize(option) {
 
   var mapClass = function(str) {
     return isString(str)
-      ? parseSel(str.replace(/\s+\.?/g, '.').replace(/^([^:\s.])/i, '.$1')).replace(/\./g, ' ')
+      ? parseSel(str.replace(/\s+\.?/g, '.').replace(/^([^:\s.])/i, '.$1')).replace(/\./g, ' ').trim()
       : str
   };
 
@@ -1110,6 +1110,6 @@ function cssobj$1 (obj, config, state) {
   return cssobj(config)(obj, state)
 }
 
-cssobj$1.version = '1.3.2';
+cssobj$1.version = '1.3.4';
 
 module.exports = cssobj$1;

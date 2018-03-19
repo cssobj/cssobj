@@ -14,7 +14,7 @@ Runtime CSS manager, Turn CSS into dynamic JS module, Stylesheet [CRUD][] (Creat
  - [Auto Vendor Prefixer](http://1111hui.com/github/css/cssobj-demo/#demoprefixer)
  - [Server Rendering][server]
 
-[Usage](https://github.com/cssobj/cssobj#usage) - [Wiki](https://github.com/cssobj/cssobj/wiki) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Demo](https://cssobj.github.io/cssobj-demo/) - [Repo](https://github.com/cssobj/cssobj) - [Babel](https://github.com/cssobj/cssobj#work-flow-with-babel-see-also-without-babel-version) - [Without Babel](https://github.com/cssobj/cssobj#work-flow-without-babel)
+[Usage](https://github.com/cssobj/cssobj#usage) - [Wiki](https://github.com/cssobj/cssobj/wiki) - [API](https://github.com/cssobj/cssobj/blob/master/docs/api.md) - [Demo](https://cssobj.github.io/cssobj-demo/) - [React](https://github.com/cssobj/cssobj#react) - [Babel](https://github.com/cssobj/cssobj#work-flow-with-babel-see-also-without-babel-version)
 
 [![Build Status](https://travis-ci.org/cssobj/cssobj.svg?branch=master)](https://travis-ci.org/cssobj/cssobj)
 [![npm](https://img.shields.io/npm/v/cssobj.svg "Version")](https://www.npmjs.com/package/cssobj)
@@ -297,6 +297,10 @@ result.mapClass('nav active')  // [string] 'nav_1lwyllh4_ active_1lwyllh4_'
 // As CSS selector
 result.mapSel('.nav li.item')  // [string] '.nav_1lwyllh4_ li.item_1lwyllh4_'
 ```
+
+## React
+
+You can use [react-cssobj](https://github.com/futurist/react-cssobj) with React
 
 ## Work Flow with Babel, See also [Without Babel Version](https://github.com/cssobj/cssobj#work-flow-without-babel)
 

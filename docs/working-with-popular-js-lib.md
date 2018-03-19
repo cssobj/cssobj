@@ -2,8 +2,8 @@
 
 **cssobj** is good for using with vanilla JS or any JS libs like **MVC frameworks**
 
- - [jQuery](#jquery)
  - [ReactJS](#reactjs)
+ - [jQuery](#jquery)
  - [Mithril](#mithril)
  - [Vue](#vue)
  - [Angular 1](#angular-1)
@@ -30,6 +30,10 @@ Just like your normally use with plain css, just beware of **local class names**
 
 You may want to use with:
 
+## ReactJS
+
+You can use [react-cssobj](https://github.com/futurist/react-cssobj) with React
+
 ## jQuery
 
 ```javascript
@@ -43,50 +47,6 @@ $(result.mapSel('.nav .item')).append(...)
 $('div').addClass(result.mapClass('!news item active'))
 ```
 
-## ReactJS
-
-You can just set cssobj into state in your component.
-
-[fiddle demo](https://jsfiddle.net/futurist/vk9uu520/) Please open console and see **local class names** work!
-
-**Notice**, you should check [babel-plugin-transform-cssobj](https://github.com/cssobj/babel-plugin-transform-cssobj) to simplify `mapClass`.
-
-```javascript
-import React from 'react'
-import ReactDOM from 'react-dom'
-
-class App extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      obj: obj,
-      result: cssobj(obj, {local: props.local })
-    }
-    this.updateCSS = this.updateCSS.bind(this)
-  }
-
-  updateCSS () {
-    this.state.obj['.nav'].fontSize = '34px'
-    this.state.result.update()
-  }
-
-  render () {
-    var result = this.state.result
-    return (
-      // .news is global css, .item .active is in cssobj local names
-      <div className={result.mapClass('nav')} onClick={this.updateCSS}>
-        <div className={result.mapClass('!news item active')}>
-          Hello cssobj in ReactJS!
-        </div>
-      </div>
-    )
-  }
-}
-
-ReactDOM.render(<App local={true} />, document.getElementById('container'))
-
-```
 
 ## Mithril
 

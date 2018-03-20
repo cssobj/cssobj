@@ -1,6 +1,6 @@
 {
   "name": "cssobj",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Runtime CSS manager, Turn CSS into dynamic JS module, Stylesheet CRUD (Create, Read, Update, Delete) in CSSOM, Solve common problems of CSS-in-JS, name space (local) class names",
   "keywords": [
     "cssinjs",

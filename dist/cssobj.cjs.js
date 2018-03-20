@@ -1,7 +1,7 @@
 /*
-  cssobj v1.3.4
-  Mon Mar 19 2018 10:17:01 GMT+0800 (CST)
-  commit a9fc5485f6b26b616beb48f97effd0496ffa4785
+  cssobj v1.3.5
+  Tue Mar 20 2018 21:18:29 GMT+0800 (CST)
+  commit 818e1f47b141c26f72246c078f0880347a87874e
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -11,8 +11,8 @@
     319d94d9d6c0ee455ed0dfe0c7f796298a145250
   - cssobj-plugin-cssom@4.1.4
     18b665ff6051ae754c0956ea1c278d0a4cda112c
-  - cssobj-plugin-localize@3.3.0
-    0be8b99e45fdd4add3334f436fe819d9bc123b61
+  - cssobj-plugin-localize@3.3.1
+    c12ea91e0c1d4407ab1ff5ba628f3922147fadc6
 */
 
 'use strict';
@@ -1074,20 +1074,23 @@ function cssobj_plugin_selector_localize(option) {
       : str
   };
 
+  var setResult = function(result) {
+    result.space = space;
+    result.localNames = localNames;
+    result.mapSel = parseSel;
+    result.mapClass = mapClass;
+    return result
+  };
+
   return {
     selector: function localizeName (sel, node, result) {
       // don't touch at rule's selText
       // it's copied from parent, which already localized
       if(node.at) return sel
-      if(!result.mapSel) {
-        result.space = space;
-        result.localNames = localNames;
-        result.mapSel = parseSel;
-        result.mapClass = mapClass;
-      }
-
+      if(!result.mapSel) setResult(result);
       return parseSel(sel)
-    }
+    },
+    post: setResult
   }
 }
 
@@ -1110,6 +1113,6 @@ function cssobj$1 (obj, config, state) {
   return cssobj(config)(obj, state)
 }
 
-cssobj$1.version = '1.3.4';
+cssobj$1.version = '1.3.5';
 
 module.exports = cssobj$1;

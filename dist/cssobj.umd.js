@@ -1,7 +1,7 @@
 /*
-  cssobj v1.3.5
-  Tue Mar 20 2018 21:18:29 GMT+0800 (CST)
-  commit 818e1f47b141c26f72246c078f0880347a87874e
+  cssobj v1.3.6
+  Thu Mar 22 2018 09:41:25 GMT+0800 (CST)
+  commit 5199e3a94197a9cfdd0ecc4576dcaed71b01458d
 
   https://github.com/cssobj/cssobj
   Released under the MIT License.
@@ -11,8 +11,8 @@
     319d94d9d6c0ee455ed0dfe0c7f796298a145250
   - cssobj-plugin-cssom@4.1.4
     18b665ff6051ae754c0956ea1c278d0a4cda112c
-  - cssobj-plugin-localize@3.3.1
-    c12ea91e0c1d4407ab1ff5ba628f3922147fadc6
+  - cssobj-plugin-localize@3.3.2
+    90529430922b4b3bbb27c70264157f1fae71eb62
 */
 
 (function (global, factory) {
@@ -163,16 +163,19 @@ function getParents (node, test, key, childrenKey, parentKey) {
 }
 
 // split selector with splitter, aware of css attributes
-function splitSelector (sel, splitter) {
+function splitSelector (sel, splitter, inBracket) {
   if (sel.indexOf(splitter) < 0) return [sel]
   for (var c, i = 0, n = 0, instr = '', prev = 0, d = []; c = sel.charAt(i); i++) {
     if (instr) {
-      if (c == instr) instr = '';
+      if (c == instr && sel.charAt(i-1)!='\\') instr = '';
       continue
     }
     if (c == '"' || c == '\'') instr = c;
-    if (c == '(' || c == '[') n++;
-    if (c == ')' || c == ']') n--;
+    /* istanbul ignore if  */
+    if(!inBracket){
+      if (c == '(' || c == '[') n++;
+      if (c == ')' || c == ']') n--;
+    }
     if (!n && c == splitter) d.push(sel.substring(prev, i)), prev = i + 1;
   }
   return d.concat(sel.substring(prev))
@@ -1058,7 +1061,7 @@ function cssobj_plugin_selector_localize(option) {
 
   var parseSel = function(str) {
     if(!isString(str)) return str
-    var part = splitSelector(str, '.');
+    var part = splitSelector(str, '.', true);
     var sel=part[0];
     for(var i = 1, p, pos, len = part.length; i < len; i++) {
       p = part[i];
@@ -1117,7 +1120,7 @@ function cssobj$1 (obj, config, state) {
   return cssobj(config)(obj, state)
 }
 
-cssobj$1.version = '1.3.5';
+cssobj$1.version = '1.3.6';
 
 return cssobj$1;
 

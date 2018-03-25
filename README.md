@@ -300,7 +300,25 @@ result.mapSel('.nav li.item')  // [string] '.nav_1lwyllh4_ li.item_1lwyllh4_'
 
 ## React
 
-You can use [react-cssobj](https://github.com/futurist/react-cssobj) with React
+You can use [react-cssobj](https://github.com/futurist/react-cssobj) with React, like below:
+
+
+```js
+import React from 'react'
+import ReactCSS from 'react-cssobj'
+
+const {css, mapClass} = ReactCSS({
+  '.app': {
+    background: 'red'
+  }
+})
+
+export default class App extends React.Component {
+  render(){
+    return mapClass (<div className = 'app'>App</div>)
+  }
+}
+```
 
 ## Work Flow with Babel, See also [Without Babel Version](https://github.com/cssobj/cssobj#work-flow-without-babel)
 
